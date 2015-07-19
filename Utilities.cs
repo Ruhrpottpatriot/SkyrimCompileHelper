@@ -17,13 +17,13 @@ namespace SkyrimCompilerHelper
 
     using IniParser;
     using IniParser.Model;
-    using IniParser.Parser;
 
     using SkyrimCompilerHelper.Options;
 
     /// <summary>Contains some useful methods and properties.</summary>
     public class Utilities
     {
+        /// <summary>Initialises a new instance of the <see cref="Utilities"/> class.</summary>
         public Utilities()
         {
             this.ConfigData = new FileIniDataParser().ReadFile(@".\config.ini");
@@ -90,13 +90,16 @@ namespace SkyrimCompilerHelper
             DirectoryInfo buildDebugDirectoryInfo = new DirectoryInfo(@"..\src\debug");
             this.DeleteFiles(buildDebugDirectoryInfo);
             this.DeleteDirectories(buildDebugDirectoryInfo);
-
-
+            
             DirectoryInfo buildReleaseDirectoryInfo = new DirectoryInfo(@"..\src\release");
             this.DeleteFiles(buildReleaseDirectoryInfo);
             this.DeleteDirectories(buildReleaseDirectoryInfo);
         }
 
+        /// <summary>Copies the contents of a directory from one location to another.</summary>
+        /// <param name="source">The source directory.</param>
+        /// <param name="destination">The destination directory.</param>
+        /// <exception cref="DirectoryNotFoundException">Thrown, when the source directory does not exist.</exception>
         public void Copy(string source, string destination)
         {
             // Get the subdirectories for the specified directory.
