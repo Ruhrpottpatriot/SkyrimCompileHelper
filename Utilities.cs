@@ -52,21 +52,21 @@ namespace SkyrimCompilerHelper
             SectionData generalSection = new SectionData("General");
             Console.Write("ModName: ");
             generalSection.Keys.AddKey("ModName", Console.ReadLine());
-            
+
             // Create the program paths section
             SectionData pathsSection = new SectionData("ProgramPaths");
             Console.Write("Skyrim Path: ");
             pathsSection.Keys.AddKey("Skyrim", Console.ReadLine());
             Console.Write("Mod Organizer: ");
             pathsSection.Keys.AddKey("ModOrganizer", Console.ReadLine());
-            
+
             // Generate the compiler options section
             SectionData compilerOptionsSection = new SectionData("CompilerOptions");
             compilerOptionsSection.LeadingComments.Add("Only change the section below, if you know what you are doing!");
             compilerOptionsSection.Keys.AddKey("PapyrusCompiler", @"\Papyrus Compiler\PapyrusCompiler.exe");
             compilerOptionsSection.Keys.AddKey("ScriptSourcePath", @"\Data\Scripts\Source");
             compilerOptionsSection.Keys.AddKey("DefaultFlags", "\"{0}\" -all -f=\"TESV_Papyrus_Flags.flg\" -i=\"{1}\" -o=\"{2}\"");
-            
+
             // Create a new ini file
             IniData config = new IniData();
             config.Sections.Add(generalSection);
@@ -75,7 +75,7 @@ namespace SkyrimCompilerHelper
 
             // Write the file to disk
             FileIniDataParser parser = new FileIniDataParser();
-            parser.WriteFile(@".\config.ini", config, Encoding.UTF8); 
+            parser.WriteFile(@".\config.ini", config, Encoding.UTF8);
         }
 
         /// <summary>Deletes files and folders from the build directory and mod organizer directory.a</summary>
@@ -95,6 +95,38 @@ namespace SkyrimCompilerHelper
             DirectoryInfo buildReleaseDirectoryInfo = new DirectoryInfo(@"..\src\release");
             this.DeleteFiles(buildReleaseDirectoryInfo);
             this.DeleteDirectories(buildReleaseDirectoryInfo);
+        }
+
+        public void Copy(string source, string destination)
+        {
+            // Get the subdirectories for the specified directory.
+            DirectoryInfo dir = new DirectoryInfo(source);
+            DirectoryInfo[] dirs = dir.GetDirectories();
+
+            if (!dir.Exists)
+            {
+                throw new DirectoryNotFoundException("Source directory does not exist or could not be found: " + source);
+            }
+
+            // If the destination directory doesn't exist, create it.
+            if (!Directory.Exists(destination))
+            {
+                Directory.CreateDirectory(destination);
+            }
+
+            // Get the files in the directory and copy them to the new location.
+            FileInfo[] files = dir.GetFiles();
+            foreach (FileInfo file in files)
+            {
+                string temppath = Path.Combine(destination, file.Name);
+                file.CopyTo(temppath, false);
+            }
+            
+            foreach (DirectoryInfo subdir in dirs)
+            {
+                string temppath = Path.Combine(destination, subdir.Name);
+                this.Copy(subdir.FullName, temppath);
+            }
         }
 
         /// <summary>Deletes the sub directories in a folder.</summary>
