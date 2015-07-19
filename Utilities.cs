@@ -22,6 +22,11 @@ namespace SkyrimCompilerHelper
     /// <summary>Contains some useful methods and properties.</summary>
     public class Utilities
     {
+        public Utilities()
+        {
+            this.ConfigData = new FileIniDataParser().ReadFile(@".\config.ini");
+        }
+
         /// <summary>Gets the config data.</summary>
         public IniData ConfigData { get; private set; }
 
@@ -85,9 +90,12 @@ namespace SkyrimCompilerHelper
         {
             try
             {
-                foreach (FileInfo file in dirInfo.GetFiles())
+                if (dirInfo.Exists)
                 {
-                    file.Delete();
+                    foreach (FileInfo file in dirInfo.GetFiles())
+                    {
+                        file.Delete();
+                    }
                 }
             }
             catch (IOException ex)
@@ -103,9 +111,12 @@ namespace SkyrimCompilerHelper
         {
             try
             {
-                foreach (DirectoryInfo dir in dirInfo.GetDirectories())
+                if (dirInfo.Exists)
                 {
-                    dir.Delete(true);
+                    foreach (DirectoryInfo dir in dirInfo.GetDirectories())
+                    {
+                        dir.Delete(true);
+                    }
                 }
             }
             catch (IOException ex)
