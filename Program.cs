@@ -35,15 +35,12 @@ namespace SkyrimCompilerHelper
             switch (invokedVerb)
             {
                 case "init":
-                    Utilities.Initialize();
+                    Utilities.Initialize((InitializeOption)invokedVerbInstance);
                     break;
                 case "clean":
                     utils.Clean();
                     break;
             }
-
-
-            Console.ReadLine();
         }
 
 

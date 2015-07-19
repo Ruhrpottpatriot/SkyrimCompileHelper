@@ -19,6 +19,8 @@ namespace SkyrimCompilerHelper
     using IniParser.Model;
     using IniParser.Parser;
 
+    using SkyrimCompilerHelper.Options;
+
     /// <summary>Contains some useful methods and properties.</summary>
     public class Utilities
     {
@@ -31,9 +33,20 @@ namespace SkyrimCompilerHelper
         public IniData ConfigData { get; private set; }
 
         /// <summary>Initializes the modding environment</summary>
-        public static void Initialize()
+        /// <param name="invokedVerbInstance">The verb options.</param>
+        public static void Initialize(InitializeOption invokedVerbInstance)
         {
-            Console.WriteLine("Please enter the following information to initialize the modding environment.");
+            if (File.Exists(@".\config.ini") && !invokedVerbInstance.Force)
+            {
+                Console.WriteLine("The environment has already been initialized. Use the -f parameter to reinitialize");
+                return;
+            }
+            else if (invokedVerbInstance.Force)
+            {
+                File.Delete(@".\config.ini");
+            }
+
+            Console.WriteLine("Please enter some information to initialize the modding environment.");
 
             // Create the general section
             SectionData generalSection = new SectionData("General");

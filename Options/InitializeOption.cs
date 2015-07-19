@@ -11,8 +11,13 @@
 
 namespace SkyrimCompilerHelper.Options
 {
+    using CommandLine;
+
     /// <summary>Represents the command line option to initialize the environment.</summary>
     public class InitializeOption : OptionBase
     {
+        /// <summary>Gets or sets a value indicating whether the command should force.</summary>
+        [Option('f', HelpText = "Forces a reinit of the modding environment.")]
+        public bool Force { get; set; }
     }
 }
