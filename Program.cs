@@ -35,7 +35,7 @@ namespace SkyrimCompilerHelper
             switch (invokedVerb)
             {
                 case "init":
-                    utils.Initialize();
+                    Utilities.Initialize();
                     break;
                 case "clean":
                     utils.Clean();
