@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompilerHelper
+namespace SkyrimCompileHelper
 {
     using System;
     using System.IO;
@@ -18,7 +18,7 @@ namespace SkyrimCompilerHelper
     using IniParser;
     using IniParser.Model;
 
-    using SkyrimCompilerHelper.Options;
+    using SkyrimCompileHelper.Options;
 
     /// <summary>Contains some useful methods and properties.</summary>
     public class Utilities

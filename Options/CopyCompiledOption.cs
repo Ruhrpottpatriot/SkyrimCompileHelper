@@ -1,4 +1,4 @@
-namespace SkyrimCompilerHelper
+namespace SkyrimCompileHelper.Options
 {
     public class CopyCompiledOption
     {

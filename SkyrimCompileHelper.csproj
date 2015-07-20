@@ -7,7 +7,7 @@
     <ProjectGuid>{012E0580-D7B9-4631-AC18-F16D531907C3}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SkyrimCompilerHelper</RootNamespace>
+    <RootNamespace>SkyrimCompileHelper</RootNamespace>
     <AssemblyName>SCH</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

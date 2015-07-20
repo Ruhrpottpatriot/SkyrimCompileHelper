@@ -9,11 +9,13 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompilerHelper
+namespace SkyrimCompileHelper
 {
     using System;
     using System.Diagnostics;
     using System.IO;
+
+    using SkyrimCompileHelper.Options;
 
     /// <summary>Class containing methods and properties to help compile skyrim papyrus scripts.</summary>
     internal class Compiler

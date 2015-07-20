@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompilerHelper.Options
+namespace SkyrimCompileHelper.Options
 {
     using CommandLine;
 

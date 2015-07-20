@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompilerHelper
+namespace SkyrimCompileHelper.Options
 {
     /// <summary>Enumerates the compile modes.
     /// </summary>

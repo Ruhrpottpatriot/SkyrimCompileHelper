@@ -9,12 +9,12 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompilerHelper
+namespace SkyrimCompileHelper
 {
     using System;
     using System.IO;
 
-    using SkyrimCompilerHelper.Options;
+    using SkyrimCompileHelper.Options;
 
     /// <summary>Main program class.</summary>
     public class Program

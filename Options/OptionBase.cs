@@ -9,10 +9,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompilerHelper.Options
+namespace SkyrimCompileHelper.Options
 {
-    using CommandLine;
-
     /// <summary>Base class containing basic command line options.</summary>
     public abstract class OptionBase
     {

@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompilerHelper.Options
+namespace SkyrimCompileHelper.Options
 {
     /// <summary>Represents the command line option to clean the project folders.</summary>
     public class CleanOption : OptionBase
