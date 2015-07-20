@@ -55,6 +55,8 @@ namespace SkyrimCompilerHelper
                     break;
 
             }
+
+            Console.Read();
         }
 
         private static void Copy(CopyOption copyOption)
