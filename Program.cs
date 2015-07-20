@@ -1,22 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Program.cs" company="Robert Logiewa">
+//   The MIT License (MIT)
+//   
+//   Copyright (c) 2015 Robert Logiewa
+// </copyright>
+// <summary>
+//   Main program class.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace SkyrimCompilerHelper
 {
-    using System.Diagnostics;
+    using System;
     using System.IO;
-    using System.Runtime.CompilerServices;
 
     using SkyrimCompilerHelper.Options;
 
     /// <summary>Main program class.</summary>
     public class Program
     {
-        private const string ConfigPath = @".\config";
-
         private static string invokedVerb;
 
         private static object invokedVerbInstance;
@@ -52,8 +54,8 @@ namespace SkyrimCompilerHelper
                         Compiler compiler = new Compiler(((CompileOption)invokedVerbInstance).Mode);
                         compiler.Compile();
                     }
-                    break;
 
+                    break;
             }
 
             Console.Read();
