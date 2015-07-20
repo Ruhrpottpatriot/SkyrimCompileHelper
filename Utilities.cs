@@ -81,19 +81,9 @@ namespace SkyrimCompilerHelper
         /// <summary>Deletes files and folders from the build directory and mod organizer directory.a</summary>
         public void Clean()
         {
-            string modName = this.ConfigData["General"]["ModName"];
-            string organizerPath = this.ConfigData["ProgramPaths"]["ModOrganizer"];
-            DirectoryInfo organizerDirectoryInfo = new DirectoryInfo(Path.Combine(organizerPath, "mods", modName));
-            this.DeleteFiles(organizerDirectoryInfo);
-            this.DeleteDirectories(organizerDirectoryInfo);
-
-            DirectoryInfo buildDebugDirectoryInfo = new DirectoryInfo(@"..\src\debug");
-            this.DeleteFiles(buildDebugDirectoryInfo);
-            this.DeleteDirectories(buildDebugDirectoryInfo);
-            
-            DirectoryInfo buildReleaseDirectoryInfo = new DirectoryInfo(@"..\src\release");
-            this.DeleteFiles(buildReleaseDirectoryInfo);
-            this.DeleteDirectories(buildReleaseDirectoryInfo);
+            this.CleanDirectory(new DirectoryInfo(Path.Combine(this.ConfigData["ProgramPaths"]["ModOrganizer"], "mods", this.ConfigData["General"]["ModName"])));
+            this.CleanDirectory(new DirectoryInfo(@"..\src\debug"));
+            this.CleanDirectory(new DirectoryInfo(@"..\src\release"));
         }
 
         /// <summary>Copies the contents of a directory from one location to another.</summary>
@@ -124,12 +114,18 @@ namespace SkyrimCompilerHelper
                 string temppath = Path.Combine(destination, file.Name);
                 file.CopyTo(temppath, false);
             }
-            
+
             foreach (DirectoryInfo subdir in dirs)
             {
                 string temppath = Path.Combine(destination, subdir.Name);
                 this.Copy(subdir.FullName, temppath);
             }
+        }
+
+        private void CleanDirectory(DirectoryInfo dirInfo)
+        {
+            this.DeleteFiles(dirInfo);
+            this.DeleteDirectories(dirInfo);
         }
 
         /// <summary>Deletes the sub directories in a folder.</summary>
@@ -149,7 +145,6 @@ namespace SkyrimCompilerHelper
             catch (IOException ex)
             {
                 Console.WriteLine(ex.Message);
-                throw;
             }
         }
 
@@ -170,7 +165,6 @@ namespace SkyrimCompilerHelper
             catch (IOException ex)
             {
                 Console.WriteLine(ex.Message);
-                throw;
             }
             catch (UnauthorizedAccessException ex)
             {

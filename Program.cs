@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 namespace SkyrimCompilerHelper
 {
     using System.Diagnostics;
+    using System.IO;
+    using System.Runtime.CompilerServices;
 
     using SkyrimCompilerHelper.Options;
 
@@ -19,13 +21,15 @@ namespace SkyrimCompilerHelper
 
         private static object invokedVerbInstance;
 
+        private static Utilities utils;
+
 
         /// <summary>Main entry point for the application.</summary>
         /// <param name="args">The arguments passed to the application.</param>
         public static void Main(string[] args)
         {
             CommandOptions commandOptions = new CommandOptions();
-            Utilities utils = new Utilities();
+            utils = new Utilities();
 
             if (!CommandLine.Parser.Default.ParseArguments(args, commandOptions, OnVerbCommand))
             {
@@ -40,9 +44,35 @@ namespace SkyrimCompilerHelper
                 case "clean":
                     utils.Clean();
                     break;
+                case "copy":
+                    Copy((CopyOption)invokedVerbInstance);
+                    break;
+                case "compile":
+                    {
+                        Compiler compiler = new Compiler(((CompileOption)invokedVerbInstance).Mode);
+                        compiler.Compile();
+                    }
+                    break;
+
             }
         }
 
+        private static void Copy(CopyOption copyOption)
+        {
+            if (copyOption.Assets)
+            {
+                string source = Path.Combine(utils.ConfigData["ProgramPaths"]["ModOrganizer"], "mods", utils.ConfigData["General"]["ModName"]);
+                string destination = @"..\src";
+
+                utils.Copy(source, destination);
+            }
+            else if (copyOption.Binary)
+            {
+                string source = @".\bin\debug";
+                string destination = Path.Combine(utils.ConfigData["ProgramPaths"]["ModOrganizer"], "mods", utils.ConfigData["General"]["ModName"]);
+                utils.Copy(source, destination);
+            }
+        }
 
         /// <summary>Populates fields with parsed verbs.</summary>
         /// <param name="verb">The parsed verb.</param>

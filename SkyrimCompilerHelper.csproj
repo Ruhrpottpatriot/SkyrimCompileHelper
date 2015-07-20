@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compiler.cs" />
     <Compile Include="Options\CleanOption.cs" />
     <Compile Include="Options\CompileMode.cs" />
     <Compile Include="Options\CompileOption.cs" />
