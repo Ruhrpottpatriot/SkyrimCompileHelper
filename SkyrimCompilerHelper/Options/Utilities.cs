@@ -32,52 +32,6 @@ namespace SkyrimCompileHelper
         /// <summary>Gets the config data.</summary>
         public IniData ConfigData { get; private set; }
 
-        /// <summary>Initializes the modding environment</summary>
-        /// <param name="invokedVerbInstance">The verb options.</param>
-        public static void Initialize(InitializeOption invokedVerbInstance)
-        {
-            if (File.Exists(@".\config.ini") && !invokedVerbInstance.Force)
-            {
-                Console.WriteLine("The environment has already been initialized. Use the -f parameter to reinitialize");
-                return;
-            }
-            else if (invokedVerbInstance.Force)
-            {
-                File.Delete(@".\config.ini");
-            }
-
-            Console.WriteLine("Please enter some information to initialize the modding environment.");
-
-            // Create the general section
-            SectionData generalSection = new SectionData("General");
-            Console.Write("ModName: ");
-            generalSection.Keys.AddKey("ModName", Console.ReadLine());
-
-            // Create the program paths section
-            SectionData pathsSection = new SectionData("ProgramPaths");
-            Console.Write("Skyrim Path: ");
-            pathsSection.Keys.AddKey("Skyrim", Console.ReadLine());
-            Console.Write("Mod Organizer: ");
-            pathsSection.Keys.AddKey("ModOrganizer", Console.ReadLine());
-
-            // Generate the compiler options section
-            SectionData compilerOptionsSection = new SectionData("CompilerOptions");
-            compilerOptionsSection.LeadingComments.Add("Only change the section below, if you know what you are doing!");
-            compilerOptionsSection.Keys.AddKey("PapyrusCompiler", @"\Papyrus Compiler\PapyrusCompiler.exe");
-            compilerOptionsSection.Keys.AddKey("ScriptSourcePath", @"\Data\Scripts\Source");
-            compilerOptionsSection.Keys.AddKey("DefaultFlags", "\"{0}\" -all -f=\"TESV_Papyrus_Flags.flg\" -i=\"{1}\" -o=\"{2}\"");
-
-            // Create a new ini file
-            IniData config = new IniData();
-            config.Sections.Add(generalSection);
-            config.Sections.Add(pathsSection);
-            config.Sections.Add(compilerOptionsSection);
-
-            // Write the file to disk
-            FileIniDataParser parser = new FileIniDataParser();
-            parser.WriteFile(@".\config.ini", config, Encoding.UTF8);
-        }
-
         /// <summary>Deletes files and folders from the build directory and mod organizer directory.a</summary>
         public void Clean()
         {

@@ -33,6 +33,10 @@ namespace SkyrimCompileHelper.Options
         [VerbOption("copy", HelpText = "Copies files from one folder to another. Warning! This will overwrite existing files!")]
         public CopyOption CopyVerb { get; set; }
 
+        /// <summary>Gets or sets the switch compile mode.</summary>
+        [Option("switch-compile-mode", HelpText = "Switches the compile mode to the given mode.")]
+        public SwitchCompileModeOption SwitchCompileMode { get; set; }
+
         /// <summary>Compiles the help text.</summary>
         /// <param name="verb">The verb to compile the help for.</param>
         /// <returns>The help <see cref="string"/>.</returns>
