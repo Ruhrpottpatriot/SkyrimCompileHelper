@@ -20,7 +20,7 @@
         public string Name { get; set; }
 
         /// <summary>Gets or sets the compile configurations.</summary>
-        public ObservableCollection<CompileConfiguration> CompileConfigurations { get; set; }
+        public IList<CompileConfiguration> CompileConfigurations { get; set; }
 
         /// <summary>Gets or sets the selected configuration.</summary>
         public CompileConfiguration SelectedConfiguration { get; set; }

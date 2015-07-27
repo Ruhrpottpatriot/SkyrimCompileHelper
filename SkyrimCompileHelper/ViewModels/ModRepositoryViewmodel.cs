@@ -29,13 +29,6 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
 
-        /// <summary>Configuration manager string constant.</summary>
-        private const string ConfigurationManger = "Configuration Manager";
-
-        /// <summary>Backing field. Sores the compile configurations.
-        /// </summary>
-        private IList<CompileConfiguration> compileConfigurations;
-
         /// <summary>Initializes a new instance of the <see cref="ModRepositoryViewModel"/> class.</summary>
         public ModRepositoryViewModel()
         {
@@ -44,7 +37,7 @@ namespace SkyrimCompileHelper.ViewModels
                 this.Name = "Outfits of Skyrim";
                 this.Version = new SemVersion(0, 1);
                 this.CompilerFlags = "Flags";
-                this.Configurations = new List<string> { "Debug", "Release", ConfigurationManger };
+                // this.Configurations = new List<string> { "Debug", "Release", ConfigurationManger };
             }
         }
 
@@ -54,10 +47,10 @@ namespace SkyrimCompileHelper.ViewModels
         public ModRepositoryViewModel(IWindowManager windowManager, ModRepository repository)
         {
             this.windowManager = windowManager;
-            this.Configurations = new List<string> { ConfigurationManger };
+            this.Configurations = repository.CompileConfigurations ?? new List<CompileConfiguration>();
+            this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
             this.Name = repository.Name;
             this.Version = repository.Version;
-            this.compileConfigurations = repository.CompileConfigurations;
         }
 
         /// <summary>Gets or sets the repository name.</summary>
@@ -70,7 +63,7 @@ namespace SkyrimCompileHelper.ViewModels
         public string CompilerFlags { get; set; }
 
         /// <summary>Gets or sets the compile configurations.</summary>
-        public List<string> Configurations { get; set; }
+        public IList<CompileConfiguration> Configurations { get; set; }
 
         /// <summary>Changes the version of a mod repository.</summary>
         /// <exception cref="NotImplementedException">
@@ -97,15 +90,28 @@ namespace SkyrimCompileHelper.ViewModels
         /// <exception cref="NotImplementedException">Thrown when the configuration manger is selected.</exception>
         public void ChangeConfiguration(ComboBox sender)
         {
-            string value = (string)sender.SelectedItem;
+            string value = ((CompileConfiguration)sender.SelectedItem).Name;
 
-            if (value == ConfigurationManger)
+            if (value == Constants.EditConst)
             {
-                throw new NotImplementedException(); // ToDo: Implement Configuration Manager.
+                ConfigurationManagerViewModel viewModel = new ConfigurationManagerViewModel(this.windowManager, this.Configurations);
+
+                Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
+                {
+                    { "ResizeMode", ResizeMode.NoResize }
+                };
+
+                bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
+
+                if (answer.HasValue && answer.Value)
+                {
+                    this.Configurations = viewModel.Configurations;
+                }
+
                 return;
             }
 
-            var configuration = this.compileConfigurations.SingleOrDefault(c => c.Name == value);
+            CompileConfiguration configuration = this.Configurations.SingleOrDefault(c => c.Name == value);
             this.CompilerFlags = configuration != null ? configuration.CompilerFlags : string.Empty;
         }
 

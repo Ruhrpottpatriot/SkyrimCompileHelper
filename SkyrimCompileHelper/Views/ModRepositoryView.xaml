@@ -70,6 +70,11 @@
                       Height="22"
                       VerticalAlignment="Bottom"
                       cal:Message.Attach="[Event SelectionChanged] = [Action ChangeConfiguration($source)]">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"></TextBlock>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
             </ComboBox>
         </StackPanel>
 
