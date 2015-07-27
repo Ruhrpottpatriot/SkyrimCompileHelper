@@ -74,10 +74,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Common\Converter\SemVersionToStringConverter.cs" />
     <Compile Include="MefBootstrapper.cs" />
     <Compile Include="Common\Settings.cs" />
     <Compile Include="Repositories\SettingsRepository.cs" />
     <Page Include="Views\ChangeVersionView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ModRepositoryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -96,6 +101,7 @@
     <Compile Include="Common\CompileConfiguration.cs" />
     <Compile Include="Common\ModRepository.cs" />
     <Compile Include="ViewModels\ChangeVersionViewModel.cs" />
+    <Compile Include="ViewModels\ModRepositoryViewmodel.cs" />
     <Compile Include="ViewModels\NewRepositoryViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
   </ItemGroup>

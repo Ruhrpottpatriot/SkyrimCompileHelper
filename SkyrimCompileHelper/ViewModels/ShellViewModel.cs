@@ -48,12 +48,20 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 this.SkyrimPath = @"C:\Skyrim";
                 this.OrganizerPath = @"C:Organizer";
-                this.SelectedRepository = new ModRepository
+
+                ModRepository repo1 = new ModRepository
                 {
                     Name = "Outfits of Skyrim",
                     Version = "0.1.0",
                     Path = @"C:\Outfits"
                 };
+
+                this.Repositories = new ObservableCollection<ModRepository>
+                {
+                    this.addRepositoryBlueprint,
+                    repo1
+                };
+                this.SelectedRepository = repo1;
             }
         }
 
@@ -69,6 +77,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.OrganizerPath = this.generalSettings.ModOrganizerPath;
 
             this.Repositories = new ObservableCollection<ModRepository> { this.addRepositoryBlueprint };
+            
         }
 
         /// <summary>Gets or sets skyrims path.</summary>
@@ -77,9 +86,15 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Gets or sets mod organizers path.</summary>
         public string OrganizerPath { get; set; }
 
+        /// <summary>Gets or sets the repositories.</summary>
         public ObservableCollection<ModRepository> Repositories { get; set; }
 
+        /// <summary>Gets or sets the selected repository.</summary>
         public ModRepository SelectedRepository { get; set; }
+
+        public ObservableCollection<CompileConfiguration> CompileConfigurations { get; set; }
+
+        public CompileConfiguration SelectedConfiguration { get; set; }
 
         /// <summary>Adds a repository to the list.</summary>
         public void AddRepository()
@@ -89,9 +104,9 @@ namespace SkyrimCompileHelper.ViewModels
                 NewRepositoryViewModel viewModel = new NewRepositoryViewModel(this.windowManager);
 
                 Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
-            {
-                { "ResizeMode", ResizeMode.NoResize } 
-            };
+                {
+                    { "ResizeMode", ResizeMode.NoResize } 
+                };
 
                 bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
 
@@ -107,12 +122,19 @@ namespace SkyrimCompileHelper.ViewModels
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1627:DocumentationTextMustNotBeEmpty", Justification = "Reviewed. Suppression is OK here.")]
         public void Compile()
         {
-            throw new NotImplementedException();
-        }
+            ModRepositoryViewModel viewModel = new ModRepositoryViewModel(this.windowManager, this.SelectedRepository);
 
-        public void ChangeVersion()
-        {
-            throw new NotImplementedException();
+            Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
+                {
+                    { "ResizeMode", ResizeMode.NoResize } 
+                };
+
+            bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
+
+            if (answer.HasValue && answer.Value)
+            {
+                //this.Repositories.Add(viewModel.GetRepository());
+            }
         }
 
         /// <summary>Saves the settings to the repository.</summary>

@@ -33,16 +33,13 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
 
-        /// <summary>The version.</summary>
-        private SemVersion version;
-
         /// <summary>Initializes a new instance of the <see cref="NewRepositoryViewModel"/> class.</summary>
         public NewRepositoryViewModel()
         {
             if (Execute.InDesignMode)
             {
                 this.Name = "Test Modification";
-                this.version = new SemVersion(0, 1);
+                this.Version = new SemVersion(0, 1);
                 this.Path = @"C:\SkyrimMod";
             }
         }
@@ -56,7 +53,7 @@ namespace SkyrimCompileHelper.ViewModels
         public NewRepositoryViewModel(IWindowManager windowManager)
         {
             this.windowManager = windowManager;
-            this.version = new SemVersion(0);
+            this.Version = new SemVersion(0);
         }
 
         /// <summary>Gets or sets the name.</summary>
@@ -66,19 +63,7 @@ namespace SkyrimCompileHelper.ViewModels
         public string Path { get; set; }
 
         /// <summary>Gets or sets the version.</summary>
-        public string Version
-        {
-            get
-            {
-                return this.version.ToString();
-            }
-
-            set
-            {
-                this.version = SemVersion.Parse(value);
-                this.NotifyOfPropertyChange(() => this.Version);
-            }
-        }
+        public SemVersion Version { get; set; }
 
         /// <summary>Gets a value indicating whether the user can create a repository.</summary>
         /// <remarks>This property tells if a user should be able to create a new repository. Name and Path are required to be able to crate a new repository.
@@ -106,14 +91,14 @@ namespace SkyrimCompileHelper.ViewModels
         /// <returns>A <see cref="ModRepository" /> containing the view models information.</returns>
         public ModRepository GetRepository()
         {
-            return new ModRepository { Name = this.Name, Path = this.Path/*, Version = this.Version */};
+            return new ModRepository { Name = this.Name, Path = this.Path, Version = this.Version };
         }
 
         /// <summary>Changes the version of the mod repository.</summary>
         /// <exception cref="NotImplementedException" />
         public void ChangeVersion()
         {
-             ChangeVersionViewModel viewModel = new ChangeVersionViewModel(this.version);
+            ChangeVersionViewModel viewModel = new ChangeVersionViewModel(this.Version);
 
             Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
             {
