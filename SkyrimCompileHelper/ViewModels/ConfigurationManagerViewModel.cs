@@ -11,6 +11,7 @@
 
 namespace SkyrimCompileHelper.ViewModels
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
@@ -24,7 +25,7 @@ namespace SkyrimCompileHelper.ViewModels
 
     /// <summary>ViewModel containing methods and properties to manage configurations.</summary>
     [ImplementPropertyChanged]
-    public class ConfigurationManagerViewModel : Screen
+    public sealed class ConfigurationManagerViewModel : Screen
     {
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
@@ -34,6 +35,8 @@ namespace SkyrimCompileHelper.ViewModels
         {
             if (Execute.InDesignMode)
             {
+                this.DisplayName = "Edit Project Configurations";
+
                 this.Configurations = new ObservableCollection<CompileConfiguration> 
                 {
                     new CompileConfiguration { Name = "Name1" },
@@ -47,6 +50,8 @@ namespace SkyrimCompileHelper.ViewModels
         /// <param name="configurations">The already existing configurations.</param>
         public ConfigurationManagerViewModel(IWindowManager windowManager, IList<CompileConfiguration> configurations)
         {
+            this.DisplayName = "Edit Project Configurations";
+
             this.windowManager = windowManager;
             CompileConfiguration removeConfiguration = configurations.SingleOrDefault(c => c.Name == Constants.EditConst);
             this.Configurations = new ObservableCollection<CompileConfiguration>(configurations);
@@ -58,7 +63,7 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Gets or sets the selected configuration.</summary>
         public CompileConfiguration SelectedConfiguration { get; set; }
-
+        
         /// <summary>Adds a new configuration.</summary>
         public void AddConfiguration()
         {
@@ -86,6 +91,8 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Closes the screen.</summary>
         public void Close()
         {
+            // Hack: Since we removed the edit item in the constructor, we need to re-add it here.
+            this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
             this.TryClose(true);
         }
     }

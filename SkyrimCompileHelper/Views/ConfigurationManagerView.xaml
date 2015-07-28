@@ -8,14 +8,14 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewModels:ConfigurationManagerViewModel, IsDesignTimeCreatable=True}"
         cal:Bind.AtDesignTime="True"
-        Title="Edit Project Configurations"
+        Title="{Binding DisplayName}"
         SizeToContent="WidthAndHeight">
-    <Grid>
+    <Grid Margin="5">
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition />
         </Grid.RowDefinitions>
-        
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
@@ -24,7 +24,7 @@
         <TextBlock Text="Available Configurations:"
                    Grid.Row="0"
                    Grid.Column="0" />
-        
+
         <ListBox x:Name="Configurations"
                  SelectedItem="{Binding SelectedConfiguration}"
                  Grid.Column="0"
@@ -34,7 +34,7 @@
                  Margin="0,0,3,0">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Name}"/>
+                    <TextBlock Text="{Binding Name}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
@@ -47,12 +47,13 @@
             <Button Content="Remove"
                     DockPanel.Dock="Top"
                     Margin="0,0,0,3"
-                    cal:Message.Attach="DeleteConfiguration()"/>
-            <Button Content="Add" 
+                    cal:Message.Attach="DeleteConfiguration()" />
+            <Button Content="Add"
                     DockPanel.Dock="Top"
                     cal:Message.Attach="AddConfiguration()" />
-            
-            <Button Content="Close"
+
+            <Button x:Name="Close"
+                    Content="Close"
                     DockPanel.Dock="Bottom" />
         </DockPanel>
     </Grid>
