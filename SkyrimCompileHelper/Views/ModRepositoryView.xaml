@@ -14,7 +14,7 @@
         <converter:SemVersionToStringConverter x:Key="SemVersionToStringConverter" />
     </UserControl.Resources>
 
-    <Grid Margin="0,0,0,5">
+    <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
@@ -25,28 +25,23 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal"
-                    Margin="0,0,0,5"
+        <StackPanel Margin="0,0,3,3"
                     Grid.Column="0"
                     Grid.Row="0">
-            <TextBlock Text="Name:"
-                       Margin="0,0,3,0" />
+            <TextBlock Text="Name:" />
             <TextBox x:Name="Name"
-                     Margin="3,0,0,0"
                      MinWidth="75" />
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal"
-                    Margin="5,0,0,0"
+        <StackPanel Margin="3,0,0,3"
                     Grid.Row="0"
                     Grid.Column="1">
-
-            <TextBlock Text="Version:"
-                       Margin="0,0,3,0" />
-            <TextBox Margin="3,0,0,0"
-                     MinWidth="75"
+            <TextBlock Text="Version:" />
+            <TextBox MinWidth="75"
                      Text="{Binding Version, Converter={StaticResource SemVersionToStringConverter}}"
                      IsReadOnly="True">
                 <i:Interaction.Triggers>
@@ -57,19 +52,21 @@
             </TextBox>
         </StackPanel>
 
-        <StackPanel Orientation="Horizontal"
-                    Grid.Row="1"
+        <Button x:Name="OpenSolutionFolder"
+                Grid.Row="1"
+                Grid.Column="0"
+                Content="Open Solution Folder"
+                Margin="0,3,0,3" />
+
+        <StackPanel Grid.Row="2"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
-                    Margin="0,5,0,5">
-            <TextBlock Text="Configuration:"
-                       Margin="0,0,3,0" />
+                    Margin="0,3,0,3">
+            <TextBlock Text="Configuration:" />
             <ComboBox x:Name="Configurations"
-                      Margin="3,0,0,0"
-                      MinWidth="100"
-                      Height="22"
-                      VerticalAlignment="Bottom"
-                      cal:Message.Attach="[Event SelectionChanged] = [Action ChangeConfiguration($source)]">
+                      MinWidth="150"
+                      cal:Message.Attach="[Event SelectionChanged] = [Action ChangeConfiguration($source)]"
+                      HorizontalAlignment="Left">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"></TextBlock>
@@ -78,10 +75,10 @@
             </ComboBox>
         </StackPanel>
 
-        <StackPanel Grid.Row="2"
+        <StackPanel Grid.Row="3"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
-                    Margin="0,5,0,5">
+                    Margin="0,3,0,5">
             <CheckBox x:Name="EnableCustomFlags"
                       Content="Enable Cumstom Flags" />
             <TextBox x:Name="CompilerFlags"
@@ -90,7 +87,7 @@
 
         <Button x:Name="Compile"
                 Grid.Column="0"
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.ColumnSpan="2"
                 Margin="0,5,0,0"
                 Content="Compile" />

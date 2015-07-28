@@ -37,7 +37,12 @@ namespace SkyrimCompileHelper.ViewModels
                 this.Name = "Outfits of Skyrim";
                 this.Version = new SemVersion(0, 1);
                 this.CompilerFlags = "Flags";
-                // this.Configurations = new List<string> { "Debug", "Release", ConfigurationManger };
+                this.Configurations = new List<CompileConfiguration>
+                {
+                    new CompileConfiguration { Name = "Debug" },
+                    new CompileConfiguration { Name = "Release" },
+                    new CompileConfiguration { Name = Constants.EditConst }
+                };
             }
         }
 
@@ -66,8 +71,6 @@ namespace SkyrimCompileHelper.ViewModels
         public IList<CompileConfiguration> Configurations { get; set; }
 
         /// <summary>Changes the version of a mod repository.</summary>
-        /// <exception cref="NotImplementedException">
-        /// </exception>
         public void ChangeVersion()
         {
             ChangeVersionViewModel viewModel = new ChangeVersionViewModel(this.Version);
@@ -81,7 +84,7 @@ namespace SkyrimCompileHelper.ViewModels
 
             if (answer.HasValue && answer.Value)
             {
-                this.Version = viewModel.GetVersion().ToString();
+                this.Version = viewModel.GetVersion();
             }
         }
 
@@ -90,9 +93,14 @@ namespace SkyrimCompileHelper.ViewModels
         /// <exception cref="NotImplementedException">Thrown when the configuration manger is selected.</exception>
         public void ChangeConfiguration(ComboBox sender)
         {
-            string value = ((CompileConfiguration)sender.SelectedItem).Name;
+            if (sender.SelectedItem == null)
+            {
+                return;
+            }
 
-            if (value == Constants.EditConst)
+            string configurationName = ((CompileConfiguration)sender.SelectedItem).Name;
+
+            if (configurationName == Constants.EditConst)
             {
                 ConfigurationManagerViewModel viewModel = new ConfigurationManagerViewModel(this.windowManager, this.Configurations);
 
@@ -111,10 +119,12 @@ namespace SkyrimCompileHelper.ViewModels
                 return;
             }
 
-            CompileConfiguration configuration = this.Configurations.SingleOrDefault(c => c.Name == value);
+            CompileConfiguration configuration = this.Configurations.SingleOrDefault(c => c.Name == configurationName);
             this.CompilerFlags = configuration != null ? configuration.CompilerFlags : string.Empty;
         }
 
+        /// <summary>Compiles the source files with the selected configuration.</summary>
+        /// <exception cref="NotImplementedException">This method has not been implemented yet.</exception>
         public void Compile()
         {
             throw new NotImplementedException();
