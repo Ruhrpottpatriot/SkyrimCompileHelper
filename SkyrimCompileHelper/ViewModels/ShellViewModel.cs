@@ -101,7 +101,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             if (this.SelectedRepository.Equals(this.addRepositoryBlueprint))
             {
-                NewRepositoryViewModel viewModel = new NewRepositoryViewModel(this.windowManager);
+                NewSolutionViewModel viewModel = new NewSolutionViewModel(this.windowManager);
 
                 Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
                 {
@@ -122,7 +122,7 @@ namespace SkyrimCompileHelper.ViewModels
         [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1627:DocumentationTextMustNotBeEmpty", Justification = "Reviewed. Suppression is OK here.")]
         public void Compile()
         {
-            ModRepositoryViewModel viewModel = new ModRepositoryViewModel(this.windowManager, this.SelectedRepository);
+            SolutionViewModel viewModel = new SolutionViewModel(this.windowManager, this.SelectedRepository);
 
             Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
                 {

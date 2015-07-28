@@ -102,11 +102,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\ModRepositoryView.xaml">
+    <Page Include="Views\SolutionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\NewRepositoryView.xaml">
+    <Page Include="Views\NewSolutionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -122,8 +122,8 @@
     <Compile Include="Common\ModRepository.cs" />
     <Compile Include="ViewModels\ChangeVersionViewModel.cs" />
     <Compile Include="ViewModels\ConfigurationManagerViewModel.cs" />
-    <Compile Include="ViewModels\ModRepositoryViewmodel.cs" />
-    <Compile Include="ViewModels\NewRepositoryViewModel.cs" />
+    <Compile Include="ViewModels\SolutionViewModel.cs" />
+    <Compile Include="ViewModels\NewSolutionViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

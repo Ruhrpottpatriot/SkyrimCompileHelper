@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="SkyrimCompileHelper.Views.NewRepositoryView"
+﻿<UserControl x:Class="SkyrimCompileHelper.Views.NewSolutionView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -8,7 +8,7 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:converter="clr-namespace:SkyrimCompileHelper.Common.Converter"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type=vm:NewRepositoryViewModel, IsDesignTimeCreatable=True}"
+        d:DataContext="{d:DesignInstance Type=vm:NewSolutionViewModel, IsDesignTimeCreatable=True}"
         cal:Bind.AtDesignTime="True">
     <UserControl.Resources>
         <converter:SemVersionToStringConverter x:Key="SemVersionToStringConverter" />

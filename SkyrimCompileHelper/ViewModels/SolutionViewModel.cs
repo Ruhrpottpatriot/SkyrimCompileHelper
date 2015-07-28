@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ModRepositoryViewmodel.cs" company="Robert Logiewa">
+// <copyright file="SolutionViewModel.cs" company="Robert Logiewa">
 //   The MIT License (MIT)
 //   
 //   Copyright (c) 2015 Robert Logiewa
@@ -24,13 +24,13 @@ namespace SkyrimCompileHelper.ViewModels
 
     /// <summary>ViewModel containing methods and properties to work with a mod repository.</summary>
     [ImplementPropertyChanged]
-    public class ModRepositoryViewModel : PropertyChangedBase
+    public class SolutionViewModel : PropertyChangedBase
     {
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
 
-        /// <summary>Initializes a new instance of the <see cref="ModRepositoryViewModel"/> class.</summary>
-        public ModRepositoryViewModel()
+        /// <summary>Initializes a new instance of the <see cref="SolutionViewModel"/> class.</summary>
+        public SolutionViewModel()
         {
             if (Execute.InDesignMode)
             {
@@ -46,10 +46,10 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ModRepositoryViewModel"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SolutionViewModel"/> class.</summary>
         /// <param name="windowManager">The window manager.</param>
         /// <param name="repository">The mod repository to work with.</param>
-        public ModRepositoryViewModel(IWindowManager windowManager, ModRepository repository)
+        public SolutionViewModel(IWindowManager windowManager, ModRepository repository)
         {
             this.windowManager = windowManager;
             this.Configurations = repository.CompileConfigurations ?? new List<CompileConfiguration>();

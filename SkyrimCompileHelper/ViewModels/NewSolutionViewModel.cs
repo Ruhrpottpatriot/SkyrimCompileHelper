@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="NewRepositoryViewModel.cs" company="Robert Logiewa">
+// <copyright file="NewSolutionViewModel.cs" company="Robert Logiewa">
 //   The MIT License (MIT)
 //   
 //   Copyright (c) 2015 Robert Logiewa
@@ -28,13 +28,13 @@ namespace SkyrimCompileHelper.ViewModels
 
     /// <summary>ViewModel containing methods and properties to create a new mod repository.</summary>
     [ImplementPropertyChanged]
-    public class NewRepositoryViewModel : Screen
+    public class NewSolutionViewModel : Screen
     {
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
 
-        /// <summary>Initializes a new instance of the <see cref="NewRepositoryViewModel"/> class.</summary>
-        public NewRepositoryViewModel()
+        /// <summary>Initializes a new instance of the <see cref="NewSolutionViewModel"/> class.</summary>
+        public NewSolutionViewModel()
         {
             if (Execute.InDesignMode)
             {
@@ -45,12 +45,12 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NewRepositoryViewModel"/> class.
+        /// Initializes a new instance of the <see cref="NewSolutionViewModel"/> class.
         /// </summary>
         /// <param name="windowManager">
         /// The window manager.
         /// </param>
-        public NewRepositoryViewModel(IWindowManager windowManager)
+        public NewSolutionViewModel(IWindowManager windowManager)
         {
             this.windowManager = windowManager;
             this.Version = new SemVersion(0);
