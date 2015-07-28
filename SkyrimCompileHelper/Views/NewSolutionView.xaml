@@ -51,7 +51,7 @@
                     Grid.Row="1"
                     Grid.ColumnSpan="2"
                     Margin="0,3,0,3">
-            <TextBlock Text="Repository Path:" />
+            <TextBlock Text="Solution Path:" />
             <TextBox x:Name="Path">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="MouseDoubleClick">
@@ -61,7 +61,7 @@
             </TextBox>
         </StackPanel>
 
-        <Button x:Name="CreateRepository"
+        <Button x:Name="CreateSolution"
                 Grid.Row="2"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"

@@ -22,7 +22,7 @@ namespace SkyrimCompileHelper.ViewModels
 
     using SkyrimCompileHelper.Common;
 
-    /// <summary>ViewModel containing methods and properties to work with a mod repository.</summary>
+    /// <summary>ViewModel containing methods and properties to work with a solution.</summary>
     [ImplementPropertyChanged]
     public class SolutionViewModel : PropertyChangedBase
     {
@@ -48,20 +48,20 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Initializes a new instance of the <see cref="SolutionViewModel"/> class.</summary>
         /// <param name="windowManager">The window manager.</param>
-        /// <param name="repository">The mod repository to work with.</param>
-        public SolutionViewModel(IWindowManager windowManager, ModRepository repository)
+        /// <param name="solution">The solution to work with.</param>
+        public SolutionViewModel(IWindowManager windowManager, Solution solution)
         {
             this.windowManager = windowManager;
-            this.Configurations = repository.CompileConfigurations ?? new List<CompileConfiguration>();
+            this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
             this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
-            this.Name = repository.Name;
-            this.Version = repository.Version;
+            this.Name = solution.Name;
+            this.Version = solution.Version;
         }
 
-        /// <summary>Gets or sets the repository name.</summary>
+        /// <summary>Gets or sets the solution name.</summary>
         public string Name { get; set; }
 
-        /// <summary>Gets or sets the repository version.</summary>
+        /// <summary>Gets or sets the solution version.</summary>
         public SemVersion Version { get; set; }
 
         /// <summary>Gets or sets the compiler flags.</summary>
@@ -70,7 +70,14 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Gets or sets the compile configurations.</summary>
         public IList<CompileConfiguration> Configurations { get; set; }
 
-        /// <summary>Changes the version of a mod repository.</summary>
+        /// <summary>Opens the solution folder in the windows explorer.</summary>
+        /// <exception cref="NotImplementedException">Not yet implemented</exception>
+        public void OpenSolutionFolder()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>Changes the version of a solution.</summary>
         public void ChangeVersion()
         {
             ChangeVersionViewModel viewModel = new ChangeVersionViewModel(this.Version);
@@ -88,7 +95,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
-        /// <summary>Changes the compile configuration for the current repository.</summary>
+        /// <summary>Changes the compile configuration for the current solution.</summary>
         /// <param name="sender">The <see cref="ComboBox"/> that holds the selected item.</param>
         /// <exception cref="NotImplementedException">Thrown when the configuration manger is selected.</exception>
         public void ChangeConfiguration(ComboBox sender)
@@ -124,7 +131,7 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>Compiles the source files with the selected configuration.</summary>
-        /// <exception cref="NotImplementedException">This method has not been implemented yet.</exception>
+        /// <exception cref="NotImplementedException">Not yet implemented.</exception>
         public void Compile()
         {
             throw new NotImplementedException();

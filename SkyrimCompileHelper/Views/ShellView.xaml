@@ -47,13 +47,12 @@
         <StackPanel Orientation="Horizontal"
                     Grid.Row="1"
                     Margin="0,5,0,5">
-            <TextBlock Text="Repository:"
+            <TextBlock Text="Solution:"
                        Margin="0,0,3,0" />
-            <ComboBox cal:Message.Attach="AddRepository()"
-                      ItemsSource="{Binding Repositories}"
-                      SelectedItem="{Binding SelectedRepository}"
+            <ComboBox x:Name="Solutions"
                       MinWidth="100"
-                      Margin="3,0,0,0">
+                      Margin="3,0,0,0"
+                      cal:Message.Attach="[Event SelectionChanged] = [Action ChangeSolution($source)]">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}" />
@@ -62,9 +61,8 @@
             </ComboBox>
         </StackPanel>
 
-        <Button x:Name="Compile"
-                Grid.Row="2"
-                Content="Compile" />
+        <ContentControl x:Name="SelectedSolution"
+                        Grid.Row="2" />
         
     </Grid>
 </Window>

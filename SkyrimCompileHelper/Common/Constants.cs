@@ -1,15 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Constants.cs" company="Robert Logiewa">
+//   The MIT License (MIT)
+//   
+//   Copyright (c) 2015 Robert Logiewa
+// </copyright>
+// <summary>
+//   Contains application wide constants.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace SkyrimCompileHelper.Common
 {
-    public class Constants
+    /// <summary>Contains application wide constants.</summary>
+    public static class Constants
     {
-        /// <summary>The edit const.</summary>
+        /// <summary>The edit constant.</summary>
         public const string EditConst = "<edit...>";
 
+        /// <summary>The add constant.</summary>
+        public const string AddConst = "<add...>";
     }
 }

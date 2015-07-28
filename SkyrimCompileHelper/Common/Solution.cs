@@ -1,17 +1,16 @@
 ﻿namespace SkyrimCompileHelper.Common
 {
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
 
     using PropertyChanged;
 
     using Semver;
 
     [ImplementPropertyChanged]
-    public class ModRepository
+    public class Solution
     {
-        /// <summary>Initializes a new instance of the <see cref="ModRepository"/> class.</summary>
-        public ModRepository()
+        /// <summary>Initializes a new instance of the <see cref="Solution"/> class.</summary>
+        public Solution()
         {
             this.Version = new SemVersion(0);
         }

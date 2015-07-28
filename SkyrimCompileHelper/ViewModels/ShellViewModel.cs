@@ -11,12 +11,10 @@
 
 namespace SkyrimCompileHelper.ViewModels
 {
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel.Composition;
-    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -24,7 +22,6 @@ namespace SkyrimCompileHelper.ViewModels
 
     using PropertyChanged;
 
-    using Semver;
 
     using SkyrimCompileHelper.Common;
 
@@ -33,13 +30,11 @@ namespace SkyrimCompileHelper.ViewModels
     [Export(typeof(ShellViewModel))]
     public sealed class ShellViewModel : PropertyChangedBase
     {
-        private readonly ModRepository addRepositoryBlueprint = new ModRepository { Name = "Add New Repository..." };
-
+        /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
 
+        /// <summary>The general settings.</summary>
         private readonly SettingsRepository generalSettings;
-
-        private string organizerPath;
 
         /// <summary>Initializes a new instance of the <see cref="ShellViewModel"/> class.</summary>
         public ShellViewModel()
@@ -49,19 +44,10 @@ namespace SkyrimCompileHelper.ViewModels
                 this.SkyrimPath = @"C:\Skyrim";
                 this.OrganizerPath = @"C:Organizer";
 
-                ModRepository repo1 = new ModRepository
+                this.Solutions = new ObservableCollection<Solution>
                 {
-                    Name = "Outfits of Skyrim",
-                    Version = "0.1.0",
-                    Path = @"C:\Outfits"
+                    new Solution { Name = "Outfits of Skyrim", Version = "0.1.0", Path = @"C:\Outfits" }
                 };
-
-                this.Repositories = new ObservableCollection<ModRepository>
-                {
-                    this.addRepositoryBlueprint,
-                    repo1
-                };
-                this.SelectedRepository = repo1;
             }
         }
 
@@ -76,8 +62,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.SkyrimPath = this.generalSettings.SkyrimPath;
             this.OrganizerPath = this.generalSettings.ModOrganizerPath;
 
-            this.Repositories = new ObservableCollection<ModRepository> { this.addRepositoryBlueprint };
-            
+            this.Solutions = new ObservableCollection<Solution> { new Solution { Name = Constants.AddConst } };
         }
 
         /// <summary>Gets or sets skyrims path.</summary>
@@ -87,54 +72,47 @@ namespace SkyrimCompileHelper.ViewModels
         public string OrganizerPath { get; set; }
 
         /// <summary>Gets or sets the repositories.</summary>
-        public ObservableCollection<ModRepository> Repositories { get; set; }
+        public ObservableCollection<Solution> Solutions { get; set; }
 
-        /// <summary>Gets or sets the selected repository.</summary>
-        public ModRepository SelectedRepository { get; set; }
+        /// <summary>Gets or sets the selected solution.</summary>
+        public SolutionViewModel SelectedSolution { get; set; }
 
-        public ObservableCollection<CompileConfiguration> CompileConfigurations { get; set; }
-
-        public CompileConfiguration SelectedConfiguration { get; set; }
-
-        /// <summary>Adds a repository to the list.</summary>
-        public void AddRepository()
+        /// <summary>Changes a solution based on the users selection.</summary>
+        /// <param name="sender">The ComboBox containing the selection.</param>
+        public void ChangeSolution(ComboBox sender)
         {
-            if (this.SelectedRepository.Equals(this.addRepositoryBlueprint))
+            if (sender.SelectedItem == null)
             {
-                NewSolutionViewModel viewModel = new NewSolutionViewModel(this.windowManager);
-
-                Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
-                {
-                    { "ResizeMode", ResizeMode.NoResize } 
-                };
-
-                bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
-
-                if (answer.HasValue && answer.Value)
-                {
-                    this.Repositories.Add(viewModel.GetRepository());
-                }
+                return;
             }
+
+            string solutionName = ((Solution)sender.SelectedItem).Name;
+
+            if (solutionName == Constants.AddConst)
+            {
+                this.Solutions.Add(this.CreateSolution());
+
+                return;
+            }
+
+            Solution solution = this.Solutions.Single(s => s.Name == solutionName);
+            this.SelectedSolution = new SolutionViewModel(this.windowManager, solution);
         }
 
-        /// <summary>Compiles the repository.</summary>
-        /// <exception cref="NotImplementedException" />
-        [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1627:DocumentationTextMustNotBeEmpty", Justification = "Reviewed. Suppression is OK here.")]
-        public void Compile()
+        /// <summary>Opens a new window to create a new solution.</summary>
+        /// <returns>The <see cref="Solution"/> created by the user.</returns>
+        private Solution CreateSolution()
         {
-            SolutionViewModel viewModel = new SolutionViewModel(this.windowManager, this.SelectedRepository);
+            NewSolutionViewModel viewModel = new NewSolutionViewModel(this.windowManager);
 
             Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
-                {
-                    { "ResizeMode", ResizeMode.NoResize } 
-                };
+            {
+                { "ResizeMode", ResizeMode.NoResize } 
+            };
 
             bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
 
-            if (answer.HasValue && answer.Value)
-            {
-                //this.Repositories.Add(viewModel.GetRepository());
-            }
+            return answer.HasValue && answer.Value ? viewModel.GetSolution() : null;
         }
 
         /// <summary>Saves the settings to the repository.</summary>

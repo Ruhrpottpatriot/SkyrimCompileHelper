@@ -119,7 +119,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Common\CompileConfiguration.cs" />
-    <Compile Include="Common\ModRepository.cs" />
+    <Compile Include="Common\Solution.cs" />
     <Compile Include="ViewModels\ChangeVersionViewModel.cs" />
     <Compile Include="ViewModels\ConfigurationManagerViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
