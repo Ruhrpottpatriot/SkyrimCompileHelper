@@ -112,9 +112,9 @@ namespace SkyrimCompileHelper.ViewModels
                 if (answer.HasValue && answer.Value)
                 {
                     this.Solutions = viewModel.GetSolutions();
-                    this.Solutions.Add(new Solution { Name = Constants.EditConst });
-
                     this.solutionRepository.Update(new DictionaryRange<string, Solution>(this.Solutions.ToDictionary(s => s.Name, s => s)));
+
+                    this.Solutions.Add(new Solution { Name = Constants.EditConst });
                 }
 
                 return;
