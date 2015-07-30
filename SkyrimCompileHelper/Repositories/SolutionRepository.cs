@@ -43,7 +43,7 @@ namespace SkyrimCompileHelper.Repositories
 
             foreach (KeyValuePair<string, Solution> pair in items)
             {
-                using (StreamWriter writer = File.CreateText(Path.Combine(this.solutionPath, pair.Key + ".sln")))
+                using (StreamWriter writer = File.CreateText(Path.Combine(this.solutionPath, pair.Key + ".smsln")))
                 {
                     new JsonSerializer().Serialize(writer, pair.Value);
                 }
@@ -82,7 +82,7 @@ namespace SkyrimCompileHelper.Repositories
         /// <param name="items">An <see cref="IDictionaryRange{TKey,TValue}"/> containing the items to update.</param>
         public void Update(IDictionaryRange<string, Solution> items)
         {
-            foreach (var path in items.Select(item => Path.Combine(this.solutionPath, item.Key + ".sln")).Where(File.Exists))
+            foreach (var path in items.Select(item => Path.Combine(this.solutionPath, item.Key + ".smsln")).Where(File.Exists))
             {
                 File.Delete(path);
             }
@@ -101,7 +101,7 @@ namespace SkyrimCompileHelper.Repositories
 
             foreach (string identifier in identifiers)
             {
-                string solutionPath = Path.Combine(this.solutionPath, identifier + ".sln");
+                string solutionPath = Path.Combine(this.solutionPath, identifier + ".smsln");
 
                 if (File.Exists(solutionPath))
                 {
