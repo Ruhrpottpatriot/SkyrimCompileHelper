@@ -89,6 +89,9 @@
     <Compile Include="Common\DictionaryRange.cs" />
     <Compile Include="Common\IDictionaryRange.cs" />
     <Compile Include="Common\IRepository.cs" />
+    <Compile Include="Compiler\Compiler.cs" />
+    <Compile Include="Compiler\CompilerFlagsException.cs" />
+    <Compile Include="Compiler\CompilerFolderException.cs" />
     <Compile Include="MefBootstrapper.cs" />
     <Compile Include="Common\Repositories\IRepository.cs" />
     <Compile Include="Common\Repositories\ISettingsRepository.cs" />
@@ -168,7 +171,6 @@
   <ItemGroup>
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.1.29.0\build\Fody.targets" Condition="Exists('..\packages\Fody.1.29.0\build\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

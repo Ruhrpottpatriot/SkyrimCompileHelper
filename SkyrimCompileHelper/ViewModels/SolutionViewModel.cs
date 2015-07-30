@@ -11,6 +11,7 @@ namespace SkyrimCompileHelper.ViewModels
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
@@ -22,6 +23,7 @@ namespace SkyrimCompileHelper.ViewModels
     using Semver;
 
     using SkyrimCompileHelper.Common;
+    using SkyrimCompileHelper.Compiler;
 
     /// <summary>ViewModel containing methods and properties to work with a solution.</summary>
     [ImplementPropertyChanged]
@@ -29,6 +31,9 @@ namespace SkyrimCompileHelper.ViewModels
     {
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
+
+        /// <summary>The settings repository.</summary>
+        private readonly ISettingsRepository settingsRepository;
 
         /// <summary>Initializes a new instance of the <see cref="SolutionViewModel"/> class.</summary>
         public SolutionViewModel()
@@ -50,10 +55,12 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Initializes a new instance of the <see cref="SolutionViewModel"/> class.</summary>
         /// <param name="windowManager">The window manager.</param>
+        /// <param name="settingsRepository">The settings repository.</param>
         /// <param name="solution">The solution to work with.</param>
-        public SolutionViewModel(IWindowManager windowManager, Solution solution)
+        public SolutionViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, Solution solution)
         {
             this.windowManager = windowManager;
+            this.settingsRepository = settingsRepository;
             this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
             this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
             this.Name = solution.Name;
@@ -143,7 +150,19 @@ namespace SkyrimCompileHelper.ViewModels
         /// <exception cref="NotImplementedException">Not yet implemented.</exception>
         public void Compile()
         {
-            throw new NotImplementedException();
+            var inputFolders = new List<string>
+            {
+                 Path.Combine(this.SolutionPath, "src")   
+            };
+
+            Compiler compiler = new Compiler(this.settingsRepository.Read()["SkyrimPath"].ToString())
+            {
+                Flags = this.CompilerFlags,
+                InputFolders = inputFolders,
+                OutputFolder = @"C:\Test"
+            };
+
+            compiler.Compile();
         }
     }
 }
