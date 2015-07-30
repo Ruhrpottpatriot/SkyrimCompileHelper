@@ -52,11 +52,18 @@
             </TextBox>
         </StackPanel>
 
-        <Button x:Name="OpenSolutionFolder"
-                Grid.Row="1"
-                Grid.Column="0"
-                Content="Open Solution Folder"
-                Margin="0,3,0,3" />
+        <StackPanel Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="0,3,0,3"
+                    Grid.ColumnSpan="2">
+            <TextBlock Text="Solution Path:" />
+            <TextBox x:Name="SolutionPath" 
+                     Margin="0,0,0,3"/>
+            <Button x:Name="OpenSolutionFolder"
+                    Content="Open Solution Folder"
+                    Margin="0,3,0,0"/>
+        </StackPanel>
+        
 
         <StackPanel Grid.Row="2"
                     Grid.Column="0"

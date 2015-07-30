@@ -10,6 +10,7 @@ namespace SkyrimCompileHelper.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
@@ -37,6 +38,7 @@ namespace SkyrimCompileHelper.ViewModels
                 this.Name = "Outfits of Skyrim";
                 this.Version = new SemVersion(0, 1);
                 this.CompilerFlags = "Flags";
+                this.SolutionPath = @"C:\Test";
                 this.Configurations = new List<CompileConfiguration>
                 {
                     new CompileConfiguration { Name = "Debug" },
@@ -55,11 +57,15 @@ namespace SkyrimCompileHelper.ViewModels
             this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
             this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
             this.Name = solution.Name;
+            this.SolutionPath = solution.Path;
             this.Version = solution.Version;
         }
 
         /// <summary>Gets or sets the solution name.</summary>
         public string Name { get; set; }
+
+        /// <summary>Gets or sets the solution path.</summary>
+        public string SolutionPath { get; set; }
 
         /// <summary>Gets or sets the solution version.</summary>
         public SemVersion Version { get; set; }
@@ -74,7 +80,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <exception cref="NotImplementedException">Not yet implemented</exception>
         public void OpenSolutionFolder()
         {
-            throw new NotImplementedException();
+            Process.Start(this.SolutionPath);
         }
 
         /// <summary>Changes the version of a solution.</summary>
