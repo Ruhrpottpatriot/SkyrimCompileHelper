@@ -63,6 +63,5 @@
 
         <ContentControl x:Name="SelectedSolution"
                         Grid.Row="2" />
-        
     </Grid>
 </Window>

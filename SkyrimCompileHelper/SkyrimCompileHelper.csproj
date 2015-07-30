@@ -102,6 +102,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\SolutionManagerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SolutionView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -122,6 +126,7 @@
     <Compile Include="Common\Solution.cs" />
     <Compile Include="ViewModels\ChangeVersionViewModel.cs" />
     <Compile Include="ViewModels\ConfigurationManagerViewModel.cs" />
+    <Compile Include="ViewModels\SolutionManagerViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\NewSolutionViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />

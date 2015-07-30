@@ -42,9 +42,9 @@ namespace SkyrimCompileHelper.ViewModels
             if (Execute.InDesignMode)
             {
                 this.SkyrimPath = @"C:\Skyrim";
-                this.OrganizerPath = @"C:Organizer";
+                this.OrganizerPath = @"C:\Organizer";
 
-                this.Solutions = new ObservableCollection<Solution>
+                this.Solutions = new List<Solution>
                 {
                     new Solution { Name = "Outfits of Skyrim", Version = "0.1.0", Path = @"C:\Outfits" }
                 };
@@ -62,7 +62,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.SkyrimPath = this.generalSettings.SkyrimPath;
             this.OrganizerPath = this.generalSettings.ModOrganizerPath;
 
-            this.Solutions = new ObservableCollection<Solution> { new Solution { Name = Constants.AddConst } };
+            this.Solutions = new List<Solution> { new Solution { Name = Constants.EditConst } };
         }
 
         /// <summary>Gets or sets skyrims path.</summary>
@@ -72,7 +72,7 @@ namespace SkyrimCompileHelper.ViewModels
         public string OrganizerPath { get; set; }
 
         /// <summary>Gets or sets the repositories.</summary>
-        public ObservableCollection<Solution> Solutions { get; set; }
+        public IList<Solution> Solutions { get; set; }
 
         /// <summary>Gets or sets the selected solution.</summary>
         public SolutionViewModel SelectedSolution { get; set; }
@@ -88,31 +88,31 @@ namespace SkyrimCompileHelper.ViewModels
 
             string solutionName = ((Solution)sender.SelectedItem).Name;
 
-            if (solutionName == Constants.AddConst)
+            if (solutionName == Constants.EditConst)
             {
-                this.Solutions.Add(this.CreateSolution());
+                // Create a copy of the solution list excluding the edit item.
+                IList<Solution> solutions = this.Solutions.Where(s => s.Name != Constants.EditConst).ToList();
+
+                SolutionManagerViewModel viewModel = new SolutionManagerViewModel(this.windowManager, solutions);
+
+                Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
+                {
+                    { "ResizeMode", ResizeMode.NoResize } 
+                };
+
+                bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
+
+                if (answer.HasValue && answer.Value)
+                {
+                    this.Solutions = viewModel.GetSolutions();
+                    this.Solutions.Add(new Solution { Name = Constants.EditConst });
+                }
 
                 return;
             }
 
-            Solution solution = this.Solutions.Single(s => s.Name == solutionName);
-            this.SelectedSolution = new SolutionViewModel(this.windowManager, solution);
-        }
-
-        /// <summary>Opens a new window to create a new solution.</summary>
-        /// <returns>The <see cref="Solution"/> created by the user.</returns>
-        private Solution CreateSolution()
-        {
-            NewSolutionViewModel viewModel = new NewSolutionViewModel(this.windowManager);
-
-            Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
-            {
-                { "ResizeMode", ResizeMode.NoResize } 
-            };
-
-            bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
-
-            return answer.HasValue && answer.Value ? viewModel.GetSolution() : null;
+            Solution selectedSolution = this.Solutions.Single(s => s.Name == solutionName);
+            this.SelectedSolution = new SolutionViewModel(this.windowManager, selectedSolution);
         }
 
         /// <summary>Saves the settings to the repository.</summary>
