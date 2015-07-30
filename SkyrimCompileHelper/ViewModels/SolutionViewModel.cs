@@ -115,7 +115,9 @@ namespace SkyrimCompileHelper.ViewModels
 
             if (configurationName == Constants.EditConst)
             {
-                ConfigurationManagerViewModel viewModel = new ConfigurationManagerViewModel(this.windowManager, this.Configurations);
+                IList<CompileConfiguration> configurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList();
+
+                ConfigurationManagerViewModel viewModel = new ConfigurationManagerViewModel(this.windowManager, configurations);
 
                 Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
                 {
@@ -127,6 +129,7 @@ namespace SkyrimCompileHelper.ViewModels
                 if (answer.HasValue && answer.Value)
                 {
                     this.Configurations = viewModel.Configurations;
+                    this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
                 }
 
                 return;

@@ -53,9 +53,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.DisplayName = "Edit Project Configurations";
 
             this.windowManager = windowManager;
-            CompileConfiguration removeConfiguration = configurations.SingleOrDefault(c => c.Name == Constants.EditConst);
-            this.Configurations = new ObservableCollection<CompileConfiguration>(configurations);
-            this.Configurations.Remove(removeConfiguration);
+            this.Configurations = new ObservableCollection<CompileConfiguration>(configurations)
         }
 
         /// <summary>Gets or sets the configurations.</summary>
@@ -91,8 +89,6 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Closes the screen.</summary>
         public void Close()
         {
-            // Hack: Since we removed the edit item in the constructor, we need to re-add it here.
-            this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
             this.TryClose(true);
         }
     }
