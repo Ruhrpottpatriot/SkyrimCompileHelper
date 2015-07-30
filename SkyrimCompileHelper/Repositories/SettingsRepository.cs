@@ -41,7 +41,9 @@ namespace SkyrimCompileHelper.Repositories
         /// <param name="items">An <see cref="IDictionaryRange{TKey,TValue}"/> of items to add to the repository.</param>
         public void Create(IDictionaryRange<string, object> items)
         {
-            this.Update(items);
+            string json = JsonConvert.SerializeObject(items, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Include });
+
+            File.WriteAllText(this.settingsFilePath, json);
         }
 
         /// <summary>Reads the complete repository and returns it to the user.</summary>
@@ -72,10 +74,8 @@ namespace SkyrimCompileHelper.Repositories
             {
                 File.Delete(this.settingsFilePath);
             }
-            
-            string json = JsonConvert.SerializeObject(items, new JsonSerializerSettings { DefaultValueHandling = DefaultValueHandling.Include });
 
-            File.WriteAllText(this.settingsFilePath, json);
+            this.Create(items);
         }
 
         /// <summary>Deletes a set of items from the repository.</summary>
