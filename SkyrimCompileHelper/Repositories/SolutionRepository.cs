@@ -14,6 +14,7 @@ namespace SkyrimCompileHelper.Repositories
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
 
     using Newtonsoft.Json;
 
@@ -81,7 +82,12 @@ namespace SkyrimCompileHelper.Repositories
         /// <param name="items">An <see cref="IDictionaryRange{TKey,TValue}"/> containing the items to update.</param>
         public void Update(IDictionaryRange<string, Solution> items)
         {
-            throw new NotImplementedException();
+            foreach (var path in items.Select(item => Path.Combine(this.solutionPath, item.Key, ".sln")).Where(File.Exists))
+            {
+                File.Delete(path);
+            }
+
+            this.Create(items);
         }
 
         /// <summary>Deletes a set of items from the repository.</summary>

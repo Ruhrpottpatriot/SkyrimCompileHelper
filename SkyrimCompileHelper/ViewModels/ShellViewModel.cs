@@ -35,6 +35,9 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The settings repository.</summary>
         private readonly ISettingsRepository settingsRepository;
 
+        /// <summary>The solution repository.</summary>
+        private readonly ISolutionRepository solutionRepository;
+
         /// <summary>Initializes a new instance of the <see cref="ShellViewModel"/> class.</summary>
         public ShellViewModel()
         {
@@ -53,11 +56,15 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Initializes a new instance of the <see cref="ShellViewModel"/> class.</summary>
         /// <param name="windowManager">The window Manager.</param>
         /// <param name="settingsRepository">The settings repository.</param>
+        /// <param name="solutionRepository">The solution repository.</param>
         [ImportingConstructor]
-        public ShellViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository)
+        public ShellViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, ISolutionRepository solutionRepository)
         {
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
+            this.solutionRepository = solutionRepository;
+
+            this.Solutions = solutionRepository.Read().Values.ToList();
 
             this.SkyrimPath = settingsRepository.Read()["SkyrimPath"].ToString();
             this.OrganizerPath = settingsRepository.Read()["ModOrganizerPath"].ToString();
@@ -106,6 +113,8 @@ namespace SkyrimCompileHelper.ViewModels
                 {
                     this.Solutions = viewModel.GetSolutions();
                     this.Solutions.Add(new Solution { Name = Constants.EditConst });
+
+                    this.solutionRepository.Update(new DictionaryRange<string, Solution>(this.Solutions.ToDictionary(s => s.Name, s => s)));
                 }
 
                 return;

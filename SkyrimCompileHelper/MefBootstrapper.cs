@@ -70,6 +70,7 @@ namespace SkyrimCompileHelper
             compositionBatch.AddExportedValue<IEventAggregator>(new EventAggregator());
             compositionBatch.AddExportedValue<IWindowManager>(new WindowManager());
             compositionBatch.AddExportedValue<ISettingsRepository>(new SettingsRepository());
+            compositionBatch.AddExportedValue<ISolutionRepository>(new SolutionRepository());
 
             // Add the container itself.
             compositionBatch.AddExportedValue(this.container);
