@@ -21,7 +21,6 @@ namespace SkyrimCompileHelper.ViewModels
 
     using PropertyChanged;
 
-
     using SkyrimCompileHelper.Common;
     using SkyrimCompileHelper.Repositories;
 
@@ -60,6 +59,9 @@ namespace SkyrimCompileHelper.ViewModels
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
 
+            this.SkyrimPath = settingsRepository.Read()["SkyrimPath"].ToString();
+            this.OrganizerPath = settingsRepository.Read()["ModOrganizerPath"].ToString();
+            
             this.Solutions = new List<Solution> { new Solution { Name = Constants.EditConst } };
         }
 
