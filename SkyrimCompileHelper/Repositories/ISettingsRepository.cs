@@ -11,7 +11,7 @@
 
 namespace SkyrimCompileHelper.Repositories
 {
-    /// <summary>Represents the settings repository, containing methods to manipulate the application settings.</summary>
+    /// <summary>Provides the interface for the settings repository.</summary>
     public interface ISettingsRepository : IRepository<string, object>
     {
     }

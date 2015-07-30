@@ -92,7 +92,9 @@
     <Compile Include="MefBootstrapper.cs" />
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\ISettingsRepository.cs" />
+    <Compile Include="Repositories\ISolutionRepository.cs" />
     <Compile Include="Repositories\SettingsRepository.cs" />
+    <Compile Include="Repositories\SolutionRepository.cs" />
     <Compile Include="ViewModels\AddConfigurationViewModel.cs" />
     <Page Include="Views\AddConfigurationView.xaml">
       <SubType>Designer</SubType>
