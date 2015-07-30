@@ -9,11 +9,9 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompileHelper.Repositories
+namespace SkyrimCompileHelper.Common
 {
     using System.Collections.Generic;
-
-    using SkyrimCompileHelper.Common;
 
     /// <summary>Provides the interface for data sources.</summary>
     /// <typeparam name="TKey">The type of the key values that uniquely identify the entities in the repository.</typeparam>

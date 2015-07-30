@@ -90,11 +90,11 @@
     <Compile Include="Common\IDictionaryRange.cs" />
     <Compile Include="Common\IRepository.cs" />
     <Compile Include="MefBootstrapper.cs" />
-    <Compile Include="Repositories\IRepository.cs" />
-    <Compile Include="Repositories\ISettingsRepository.cs" />
-    <Compile Include="Repositories\ISolutionRepository.cs" />
-    <Compile Include="Repositories\SettingsRepository.cs" />
-    <Compile Include="Repositories\SolutionRepository.cs" />
+    <Compile Include="Common\Repositories\IRepository.cs" />
+    <Compile Include="Common\Repositories\ISettingsRepository.cs" />
+    <Compile Include="Common\Repositories\ISolutionRepository.cs" />
+    <Compile Include="Common\Repositories\SettingsRepository.cs" />
+    <Compile Include="Common\Repositories\SolutionRepository.cs" />
     <Compile Include="ViewModels\AddConfigurationViewModel.cs" />
     <Page Include="Views\AddConfigurationView.xaml">
       <SubType>Designer</SubType>

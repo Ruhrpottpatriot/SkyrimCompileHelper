@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompileHelper.Repositories
+namespace SkyrimCompileHelper.Common
 {
     using System;
     using System.Collections.Generic;
@@ -17,8 +17,6 @@ namespace SkyrimCompileHelper.Repositories
     using System.Linq;
 
     using Newtonsoft.Json;
-
-    using SkyrimCompileHelper.Common;
 
     /// <summary>Contains methods and properties to manipulate the application settings.</summary>
     public class SettingsRepository : ISettingsRepository

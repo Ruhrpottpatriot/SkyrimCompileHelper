@@ -22,7 +22,7 @@ namespace SkyrimCompileHelper
 
     using Caliburn.Micro;
 
-    using SkyrimCompileHelper.Repositories;
+    using SkyrimCompileHelper.Common;
     using SkyrimCompileHelper.ViewModels;
 
     /// <summary>The bootstrapper.</summary>

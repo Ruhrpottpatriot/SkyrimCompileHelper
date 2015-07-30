@@ -9,10 +9,8 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompileHelper.Repositories
+namespace SkyrimCompileHelper.Common
 {
-    using SkyrimCompileHelper.Common;
-
     /// <summary>Provides the interface for the solution repository.</summary>
     public interface ISolutionRepository : IRepository<string, Solution>
     {

@@ -63,7 +63,6 @@
                     Content="Open Solution Folder"
                     Margin="0,3,0,0"/>
         </StackPanel>
-        
 
         <StackPanel Grid.Row="2"
                     Grid.Column="0"

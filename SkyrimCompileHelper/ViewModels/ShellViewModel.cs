@@ -22,7 +22,6 @@ namespace SkyrimCompileHelper.ViewModels
     using PropertyChanged;
 
     using SkyrimCompileHelper.Common;
-    using SkyrimCompileHelper.Repositories;
 
     /// <summary>Provides methods and properties to show the shell view.</summary>
     [ImplementPropertyChanged]
