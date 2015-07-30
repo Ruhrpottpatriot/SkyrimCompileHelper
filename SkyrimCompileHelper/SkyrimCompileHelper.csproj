@@ -86,8 +86,13 @@
     </ApplicationDefinition>
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Converter\SemVersionToStringConverter.cs" />
+    <Compile Include="Common\DictionaryRange.cs" />
+    <Compile Include="Common\IDictionaryRange.cs" />
+    <Compile Include="Common\IRepository.cs" />
     <Compile Include="MefBootstrapper.cs" />
     <Compile Include="Common\Settings.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Repositories\ISettingsRepository.cs" />
     <Compile Include="Repositories\SettingsRepository.cs" />
     <Compile Include="ViewModels\AddConfigurationViewModel.cs" />
     <Page Include="Views\AddConfigurationView.xaml">

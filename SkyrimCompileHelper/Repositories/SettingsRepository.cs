@@ -1,109 +1,106 @@
-﻿namespace SkyrimCompileHelper.Common
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SettingsRepository.cs" company="Robert Logiewa">
+//   The MIT License (MIT)
+//   
+//   Copyright (c) 2015 Robert Logiewa
+// </copyright>
+// <summary>
+//   Contains methods and properties to manipulate the application settings.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace SkyrimCompileHelper.Repositories
 {
     using System;
+    using System.Collections.Generic;
     using System.IO;
 
     using Newtonsoft.Json;
 
-    public class SettingsRepository
+    using SkyrimCompileHelper.Common;
+
+    /// <summary>Contains methods and properties to manipulate the application settings.</summary>
+    public class SettingsRepository : ISettingsRepository
     {
-        private readonly Lazy<JsonSerializer> serializer;
+        /// <summary>The path to the settings folder.</summary>
+        private readonly string settingsFolderPath;
 
-        private readonly string appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        /// <summary>The path to the settings file.</summary>
+        private readonly string settingsFilePath;
 
-        private Settings settings;
-
+        /// <summary>Initializes a new instance of the <see cref="SettingsRepository"/> class.</summary>
         public SettingsRepository()
         {
-            this.serializer = new Lazy<JsonSerializer>();
-            this.settings = new Settings();
+            this.Settings = this.ReadSettingsFile();
+            string environmentPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            this.settingsFilePath = Path.Combine(environmentPath, @"SHC\settings.json");
+            this.settingsFolderPath = Path.Combine(environmentPath, "SHC");
         }
 
-        public string SkyrimPath
-        {
-            get
-            {
-                return this.settings.SkyrimPath;
-            }
+        /// <summary>Gets or sets the settings.</summary>
+        private Settings Settings { get; set; }
 
-            set
-            {
-                if (this.settings.SkyrimPath != value)
-                {
-                    this.settings.SkyrimPath = value;
-                    this.Save();
-                }
-            }
+        /// <summary>Creates a new set of items inside the repository.</summary>
+        /// <param name="items">An <see cref="IDictionaryRange{TKey,TValue}"/> of items to add to the repository.</param>
+        public void Create(IDictionaryRange<string, object> items)
+        {
+            throw new NotImplementedException();
         }
 
-        public string ModOrganizerPath
+        /// <summary>Reads the complete repository and returns it to the user.</summary>
+        /// <returns>An <see cref="IDictionaryRange{TKey,TValue}"/> containing all items in the repository.</returns>
+        public IDictionaryRange<string, object> Read()
         {
-            get
-            {
-                return this.settings.ModOrganizerPath;
-            }
-
-            set
-            {
-                if (this.settings.ModOrganizerPath != value)
-                {
-                    this.settings.ModOrganizerPath = value;
-                    this.Save();
-                }
-            }
+            throw new NotImplementedException();
         }
 
-        public string CompilerFlags
+        /// <summary>Updates a set of items in the repository.</summary>
+        /// <param name="items">An <see cref="IDictionaryRange{TKey,TValue}"/> containing the items to update.</param>
+        public void Update(IDictionaryRange<string, object> items)
         {
-            get
-            {
-                return this.settings.CompilerFlags;
-            }
-
-            set
-            {
-                if (this.settings.CompilerFlags != value)
-                {
-                    this.settings.CompilerFlags = value;
-                    this.Save();
-                }
-            }
+            throw new NotImplementedException();
         }
 
-        public void ReloadSettings()
+        /// <summary>Deletes a set of items from the repository.</summary>
+        /// <param name="identifiers">An <see cref="IEnumerable{T}"/> listing the identifiers of the items to delete.</param>
+        public void Delete(IEnumerable<string> identifiers)
         {
-            this.settings = this.Load();
+            throw new NotImplementedException();
         }
 
-        private Settings Load()
+        /// <summary>Reads and parses the settings file.</summary>
+        /// <returns>The parsed <see cref="Settings"/>.</returns>
+        private Settings ReadSettingsFile()
         {
-            string settingsFile = Path.Combine(this.appdata, @"SHC\settings.json");
-
-            if (File.Exists(settingsFile))
+            if (!Directory.Exists(this.settingsFolderPath))
             {
-                return null;
+                Directory.CreateDirectory(this.settingsFolderPath);
+                return new Settings();
             }
-
-            // deserialize JSON directly from a file
-            using (StreamReader file = File.OpenText(settingsFile))
+            
+            using (StreamReader fileReader = File.OpenText(this.settingsFilePath))
             {
-                return (Settings)this.serializer.Value.Deserialize(file, typeof(Settings));
+                return new JsonSerializer().Deserialize<Settings>(new JsonTextReader(fileReader));
             }
         }
 
-        private void Save()
+        /// <summary>Writes the settings to the file system.</summary>
+        private void WriteSettingsFile()
         {
-            string settingsDir = Path.Combine(this.appdata, "SHC");
-
-            if (!Directory.Exists(settingsDir))
+            if (!Directory.Exists(this.settingsFolderPath))
             {
-                Directory.CreateDirectory(settingsDir);
+                Directory.CreateDirectory(this.settingsFolderPath);
             }
 
-            // serialize JSON directly to a file
-            using (StreamWriter file = File.CreateText(Path.Combine(settingsDir, "settings.json")))
+            if (File.Exists(this.settingsFilePath))
             {
-                this.serializer.Value.Serialize(file, this.settings);
+                File.Delete(this.settingsFilePath);
+            }
+
+            using (StreamWriter file = File.CreateText(this.settingsFilePath))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Serialize(file, this.Settings);
             }
         }
     }

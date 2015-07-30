@@ -12,7 +12,6 @@
 namespace SkyrimCompileHelper.ViewModels
 {
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.ComponentModel.Composition;
     using System.Linq;
     using System.Windows;
@@ -24,6 +23,7 @@ namespace SkyrimCompileHelper.ViewModels
 
 
     using SkyrimCompileHelper.Common;
+    using SkyrimCompileHelper.Repositories;
 
     /// <summary>Provides methods and properties to show the shell view.</summary>
     [ImplementPropertyChanged]
@@ -33,8 +33,8 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
 
-        /// <summary>The general settings.</summary>
-        private readonly SettingsRepository generalSettings;
+        /// <summary>The settings repository.</summary>
+        private readonly ISettingsRepository settingsRepository;
 
         /// <summary>Initializes a new instance of the <see cref="ShellViewModel"/> class.</summary>
         public ShellViewModel()
@@ -55,12 +55,10 @@ namespace SkyrimCompileHelper.ViewModels
         /// <param name="windowManager">The window Manager.</param>
         /// <param name="settingsRepository">The settings repository.</param>
         [ImportingConstructor]
-        public ShellViewModel(IWindowManager windowManager, SettingsRepository settingsRepository)
+        public ShellViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository)
         {
             this.windowManager = windowManager;
-            this.generalSettings = settingsRepository;
-            this.SkyrimPath = this.generalSettings.SkyrimPath;
-            this.OrganizerPath = this.generalSettings.ModOrganizerPath;
+            this.settingsRepository = settingsRepository;
 
             this.Solutions = new List<Solution> { new Solution { Name = Constants.EditConst } };
         }
@@ -118,8 +116,13 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Saves the settings to the repository.</summary>
         public void SaveSettings()
         {
-            this.generalSettings.SkyrimPath = this.SkyrimPath;
-            this.generalSettings.ModOrganizerPath = this.OrganizerPath;
+            var settings = new DictionaryRange<string, object>
+            {
+                { "SkyrimPath", this.SkyrimPath },
+                { "ModOrganizerPath", this.OrganizerPath }
+            };
+
+            this.settingsRepository.Update(settings);
         }
     }
 }

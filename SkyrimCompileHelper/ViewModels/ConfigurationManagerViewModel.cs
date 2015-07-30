@@ -53,7 +53,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.DisplayName = "Edit Project Configurations";
 
             this.windowManager = windowManager;
-            this.Configurations = new ObservableCollection<CompileConfiguration>(configurations)
+            this.Configurations = new ObservableCollection<CompileConfiguration>(configurations);
         }
 
         /// <summary>Gets or sets the configurations.</summary>

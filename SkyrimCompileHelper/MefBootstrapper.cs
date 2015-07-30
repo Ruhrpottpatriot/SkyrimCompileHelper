@@ -22,7 +22,7 @@ namespace SkyrimCompileHelper
 
     using Caliburn.Micro;
 
-    using SkyrimCompileHelper.Common;
+    using SkyrimCompileHelper.Repositories;
     using SkyrimCompileHelper.ViewModels;
 
     /// <summary>The bootstrapper.</summary>
@@ -69,7 +69,7 @@ namespace SkyrimCompileHelper
             // Add EventAggregator to composition batch.
             compositionBatch.AddExportedValue<IEventAggregator>(new EventAggregator());
             compositionBatch.AddExportedValue<IWindowManager>(new WindowManager());
-            compositionBatch.AddExportedValue<SettingsRepository>(new SettingsRepository());
+            compositionBatch.AddExportedValue<ISettingsRepository>(new SettingsRepository());
 
             // Add the container itself.
             compositionBatch.AddExportedValue(this.container);
