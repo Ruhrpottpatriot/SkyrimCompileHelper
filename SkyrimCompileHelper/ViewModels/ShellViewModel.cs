@@ -19,6 +19,8 @@ namespace SkyrimCompileHelper.ViewModels
 
     using Caliburn.Micro;
 
+    using Microsoft.Practices.EnterpriseLibrary.Logging;
+
     using PropertyChanged;
 
     using SkyrimCompileHelper.Common;
@@ -62,13 +64,16 @@ namespace SkyrimCompileHelper.ViewModels
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
             this.solutionRepository = solutionRepository;
-
-            this.Solutions = solutionRepository.Read().Values.ToList();
+            
+            this.Solutions = new List<Solution> { new Solution { Name = Constants.EditConst } };
+            
+            foreach (Solution solution in solutionRepository.Read().Values)
+            {
+                this.Solutions.Add(solution);
+            }
 
             this.SkyrimPath = settingsRepository.Read()["SkyrimPath"].ToString();
             this.OrganizerPath = settingsRepository.Read()["ModOrganizerPath"].ToString();
-            
-            this.Solutions = new List<Solution> { new Solution { Name = Constants.EditConst } };
         }
 
         /// <summary>Gets or sets skyrims path.</summary>
