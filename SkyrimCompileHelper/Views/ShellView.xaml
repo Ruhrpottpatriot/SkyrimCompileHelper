@@ -10,7 +10,8 @@
         d:DataContext="{d:DesignInstance Type=vm:ShellViewModel, IsDesignTimeCreatable=True}"
         cal:Bind.AtDesignTime="True"
         Title="MainWindow"
-        SizeToContent="WidthAndHeight">
+        SizeToContent="WidthAndHeight"
+        ResizeMode="CanMinimize">
     
     <Grid Margin="5">
         <Grid.RowDefinitions>
