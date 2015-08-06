@@ -28,8 +28,6 @@ namespace SkyrimCompileHelper.Compiler
         /// <summary>The path to the compiler.</summary>
         private readonly string compilerPath;
 
-        public event EventHandler<CompilingCompleteEventArgs> OnCompilationComplete; 
-
         /// <summary>Initializes a new instance of the <see cref="Compiler"/> class.</summary>
         /// <param name="skyrimPath">The absolute path to skyrims main folder.</param>
         /// <param name="logWriter">The log writer.</param>
@@ -39,6 +37,10 @@ namespace SkyrimCompileHelper.Compiler
             this.logWriter = logWriter;
             this.compilerPath = Path.Combine(skyrimPath, @"Papyrus Compiler\PapyrusCompiler.exe");
         }
+
+        /// <summary>Raised when the compiler finishes it's run.The on compilation complete.
+        /// </summary>
+        public event EventHandler<CompilingCompleteEventArgs> OnCompilationComplete; 
 
         /// <summary>Gets or sets the compiler flags.</summary>
         public string Flags { get; set; }
@@ -119,28 +121,6 @@ namespace SkyrimCompileHelper.Compiler
 
             this.logWriter.Write(entry);
             this.ErrorCount++;
-        }
-    }
-
-    public class CompilingCompleteEventArgs : EventArgs
-    {
-        public CompilingCompleteEventArgs()
-        {
-        }
-
-        public CompilingCompleteEventArgs(int errorCount)
-        {
-            this.ErrorCount = errorCount;
-        }
-
-        public int ErrorCount { get; set; }
-
-        public bool CompilingSucessful
-        {
-            get
-            {
-                return this.ErrorCount <= 0;
-            }
         }
     }
 }

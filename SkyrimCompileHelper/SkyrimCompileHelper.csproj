@@ -98,6 +98,7 @@
     <Compile Include="Compiler\Compiler.cs" />
     <Compile Include="Compiler\CompilerFlagsException.cs" />
     <Compile Include="Compiler\CompilerFolderException.cs" />
+    <Compile Include="Compiler\CompilingCompleteEventArgs.cs" />
     <Compile Include="MefBootstrapper.cs" />
     <Compile Include="Common\Repositories\IRepository.cs" />
     <Compile Include="Common\Repositories\ISettingsRepository.cs" />
