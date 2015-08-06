@@ -46,7 +46,7 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>Gets or sets the selected solutions.</summary>
-        public Solution SelectedSolutions { get; set; }
+        public Solution SelectedSolution { get; set; }
 
         /// <summary>Gets or sets the solutions.</summary>
         public ObservableCollection<Solution> Solutions { get; set; }
@@ -72,7 +72,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Deletes a solution from the list.</summary>
         public void DeleteSolution()
         {
-            this.Solutions.Remove(this.SelectedSolutions);
+            this.Solutions.Remove(this.SelectedSolution);
         }
 
         /// <summary>Compiles and returns the solutions to the user.</summary>
