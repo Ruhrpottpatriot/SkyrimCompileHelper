@@ -130,7 +130,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             Solution selectedSolution = this.Solutions.Single(s => s.Name == solutionName);
-            this.SelectedSolution = new SolutionViewModel(this.windowManager, this.settingsRepository, selectedSolution, this.writer);
+            this.SelectedSolution = new SolutionViewModel(this.windowManager, this.settingsRepository, this.solutionRepository, selectedSolution, this.writer);
         }
 
         /// <summary>Saves the settings to the repository.</summary>

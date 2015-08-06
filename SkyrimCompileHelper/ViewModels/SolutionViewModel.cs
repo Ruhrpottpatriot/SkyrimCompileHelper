@@ -37,6 +37,9 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The settings repository.</summary>
         private readonly ISettingsRepository settingsRepository;
 
+        /// <summary>The solution repository.</summary>
+        private readonly ISolutionRepository solutionRepository;
+
         /// <summary>The log writer.</summary>
         private readonly LogWriter logWriter;
 
@@ -61,12 +64,14 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Initializes a new instance of the <see cref="SolutionViewModel"/> class.</summary>
         /// <param name="windowManager">The window manager.</param>
         /// <param name="settingsRepository">The settings repository.</param>
+        /// <param name="solutionRepository">The solution repository.</param>
         /// <param name="solution">The solution to work with.</param>
-        /// <param name="logWriter">The log writer</param>
-        public SolutionViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, Solution solution, LogWriter logWriter)
+        /// <param name="logWriter">The log writer.</param>
+        public SolutionViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, ISolutionRepository solutionRepository, Solution solution, LogWriter logWriter)
         {
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
+            this.solutionRepository = solutionRepository;
             this.logWriter = logWriter;
             this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
             this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
@@ -90,11 +95,21 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Gets or sets the compile configurations.</summary>
         public IList<CompileConfiguration> Configurations { get; set; }
 
+        /// <summary>Gets or sets the selected configuration.</summary>
+        public CompileConfiguration SelectedConfiguration { get; set; }
+
         /// <summary>Opens the solution folder in the windows explorer.</summary>
         /// <exception cref="NotImplementedException">Not yet implemented</exception>
         public void OpenSolutionFolder()
         {
-            Process.Start(this.SolutionPath);
+            try
+            {
+                Process.Start(this.SolutionPath);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Could not open solution directory. Please check, if the path is valid.");
+            }
         }
 
         /// <summary>Changes the version of a solution.</summary>
@@ -143,6 +158,7 @@ namespace SkyrimCompileHelper.ViewModels
                 if (answer.HasValue && answer.Value)
                 {
                     this.Configurations = viewModel.Configurations;
+                    this.SaveSolution();
                     this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
                 }
 
@@ -157,7 +173,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <exception cref="NotImplementedException">Not yet implemented.</exception>
         public void Compile()
         {
-            var inputFolders = new List<string>
+            IEnumerable<string> inputFolders = new List<string>
             {
                  Path.Combine(this.SolutionPath, "src")   
             };
@@ -166,13 +182,34 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 Flags = this.CompilerFlags,
                 InputFolders = inputFolders,
-                OutputFolder = @"C:\Test"
+                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name)
             };
-            
-            int build = Convert.ToInt32(this.Version.Build + 1);
+
+            int build = Convert.ToInt32(string.IsNullOrEmpty(this.Version.Build) ? "0" : this.Version.Build) + 1;
             this.Version = this.Version.Change(build: build.ToString());
 
             compiler.Compile();
+        }
+
+        /// <summary>Saves the selected solution to the solution repository.</summary>
+        private void SaveSolution()
+        {
+            IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>
+            {
+                {
+                    this.Name,
+                    new Solution
+                    {
+                        Name = this.Name,
+                        Path = this.SolutionPath,
+                        Version = this.Version,
+                        CompileConfigurations = this.Configurations,
+                        SelectedConfiguration = this.SelectedConfiguration
+                    }
+                }
+            };
+
+            this.solutionRepository.Update(solutions);
         }
     }
 }
