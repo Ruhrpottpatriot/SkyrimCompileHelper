@@ -1,30 +1,60 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Compiler.cs" company="Robert Logiewa">
+//   The MIT License (MIT)
+//   
+//   Copyright (c) 2015 Robert Logiewa
+// </copyright>
+// <summary>
+//   This class contains methods and properties to compile script files into their binary representation used by Skyrim.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
 
 namespace SkyrimCompileHelper.Compiler
 {
+    using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
-    using System.Windows.Media;
+    using System.Linq;
 
+    using Microsoft.Practices.EnterpriseLibrary.Logging;
+
+    /// <summary>This class contains methods and properties to compile script files into their binary representation used by Skyrim.</summary>
     public class Compiler
     {
+        /// <summary>The log writer.</summary>
+        private readonly LogWriter logWriter;
+
+        /// <summary>The path to the compiler.</summary>
         private readonly string compilerPath;
 
-        public Compiler(string skyrimPath)
+        public event EventHandler<CompilingCompleteEventArgs> OnCompilationComplete; 
+
+        /// <summary>Initializes a new instance of the <see cref="Compiler"/> class.</summary>
+        /// <param name="skyrimPath">The absolute path to skyrims main folder.</param>
+        /// <param name="logWriter">The log writer.</param>
+        public Compiler(string skyrimPath, LogWriter logWriter)
         {
+            this.ErrorCount = 0;
+            this.logWriter = logWriter;
             this.compilerPath = Path.Combine(skyrimPath, @"Papyrus Compiler\PapyrusCompiler.exe");
         }
 
+        /// <summary>Gets or sets the compiler flags.</summary>
         public string Flags { get; set; }
 
+        /// <summary>Gets or sets the input folders.</summary>
         public IEnumerable<string> InputFolders { get; set; }
 
+        /// <summary>Gets or sets the output folder.</summary>
         public string OutputFolder { get; set; }
 
+        /// <summary>Gets the compile error count.</summary>
+        public int ErrorCount { get; private set; }
+
+        /// <summary>Starts the Skyrim script compiler with the specified settings.</summary>
+        /// <exception cref="CompilerFlagsException">Raised when the specified flags are empty.</exception>
+        /// <exception cref="CompilerFolderException">Raised when input or output folders are not specified or emtpy.</exception>
         public void Compile()
         {
             if (string.IsNullOrWhiteSpace(this.Flags))
@@ -49,13 +79,11 @@ namespace SkyrimCompileHelper.Compiler
                     FileName = this.compilerPath,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    CreateNoWindow = true,
                     UseShellExecute = false
                 },
                 EnableRaisingEvents = true
             };
             process.ErrorDataReceived += this.ErrorDataRecieved;
-            process.OutputDataReceived += this.DataReceived;
 
             process.Start();
 
@@ -63,16 +91,56 @@ namespace SkyrimCompileHelper.Compiler
             process.BeginOutputReadLine();
 
             process.WaitForExit();
+
+            EventHandler<CompilingCompleteEventArgs> handler = this.OnCompilationComplete;
+            if (handler != null)
+            {
+                handler(this, new CompilingCompleteEventArgs(this.ErrorCount));
+            }
         }
 
+        /// <summary>Raised when errors are printed on the console.</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="args">The event arguments containing the error data.</param>
         private void ErrorDataRecieved(object sender, DataReceivedEventArgs args)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(args.Data))
+            {
+                return;
+            }
+
+            LogEntry entry = new LogEntry
+            {
+                Message = args.Data,
+                Categories = new[] { "Compiler", "Error" },
+                EventId = 91,
+                Title = "Compilation Error"
+            };
+
+            this.logWriter.Write(entry);
+            this.ErrorCount++;
+        }
+    }
+
+    public class CompilingCompleteEventArgs : EventArgs
+    {
+        public CompilingCompleteEventArgs()
+        {
         }
 
-        private void DataReceived(object sender, DataReceivedEventArgs args)
+        public CompilingCompleteEventArgs(int errorCount)
         {
-            
+            this.ErrorCount = errorCount;
+        }
+
+        public int ErrorCount { get; set; }
+
+        public bool CompilingSucessful
+        {
+            get
+            {
+                return this.ErrorCount <= 0;
+            }
         }
     }
 }

@@ -16,11 +16,18 @@ namespace SkyrimCompileHelper
     using System.ComponentModel.Composition;
     using System.ComponentModel.Composition.Hosting;
     using System.ComponentModel.Composition.Primitives;
+    using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Reflection;
     using System.Windows;
 
     using Caliburn.Micro;
+
+    using Microsoft.Practices.EnterpriseLibrary.Logging;
+    using Microsoft.Practices.EnterpriseLibrary.Logging.Filters;
+    using Microsoft.Practices.EnterpriseLibrary.Logging.Formatters;
+    using Microsoft.Practices.EnterpriseLibrary.Logging.TraceListeners;
 
     using SkyrimCompileHelper.Common;
     using SkyrimCompileHelper.ViewModels;
@@ -71,6 +78,7 @@ namespace SkyrimCompileHelper
             compositionBatch.AddExportedValue<IWindowManager>(new WindowManager());
             compositionBatch.AddExportedValue<ISettingsRepository>(new SettingsRepository());
             compositionBatch.AddExportedValue<ISolutionRepository>(new SolutionRepository());
+            compositionBatch.AddExportedValue(new LogWriter(this.BuildLoggingConfiguration()));
 
             // Add the container itself.
             compositionBatch.AddExportedValue(this.container);
@@ -119,6 +127,53 @@ namespace SkyrimCompileHelper
             {
                 Assembly.GetExecutingAssembly()
             };
+        }
+
+        /// <summary>Builds the configuration used to log entries to the file system.</summary>
+        /// <returns>A <see cref="LoggingConfiguration"/> with default settings.</returns>
+        private LoggingConfiguration BuildLoggingConfiguration()
+        {
+            TextFormatter formatter = new TextFormatter("Timestamp: {timestamp(local)}{newline}Message: {message}{newline}Category: {category}{newline}Priority: {priority}{newline}EventId: {eventid}{newline}ActivityId: {property(ActivityId)}{newline}Severity: {severity}{newline}Title:{title}{newline}");
+
+            ICollection<string> categories = new List<string> { "BlockedByFilter" };
+
+            PriorityFilter priorityFilter = new PriorityFilter("PriorityFilter", -1);
+            LogEnabledFilter logEnabledFilter = new LogEnabledFilter("LogEnabled Filter", true);
+            CategoryFilter categoryFilter = new CategoryFilter("CategoryFilter", categories, CategoryFilterMode.AllowAllExceptDenied);
+
+            RollingFlatFileTraceListener rollingFileListener = new RollingFlatFileTraceListener(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SHC\Logs\Everything.log"),
+                "----------------------------------------",
+                "----------------------------------------",
+                formatter,
+                20,
+                "yyyy-MM-dd",
+                RollFileExistsBehavior.Increment,
+                RollInterval.None,
+                5);
+
+            RollingFlatFileTraceListener errorFileListener = new RollingFlatFileTraceListener(
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SHC\Logs\Errors.log"),
+                "----------------------------------------",
+                "----------------------------------------",
+                formatter,
+                20,
+                "yyyy-MM-dd",
+                RollFileExistsBehavior.Increment,
+                RollInterval.None,
+                2);
+
+            // Build Configuration
+            LoggingConfiguration config = new LoggingConfiguration();
+            config.Filters.Add(priorityFilter);
+            config.Filters.Add(logEnabledFilter);
+            config.Filters.Add(categoryFilter);
+
+            config.AddLogSource("General", SourceLevels.All, true, rollingFileListener);
+            config.AddLogSource("Compiler", SourceLevels.All, true, rollingFileListener);
+            config.AddLogSource("Error", SourceLevels.Error, true, errorFileListener);
+
+            return config;
         }
     }
 }

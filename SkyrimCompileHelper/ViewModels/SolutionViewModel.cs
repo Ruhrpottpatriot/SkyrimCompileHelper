@@ -18,6 +18,8 @@ namespace SkyrimCompileHelper.ViewModels
 
     using Caliburn.Micro;
 
+    using Microsoft.Practices.EnterpriseLibrary.Logging;
+
     using PropertyChanged;
 
     using Semver;
@@ -34,6 +36,9 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>The settings repository.</summary>
         private readonly ISettingsRepository settingsRepository;
+
+        /// <summary>The log writer.</summary>
+        private readonly LogWriter logWriter;
 
         /// <summary>Initializes a new instance of the <see cref="SolutionViewModel"/> class.</summary>
         public SolutionViewModel()
@@ -57,10 +62,12 @@ namespace SkyrimCompileHelper.ViewModels
         /// <param name="windowManager">The window manager.</param>
         /// <param name="settingsRepository">The settings repository.</param>
         /// <param name="solution">The solution to work with.</param>
-        public SolutionViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, Solution solution)
+        /// <param name="logWriter">The log writer</param>
+        public SolutionViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, Solution solution, LogWriter logWriter)
         {
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
+            this.logWriter = logWriter;
             this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
             this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
             this.Name = solution.Name;
@@ -155,12 +162,15 @@ namespace SkyrimCompileHelper.ViewModels
                  Path.Combine(this.SolutionPath, "src")   
             };
 
-            Compiler compiler = new Compiler(this.settingsRepository.Read()["SkyrimPath"].ToString())
+            Compiler compiler = new Compiler(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.CompilerFlags,
                 InputFolders = inputFolders,
                 OutputFolder = @"C:\Test"
             };
+            
+            int build = Convert.ToInt32(this.Version.Build + 1);
+            this.Version = this.Version.Change(build: build.ToString());
 
             compiler.Compile();
         }

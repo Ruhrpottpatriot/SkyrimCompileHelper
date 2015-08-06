@@ -39,6 +39,9 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The solution repository.</summary>
         private readonly ISolutionRepository solutionRepository;
 
+        /// <summary>The writer.</summary>
+        private readonly LogWriter writer;
+
         /// <summary>Initializes a new instance of the <see cref="ShellViewModel"/> class.</summary>
         public ShellViewModel()
         {
@@ -58,15 +61,17 @@ namespace SkyrimCompileHelper.ViewModels
         /// <param name="windowManager">The window Manager.</param>
         /// <param name="settingsRepository">The settings repository.</param>
         /// <param name="solutionRepository">The solution repository.</param>
+        /// <param name="writer">The log writer.</param>
         [ImportingConstructor]
-        public ShellViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, ISolutionRepository solutionRepository)
+        public ShellViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, ISolutionRepository solutionRepository, LogWriter writer)
         {
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
             this.solutionRepository = solutionRepository;
-            
+            this.writer = writer;
+
             this.Solutions = new List<Solution> { new Solution { Name = Constants.EditConst } };
-            
+
             foreach (Solution solution in solutionRepository.Read().Values)
             {
                 this.Solutions.Add(solution);
@@ -125,7 +130,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             Solution selectedSolution = this.Solutions.Single(s => s.Name == solutionName);
-            this.SelectedSolution = new SolutionViewModel(this.windowManager,this.settingsRepository,  selectedSolution);
+            this.SelectedSolution = new SolutionViewModel(this.windowManager, this.settingsRepository, selectedSolution, this.writer);
         }
 
         /// <summary>Saves the settings to the repository.</summary>
