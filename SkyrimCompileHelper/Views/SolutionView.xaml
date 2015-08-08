@@ -32,7 +32,7 @@
                     Grid.Column="0"
                     Grid.Row="0">
             <TextBlock Text="Name:" />
-            <TextBox x:Name="Name"
+            <TextBox x:Name="SolutionName"
                      MinWidth="75" />
         </StackPanel>
 
@@ -75,7 +75,7 @@
                       HorizontalAlignment="Left">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Name}"></TextBlock>
+                        <TextBlock Text="{Binding Name}" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>

@@ -52,7 +52,7 @@
                     DockPanel.Dock="Top"
                     cal:Message.Attach="AddSolution()" />
 
-            <Button x:Name="Close"
+            <Button x:Name="CloseWindow"
                     Content="Close"
                     DockPanel.Dock="Bottom" />
         </DockPanel>

@@ -38,7 +38,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             if (Execute.InDesignMode)
             {
-                this.Name = "Test Modification";
+                this.SolutionName = "Test Modification";
                 this.Version = new SemVersion(0, 1);
                 this.Path = @"C:\SkyrimMod";
             }
@@ -57,7 +57,7 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>Gets or sets the name.</summary>
-        public string Name { get; set; }
+        public string SolutionName { get; set; }
 
         /// <summary>Gets or sets the path.</summary>
         public string Path { get; set; }
@@ -72,7 +72,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             get
             {
-                return !string.IsNullOrEmpty(this.Name) && !string.IsNullOrEmpty(this.Path);
+                return !string.IsNullOrEmpty(this.SolutionName) && !string.IsNullOrEmpty(this.Path);
             }
         }
 
@@ -91,7 +91,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <returns>A <see cref="Solution" /> containing the view models information.</returns>
         public Solution GetSolution()
         {
-            return new Solution { Name = this.Name, Path = this.Path, Version = this.Version };
+            return new Solution { Name = this.SolutionName, Path = this.Path, Version = this.Version };
         }
 
         /// <summary>Changes the version of the solution.</summary>

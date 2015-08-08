@@ -76,7 +76,7 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>Closes the window with an error code.</summary>
-        public void Cancel()
+        public void Save()
         {
             this.TryClose(false);
         }

@@ -48,7 +48,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             if (Execute.InDesignMode)
             {
-                this.Name = "Outfits of Skyrim";
+                this.SolutionName = "Outfits of Skyrim";
                 this.Version = new SemVersion(0, 1);
                 this.CompilerFlags = "Flags";
                 this.SolutionPath = @"C:\Test";
@@ -75,13 +75,13 @@ namespace SkyrimCompileHelper.ViewModels
             this.logWriter = logWriter;
             this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
             this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
-            this.Name = solution.Name;
+            this.SolutionName = solution.Name;
             this.SolutionPath = solution.Path;
             this.Version = solution.Version;
         }
 
         /// <summary>Gets or sets the solution name.</summary>
-        public string Name { get; set; }
+        public string SolutionName { get; set; }
 
         /// <summary>Gets or sets the solution path.</summary>
         public string SolutionPath { get; set; }
@@ -188,10 +188,10 @@ namespace SkyrimCompileHelper.ViewModels
             IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>
             {
                 {
-                    this.Name,
+                    this.SolutionName,
                     new Solution
                     {
-                        Name = this.Name,
+                        Name = this.SolutionName,
                         Path = this.SolutionPath,
                         Version = this.Version,
                         CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList(),

@@ -83,7 +83,7 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>Closes the window.</summary>
-        public void Close()
+        public void CloseWindow()
         {
             this.TryClose(true);
         }

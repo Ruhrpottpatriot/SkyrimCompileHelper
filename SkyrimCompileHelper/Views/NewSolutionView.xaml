@@ -30,7 +30,7 @@
                     Grid.Row="0"
                     Margin="0,0,3,3">
             <TextBlock Text="Name:" />
-            <TextBox x:Name="Name" />
+            <TextBox x:Name="SolutionName" />
         </StackPanel>
 
         <StackPanel Grid.Column="1"

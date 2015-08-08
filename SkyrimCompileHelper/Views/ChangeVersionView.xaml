@@ -80,7 +80,7 @@
                  Margin="2,3,0,0"
                  IsReadOnly="True" />
 
-        <Button x:Name="Close"
+        <Button x:Name="Save"
                 Grid.Row="5"
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
