@@ -16,6 +16,8 @@ namespace SkyrimCompileHelper.Compiler
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Text;
+    using System.Windows.Markup;
 
     using Microsoft.Practices.EnterpriseLibrary.Logging;
 
@@ -26,7 +28,7 @@ namespace SkyrimCompileHelper.Compiler
         private readonly LogWriter logWriter;
 
         /// <summary>The path to the compiler.</summary>
-        private readonly string compilerPath;
+        private readonly string skyrimPath;
 
         /// <summary>Initializes a new instance of the <see cref="Compiler"/> class.</summary>
         /// <param name="skyrimPath">The absolute path to skyrims main folder.</param>
@@ -35,12 +37,12 @@ namespace SkyrimCompileHelper.Compiler
         {
             this.ErrorCount = 0;
             this.logWriter = logWriter;
-            this.compilerPath = Path.Combine(skyrimPath, @"Papyrus Compiler\PapyrusCompiler.exe");
+            this.skyrimPath = skyrimPath;
         }
 
         /// <summary>Raised when the compiler finishes it's run.The on compilation complete.
         /// </summary>
-        public event EventHandler<CompilingCompleteEventArgs> OnCompilationComplete; 
+        public event EventHandler<CompilingCompleteEventArgs> OnCompilationComplete;
 
         /// <summary>Gets or sets the compiler flags.</summary>
         public string Flags { get; set; }
@@ -74,11 +76,14 @@ namespace SkyrimCompileHelper.Compiler
                 throw new CompilerFolderException("The output folder has to be specified.");
             }
 
+            string compilerArguments = this.GenerateArgumentString();
+
             Process process = new Process
             {
                 StartInfo =
                 {
-                    FileName = this.compilerPath,
+                    FileName = Path.Combine(this.skyrimPath, @"Papyrus Compiler\PapyrusCompiler.exe"),
+                    Arguments = compilerArguments,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false
@@ -86,6 +91,7 @@ namespace SkyrimCompileHelper.Compiler
                 EnableRaisingEvents = true
             };
             process.ErrorDataReceived += this.ErrorDataRecieved;
+            process.OutputDataReceived += process_OutputDataReceived;
 
             process.Start();
 
@@ -99,6 +105,25 @@ namespace SkyrimCompileHelper.Compiler
             {
                 handler(this, new CompilingCompleteEventArgs(this.ErrorCount));
             }
+        }
+
+        void process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            
+        }
+
+        private string GenerateArgumentString()
+        {
+            string inputFolder = this.InputFolders.First();
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.Append(Path.Combine(this.skyrimPath, @"Data\scripts\Source"));
+            foreach (string path in this.InputFolders.Skip(1))
+            {
+                stringBuilder.Append(", " + path);
+            }
+
+            return string.Format("\"{0}\" -all {1} -i=\"{2}\" -o=\"{3}\"", inputFolder, this.Flags, stringBuilder, this.OutputFolder);
         }
 
         /// <summary>Raised when errors are printed on the console.</summary>
