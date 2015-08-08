@@ -17,7 +17,6 @@ namespace SkyrimCompileHelper.Compiler
     using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Windows.Markup;
 
     using Microsoft.Practices.EnterpriseLibrary.Logging;
 
@@ -47,8 +46,26 @@ namespace SkyrimCompileHelper.Compiler
         /// <summary>Gets or sets the compiler flags.</summary>
         public string Flags { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether a complete folder should be compiled.</summary>
+        public bool All { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether the compiler should suppress non critical information.</summary>
+        public bool Quiet { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether debug information should be printed.</summary>
+        public bool Debug { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether scripts should be optimizes.</summary>
+        public bool Optimize { get; set; }
+
+        /// <summary>Gets or sets the assembly options.</summary>
+        public AssemblyOptions AssemblyOptions { get; set; }
+
         /// <summary>Gets or sets the input folders.</summary>
-        public IEnumerable<string> InputFolders { get; set; }
+        /// <remarks>This property lists all folders that the compiler gets the script files from.
+        /// The first item is always the main folder. If <see cref="All"/> is not set to true, 
+        /// the first item needs to be a script file.</remarks>
+        public List<string> InputFolders { get; set; }
 
         /// <summary>Gets or sets the output folder.</summary>
         public string OutputFolder { get; set; }
@@ -91,7 +108,7 @@ namespace SkyrimCompileHelper.Compiler
                 EnableRaisingEvents = true
             };
             process.ErrorDataReceived += this.ErrorDataRecieved;
-            process.OutputDataReceived += process_OutputDataReceived;
+            process.OutputDataReceived += this.OutputDataReceived;
 
             process.Start();
 
@@ -107,23 +124,72 @@ namespace SkyrimCompileHelper.Compiler
             }
         }
 
-        void process_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            
-        }
-
+        /// <summary>Generates the argument string, passed to the compiler.</summary>
+        /// <returns>The argument <see cref="string"/>.</returns>
         private string GenerateArgumentString()
         {
-            string inputFolder = this.InputFolders.First();
-            StringBuilder stringBuilder = new StringBuilder();
+            // The first item in the imput folders list is always the input file/folder.
+            string inputFile = this.InputFolders.First();
 
-            stringBuilder.Append(Path.Combine(this.skyrimPath, @"Data\scripts\Source"));
-            foreach (string path in this.InputFolders.Skip(1))
+            // Since there are some options to run the compiler, we need to build the rest of the string.
+            StringBuilder argumentsBuilder = new StringBuilder();
+
+            argumentsBuilder.Append("\"" + inputFile + "\"");
+
+            // Check if we want to compile only one file, or a folder.
+            if (this.All)
             {
-                stringBuilder.Append(", " + path);
+                argumentsBuilder.Append(" -all");
             }
 
-            return string.Format("\"{0}\" -all {1} -i=\"{2}\" -o=\"{3}\"", inputFolder, this.Flags, stringBuilder, this.OutputFolder);
+            // Check if we want to print debug information.
+            if (this.Debug)
+            {
+                argumentsBuilder.Append(" -debug");
+            }
+
+            // Check if we want to optimize
+            if (this.Optimize)
+            {
+                argumentsBuilder.Append(" -optimize");
+            }
+
+            // Check if we want to reduce output.
+            if (this.Quiet)
+            {
+                argumentsBuilder.Append(" -quiet");
+            }
+
+            // Check what we want to do with the assembly files afterwards.
+            switch (this.AssemblyOptions)
+            {
+                case AssemblyOptions.NoAssembly:
+                    argumentsBuilder.Append(" -noasm");
+                    break;
+                case AssemblyOptions.AssembleAndKeep:
+                    argumentsBuilder.Append(" -keepasm");
+                    break;
+                case AssemblyOptions.GenerateOnly:
+                    argumentsBuilder.Append(" -asmonly");
+                    break;
+            }
+
+            // Append all import folders. Skyrims data folder is appended by default.
+            argumentsBuilder.Append(" -import=\"" + Path.Combine(this.skyrimPath, @"Data\scripts\Source"));
+
+            foreach (var path in this.InputFolders.Skip(1))
+            {
+                argumentsBuilder.Append(";" + path);
+            }
+
+            argumentsBuilder.Append("\"");
+
+            // Append the flags.
+            argumentsBuilder.Append(" -flags= \"" + this.Flags + "\"");
+
+            argumentsBuilder.Append(" -output=\"" + this.OutputFolder + "\"");
+            
+            return argumentsBuilder.ToString();
         }
 
         /// <summary>Raised when errors are printed on the console.</summary>
@@ -146,6 +212,26 @@ namespace SkyrimCompileHelper.Compiler
 
             this.logWriter.Write(entry);
             this.ErrorCount++;
+        }
+
+        /// <summary>Raised when output data is printed to the console.</summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="args">The event arguments containing the data.</param>
+        private void OutputDataReceived(object sender, DataReceivedEventArgs args)
+        {
+            if (string.IsNullOrEmpty(args.Data))
+            {
+                return;
+            }
+
+            LogEntry entry = new LogEntry
+            {
+                Message = args.Data,
+                Categories = new[] { "Compiler" },
+                EventId = 90
+            };
+
+            this.logWriter.Write(entry);
         }
     }
 }

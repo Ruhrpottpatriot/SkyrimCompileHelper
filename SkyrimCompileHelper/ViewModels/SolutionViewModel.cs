@@ -181,8 +181,9 @@ namespace SkyrimCompileHelper.ViewModels
             Compiler compiler = new Compiler(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.CompilerFlags,
-                InputFolders = inputFolders,
-                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name)
+                InputFolders = inputFolders.ToList(),
+                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name),
+                All = true
             };
 
             int build = Convert.ToInt32(string.IsNullOrEmpty(this.Version.Build) ? "0" : this.Version.Build) + 1;
