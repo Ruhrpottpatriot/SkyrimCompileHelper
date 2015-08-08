@@ -57,7 +57,7 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>Gets or sets the configurations.</summary>
-        public ObservableCollection<CompileConfiguration> Configurations { get; set; }
+        public IList<CompileConfiguration> Configurations { get; set; }
 
         /// <summary>Gets or sets the selected configuration.</summary>
         public CompileConfiguration SelectedConfiguration { get; set; }

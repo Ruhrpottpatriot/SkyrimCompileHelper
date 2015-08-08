@@ -26,7 +26,6 @@
             <RowDefinition />
             <RowDefinition />
             <RowDefinition />
-            <RowDefinition />
         </Grid.RowDefinitions>
 
         <StackPanel Margin="0,0,3,3"
@@ -70,6 +69,7 @@
                     Margin="0,3,0,3">
             <TextBlock Text="Configuration:" />
             <ComboBox x:Name="Configurations"
+                      SelectedItem="{Binding SelectedConfiguration}"
                       MinWidth="150"
                       cal:Message.Attach="[Event SelectionChanged] = [Action ChangeConfiguration($source)]"
                       HorizontalAlignment="Left">
@@ -86,7 +86,8 @@
                     Grid.ColumnSpan="2"
                     Margin="0,3,0,5">
             <CheckBox x:Name="EnableCustomFlags"
-                      Content="Enable Cumstom Flags" />
+                      Content="Enable Cumstom Flags" 
+                      IsEnabled="False"/>
             <TextBox x:Name="CompilerFlags"
                      IsEnabled="{Binding IsChecked, ElementName=EnableCustomFlags}" />
         </StackPanel>
