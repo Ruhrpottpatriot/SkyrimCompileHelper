@@ -49,7 +49,7 @@ namespace SkyrimCompileHelper.ViewModels
             return new CompileConfiguration
             {
                 Name = this.ConfigurationName,
-                CompilerFlags = "\"{0}\" -all -f=\"TESV_Papyrus_Flags.flg\" -i=\"{1}\" -o=\"{2}\""
+                CompilerFlags = "-f=\"TESV_Papyrus_Flags.flg\""
             };
         }
     }
