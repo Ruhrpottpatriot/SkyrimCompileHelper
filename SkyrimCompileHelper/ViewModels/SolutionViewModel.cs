@@ -168,7 +168,7 @@ namespace SkyrimCompileHelper.ViewModels
                  Path.Combine(this.SolutionPath, "src")   
             };
 
-            Compiler compiler = new Compiler(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
+            CompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.CompilerFlags,
                 InputFolders = inputFolders.ToList(),
@@ -179,7 +179,7 @@ namespace SkyrimCompileHelper.ViewModels
             int build = Convert.ToInt32(string.IsNullOrEmpty(this.Version.Build) ? "0" : this.Version.Build) + 1;
             this.Version = this.Version.Change(build: build.ToString());
 
-            compiler.Compile();
+            compilerFactory.Compile();
         }
 
         /// <summary>Saves the selected solution to the solution repository.</summary>

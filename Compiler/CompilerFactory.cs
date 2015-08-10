@@ -21,7 +21,7 @@ namespace SkyrimCompileHelper.Compiler
     using Microsoft.Practices.EnterpriseLibrary.Logging;
 
     /// <summary>This class contains methods and properties to compile script files into their binary representation used by Skyrim.</summary>
-    public class Compiler
+    public class CompilerFactory
     {
         /// <summary>The log writer.</summary>
         private readonly LogWriter logWriter;
@@ -29,10 +29,10 @@ namespace SkyrimCompileHelper.Compiler
         /// <summary>The path to the compiler.</summary>
         private readonly string skyrimPath;
 
-        /// <summary>Initializes a new instance of the <see cref="Compiler"/> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="CompilerFactory"/> class.</summary>
         /// <param name="skyrimPath">The absolute path to skyrims main folder.</param>
         /// <param name="logWriter">The log writer.</param>
-        public Compiler(string skyrimPath, LogWriter logWriter)
+        public CompilerFactory(string skyrimPath, LogWriter logWriter)
         {
             this.ErrorCount = 0;
             this.logWriter = logWriter;

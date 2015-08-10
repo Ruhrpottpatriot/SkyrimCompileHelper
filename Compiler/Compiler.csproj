@@ -36,6 +36,10 @@
     <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging">
       <HintPath>..\packages\EnterpriseLibrary.Logging.6.0.1304.0\lib\NET45\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
     </Reference>
+    <Reference Include="PCompiler">
+      <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Skyrim\Papyrus Compiler\PCompiler.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,7 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyOptions.cs" />
-    <Compile Include="Compiler.cs" />
+    <Compile Include="CompilerFactory.cs" />
     <Compile Include="CompilerFlagsException.cs" />
     <Compile Include="CompilerFolderException.cs" />
     <Compile Include="CompilingCompleteEventArgs.cs" />
