@@ -49,7 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyOptions.cs" />
     <Compile Include="CompilerFactory.cs" />
     <Compile Include="CompilerFlagsException.cs" />
     <Compile Include="CompilerFolderException.cs" />

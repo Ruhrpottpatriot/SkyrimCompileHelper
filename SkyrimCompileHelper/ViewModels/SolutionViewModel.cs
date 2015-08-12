@@ -171,7 +171,7 @@ namespace SkyrimCompileHelper.ViewModels
             CompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.CompilerFlags,
-                InputFolders = inputFolders.ToList(),
+                ImportFolders = inputFolders.ToList(),
                 OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name),
                 All = true
             };
