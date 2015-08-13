@@ -50,7 +50,7 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 this.SolutionName = "Outfits of Skyrim";
                 this.Version = new SemVersion(0, 1);
-                this.CompilerFlags = "Flags";
+                this.FlagsFile = "Flags";
                 this.SolutionPath = @"C:\Test";
                 this.Configurations = new List<CompileConfiguration>
                 {
@@ -78,6 +78,14 @@ namespace SkyrimCompileHelper.ViewModels
             this.SolutionName = solution.Name;
             this.SolutionPath = solution.Path;
             this.Version = solution.Version;
+            this.CompilerAll = true;
+            this.CompilerAssemblyOptions = new List<string>
+            {
+                "Assemble and Delete",
+                "Assemble and Keep",
+                "Generate only",
+                "No Assembly"
+            };
         }
 
         /// <summary>Gets or sets the solution name.</summary>
@@ -89,14 +97,26 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Gets or sets the solution version.</summary>
         public SemVersion Version { get; set; }
 
-        /// <summary>Gets or sets the compiler flags.</summary>
-        public string CompilerFlags { get; set; }
-
         /// <summary>Gets or sets the compile configurations.</summary>
         public IList<CompileConfiguration> Configurations { get; set; }
 
         /// <summary>Gets or sets the selected configuration.</summary>
         public CompileConfiguration SelectedConfiguration { get; set; }
+
+        /// <summary>Gets or sets the compiler flags.</summary>
+        public string FlagsFile { get; set; }
+
+        public bool CompilerAll { get; set; }
+
+        public bool CompilerQuiet { get; set; }
+
+        public bool CompilerDebug { get; set; }
+
+        public bool CompilerOptimize { get; set; }
+
+        public IList<string> CompilerAssemblyOptions { get; set; }
+
+        public string SelectedAssemblyOption { get; set; }
 
         /// <summary>Opens the solution folder in the windows explorer.</summary>
         /// <exception cref="NotImplementedException">Not yet implemented</exception>
@@ -155,7 +175,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             CompileConfiguration configuration = this.Configurations.SingleOrDefault(c => c.Name == configurationName);
-            this.CompilerFlags = configuration != null ? configuration.CompilerFlags : string.Empty;
+            this.FlagsFile = configuration != null ? configuration.CompilerFlags : string.Empty;
             this.SaveSolution();
         }
 
@@ -170,10 +190,14 @@ namespace SkyrimCompileHelper.ViewModels
 
             Compiler compiler = new Compiler(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
-                Flags = this.CompilerFlags,
+                Flags = this.FlagsFile,
                 InputFolders = inputFolders.ToList(),
                 OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name),
-                All = true
+                All = this.CompilerAll,
+                Quiet = this.CompilerQuiet,
+                Debug = this.CompilerDebug,
+                Optimize = this.CompilerOptimize,
+                AssemblyOptions = this.SelectedAssemblyOption
             };
 
             int build = Convert.ToInt32(string.IsNullOrEmpty(this.Version.Build) ? "0" : this.Version.Build) + 1;
