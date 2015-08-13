@@ -102,6 +102,7 @@
     <Compile Include="Common\Repositories\SettingsRepository.cs" />
     <Compile Include="Common\Repositories\SolutionRepository.cs" />
     <Compile Include="ViewModels\AddConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Page Include="Views\AddConfigurationView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
