@@ -161,9 +161,11 @@ namespace SkyrimCompileHelper.Compiler
             }
 
             // Check what we want to do with the assembly files afterwards.
+            // The "Assemble and Delete" option will not be appended to the argument string,
+            // as it has no representing argument.
             switch (this.AssemblyOptions)
             {
-                case "Assemble and Delete":
+                case "No Assembly":
                     argumentsBuilder.Append(" -noasm");
                     break;
                 case "Assemble and Keep":
@@ -171,8 +173,6 @@ namespace SkyrimCompileHelper.Compiler
                     break;
                 case "Generate only":
                     argumentsBuilder.Append(" -asmonly");
-                    break;
-                case "No Assembly":
                     break;
             }
 
