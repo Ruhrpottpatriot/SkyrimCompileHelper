@@ -139,7 +139,6 @@
     <Compile Include="ViewModels\ChangeVersionViewModel.cs" />
     <Compile Include="ViewModels\ConfigurationManagerViewModel.cs" />
     <Compile Include="ViewModels\SolutionManagerViewModel.cs" />
-    <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Compile Include="ViewModels\NewSolutionViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
   </ItemGroup>
