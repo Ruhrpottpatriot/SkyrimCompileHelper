@@ -222,12 +222,15 @@ namespace SkyrimCompileHelper.ViewModels
         /// <exception cref="NotImplementedException">Not yet implemented.</exception>
         public void Compile()
         {
+            string skyrimPath = this.settingsRepository.Read()["SkyrimPath"].ToString();
+
             IEnumerable<string> inputFolders = new List<string>
             {
-                 Path.Combine(this.SolutionPath, "src")   
+                 Path.Combine(this.SolutionPath, "src"),
+                 Path.Combine(skyrimPath, @"Data\Scripts\Source")
             };
 
-            Compiler compiler = new Compiler(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
+            Compiler compiler = new Compiler(skyrimPath, this.logWriter)
             {
                 Flags = this.FlagsFile,
                 InputFolders = inputFolders.ToList(),
