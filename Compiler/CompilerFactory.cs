@@ -74,7 +74,7 @@ namespace SkyrimCompileHelper.Compiler
         public bool Optimize { get; set; }
 
         /// <summary>Gets or sets the assembly options.</summary>
-        public Compiler.AssemblyOption AssemblyOptions { get; set; }
+        public string AssemblyOptions { get; set; }
 
         /// <summary>Gets or sets the file to be compiled.</summary>
         /// <remarks>If <see cref="All"/> is set to true, this property must point to a directory.</remarks>
@@ -140,64 +140,70 @@ namespace SkyrimCompileHelper.Compiler
             {
                 LogEntry compileStartEntry = new LogEntry
                 {
-                    EventId = 30000,
+                    EventId = 30000, 
                     Title = "Starting Compilation",
                     Message = string.Format("Starting {0} compile threads for {1} files...", length, this.filesToCompile.Count),
                     Categories = { "Compiler" },
                     Severity = TraceEventType.Information
                 };
                 this.logWriter.Write(compileStartEntry);
+            }
 
-                // Generate the thread for the compilation
-                var threads = new Thread[length];
-                for (int i = 0; i < length; i++)
-                {
-                    threads[i] = new Thread(this.CompilerThread);
-                    threads[i].Start();
-                }
+            // Generate the thread for the compilation
+            var threads = new Thread[length];
+            for (int i = 0; i < length; i++)
+            {
+                threads[i] = new Thread(this.CompilerThread);
+                threads[i].Start();
+            }
 
-                foreach (Thread thread in threads)
-                {
-                    thread.Join();
-                }
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
 
-                if (!this.Quiet)
+            if (!this.Quiet)
+            {
+                LogEntry finishedCompilingEntry = new LogEntry
                 {
-                    LogEntry finishedCompilingEntry = new LogEntry
+                    EventId = 30001,
+                    Title = "Finished Compilation",
+                    Message = string.Format("Batch compile of {0} files finished. {1} succeeded, {2} failed.", this.filesToCompile.Count, this.sucessfulCompilations, this.filesToCompile.Count - this.sucessfulCompilations),
+                    Categories = (this.filesToCompile.Count - this.sucessfulCompilations) > 0 ? new[] { "Compiler", "Error" } : new[] { "Compiler" },
+                    Severity = (this.filesToCompile.Count - this.sucessfulCompilations) > 0 ? TraceEventType.Warning : TraceEventType.Information
+                };
+                this.logWriter.Write(finishedCompilingEntry);
+
+                for (int i = 0; i < this.failedCompilations.Count; i++)
+                {
+                    LogEntry failedCompilationEntry = new LogEntry
                     {
-                        EventId = 30001,
-                        Title = "Finished Compilation",
-                        Message = string.Format("Batch compile of {0} files finished. {1} succeeded, {2} failed.", this.filesToCompile.Count, this.sucessfulCompilations, this.filesToCompile.Count - this.sucessfulCompilations),
-                        Categories = (this.filesToCompile.Count - this.sucessfulCompilations) > 0 ? new[] { "Compiler", "Error" } : new[] { "Compiler" },
-                        Severity = (this.filesToCompile.Count - this.sucessfulCompilations) > 0 ? TraceEventType.Warning : TraceEventType.Information
+                        EventId = 30102,
+                        Title = string.Format("Failed File No. {0}", i),
+                        Message = string.Format("Failed on {0}", this.failedCompilations[i]),
+                        Categories = { "Compiler", "Error" },
+                        Severity = TraceEventType.Warning
                     };
-
-                    this.logWriter.Write(finishedCompilingEntry);
-
-                    for (int i = 0; i < this.failedCompilations.Count; i++)
-                    {
-                        LogEntry failedCompilationEntry = new LogEntry
-                        {
-                            EventId = 30102,
-                            Title = string.Format("Failed File No. {0}", i),
-                            Message = string.Format("Failed on {0}", this.failedCompilations[i]),
-                            Categories = { "Compiler", "Error" },
-                            Severity = TraceEventType.Warning
-                        };
-                        this.logWriter.Write(failedCompilationEntry);
-                    }
+                    this.logWriter.Write(failedCompilationEntry);
                 }
             }
         }
 
+
         /// <summary>Compiles a single script file into the corresponding binary and assembly representation.</summary>
         private void CompilerThread()
         {
+            Compiler.AssemblyOption assemblyOption;
+            if (!Enum.TryParse(this.AssemblyOptions, out assemblyOption))
+            {
+                assemblyOption = Compiler.AssemblyOption.AssembleAndDelete;
+            }
+
             Compiler compiler = new Compiler
             {
                 bDebug = this.Debug,
                 bQuiet = this.Quiet,
-                eAsmOption = this.AssemblyOptions,
+                eAsmOption = assemblyOption,
                 ImportFolders = this.ImportFolders,
                 OutputFolder = this.OutputFolder
             };
@@ -306,10 +312,20 @@ namespace SkyrimCompileHelper.Compiler
             // Get the assembly name for the full name.
             string assemblyName = args.Name.Split(",".ToCharArray())[0];
 
+            string lookupDirectory;
+
+            // Check if we want to load the papyrus compiler
+            if (assemblyName.StartsWith("Microsoft.Practices.EnterpriseLibrary"))
+            {
+                return null;
+            }
+
             // Log the loading of the missing assembly. Bug: Logging does not work, since logging framework is not loaded.
             // LogEntry missingAssemblyLoadedEntry = new LogEntry { Message = "Resolving missing libary: " + args.Name, EventId = 01, Categories = { "General" } };
             // this.logWriter.Write(missingAssemblyLoadedEntry);
-            return Assembly.LoadFile(Path.Combine(this.skyrimPath, "Papyrus Compiler", assemblyName + ".dll"));
+            var assembly = Assembly.LoadFile( Path.Combine(this.skyrimPath, "Papyrus Compiler", assemblyName + ".dll"));
+
+            return assembly;
         }
     }
 }

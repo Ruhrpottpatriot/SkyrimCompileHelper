@@ -224,18 +224,14 @@ namespace SkyrimCompileHelper.ViewModels
         {
             IEnumerable<string> inputFolders = new List<string>
             {
-                 Path.Combine(this.SolutionPath, "src")   
+                 Path.Combine(this.settingsRepository.Read()["SkyrimPath"].ToString(), @"Data\scripts\Source")   
             };
 
             CompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
-<<<<<<< HEAD
-                Flags = this.CompilerFlags,
-                ImportFolders = inputFolders.ToList(),
-=======
                 Flags = this.FlagsFile,
-                InputFolders = inputFolders.ToList(),
->>>>>>> master
+                ImportFolders = inputFolders.ToList(),
+                CompilerTarget = Path.Combine(this.SolutionPath, "src"),
                 OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name),
                 All = this.CompilerAll,
                 Quiet = this.CompilerQuiet,
