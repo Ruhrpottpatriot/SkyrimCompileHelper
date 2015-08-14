@@ -22,7 +22,7 @@
         public IList<CompileConfiguration> CompileConfigurations { get; set; }
 
         /// <summary>Gets or sets the selected configuration.</summary>
-        public CompileConfiguration SelectedConfiguration { get; set; }
+        public string SelectedConfiguration { get; set; }
 
         /// <summary>Gets or sets the version.</summary>
         public SemVersion Version { get; set; }

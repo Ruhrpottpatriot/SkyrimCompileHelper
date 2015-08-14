@@ -1,12 +1,12 @@
 ﻿<UserControl x:Class="SkyrimCompileHelper.Views.SolutionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:SkyrimCompileHelper.ViewModels"
              xmlns:converter="clr-namespace:SkyrimCompileHelper.Common.Converter"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:SolutionViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
@@ -99,7 +99,13 @@
                           Content="Enable Cumstom Flags File"
                           IsEnabled="True" />
                 <TextBox x:Name="FlagsFile"
-                         IsEnabled="{Binding IsChecked, ElementName=EnableCustomFlags}" />
+                         IsEnabled="{Binding IsChecked, ElementName=EnableCustomFlags}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <cal:ActionMessage MethodName="SaveConfiguration" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
             </StackPanel>
 
             <CheckBox x:Name="CompilerAll"
@@ -107,22 +113,26 @@
                       Grid.Row="1"
                       Grid.Column="0"
                       IsEnabled="False"
-                      Content="All" />
+                      Content="All"
+                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
             <CheckBox x:Name="CompilerQuiet"
                       Margin="3,3,0,3"
                       Grid.Row="1"
                       Grid.Column="1"
-                      Content="Quiet" />
+                      Content="Quiet"
+                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
             <CheckBox x:Name="CompilerDebug"
                       Margin="0,3,3,3"
                       Grid.Row="2"
                       Grid.Column="0"
-                      Content="Debug" />
+                      Content="Debug"
+                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
             <CheckBox x:Name="CompilerOptimize"
                       Margin="3,3,0,3"
                       Grid.Row="2"
                       Grid.Column="1"
-                      Content="Optimize" />
+                      Content="Optimize"
+                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
             <StackPanel Margin="0,3,0,3"
                         Grid.Row="3"
                         Grid.Column="0"
@@ -131,7 +141,8 @@
                            Text="Assembly Options" />
                 <ComboBox x:Name="CompilerAssemblyOptions"
                           SelectedItem="{Binding SelectedAssemblyOption}"
-                          Margin="0,2,0,0" />
+                          Margin="0,2,0,0"
+                          cal:Message.Attach="[Event SelectionChanged] = [Action SaveConfiguration]" />
             </StackPanel>
         </Grid>
 

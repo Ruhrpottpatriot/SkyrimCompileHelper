@@ -43,7 +43,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The log writer.</summary>
         private readonly LogWriter logWriter;
 
-        /// <summary>Initializes a new instance of the <see cref="SolutionViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="SolutionViewModel"/> class.</summary>
         public SolutionViewModel()
         {
             if (Execute.InDesignMode)
@@ -61,7 +61,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
-        /// <summary>Initializes a new instance of the <see cref="SolutionViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="SolutionViewModel"/> class.</summary>
         /// <param name="windowManager">The window manager.</param>
         /// <param name="settingsRepository">The settings repository.</param>
         /// <param name="solutionRepository">The solution repository.</param>
@@ -69,12 +69,13 @@ namespace SkyrimCompileHelper.ViewModels
         /// <param name="logWriter">The log writer.</param>
         public SolutionViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, ISolutionRepository solutionRepository, Solution solution, LogWriter logWriter)
         {
+            // Initilaize readonly fields
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
             this.solutionRepository = solutionRepository;
             this.logWriter = logWriter;
-            this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
-            this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
+
+            // Init the parameters
             this.SolutionName = solution.Name;
             this.SolutionPath = solution.Path;
             this.Version = solution.Version;
@@ -86,6 +87,9 @@ namespace SkyrimCompileHelper.ViewModels
                 "Generate only",
                 "No Assembly"
             };
+
+            // Initialize the configuration parameters
+            this.IntConfigParameter(solution);
         }
 
         /// <summary>Gets or sets the solution name.</summary>
@@ -106,16 +110,22 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Gets or sets the compiler flags.</summary>
         public string FlagsFile { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether the compiler should compile a whole directory.</summary>
         public bool CompilerAll { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether the compiler should supress output.</summary>
         public bool CompilerQuiet { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether the compiler should print debug information.</summary>
         public bool CompilerDebug { get; set; }
 
+        /// <summary>Gets or sets a value indicating whether the compiler should optimize the script files.</summary>
         public bool CompilerOptimize { get; set; }
 
+        /// <summary>Gets or sets the compiler assembly options.</summary>
         public IList<string> CompilerAssemblyOptions { get; set; }
 
+        /// <summary>Gets or sets the selected assembly option.</summary>
         public string SelectedAssemblyOption { get; set; }
 
         /// <summary>Opens the solution folder in the windows explorer.</summary>
@@ -175,7 +185,36 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             CompileConfiguration configuration = this.Configurations.SingleOrDefault(c => c.Name == configurationName);
-            this.FlagsFile = configuration != null ? configuration.CompilerFlags : string.Empty;
+            if (configuration != null)
+            {
+                this.CompilerAll = configuration.All;
+                this.CompilerDebug = configuration.Debug;
+                this.CompilerOptimize = configuration.Optimize;
+                this.SelectedAssemblyOption = configuration.AssemblyOption;
+                this.CompilerQuiet = configuration.Quiet;
+                this.FlagsFile = configuration.FlagFile;
+            }
+
+            this.SelectedConfiguration = configuration;
+            
+            this.SaveSolution();
+        }
+
+        /// <summary>Saves a configuration to the repository.</summary>
+        public void SaveConfiguration()
+        {
+            CompileConfiguration compConfig = this.SelectedConfiguration;
+
+            compConfig.All = this.CompilerAll;
+            compConfig.AssemblyOption = this.SelectedAssemblyOption;
+            compConfig.Debug = this.CompilerDebug;
+            compConfig.FlagFile = this.FlagsFile;
+            compConfig.Optimize = this.CompilerOptimize;
+            compConfig.Quiet = this.CompilerQuiet;
+
+            this.SelectedConfiguration = compConfig;
+            this.Configurations.Remove(compConfig);
+            this.Configurations.Add(compConfig);
             this.SaveSolution();
         }
 
@@ -219,7 +258,7 @@ namespace SkyrimCompileHelper.ViewModels
                         Path = this.SolutionPath,
                         Version = this.Version,
                         CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList(),
-                        SelectedConfiguration = this.SelectedConfiguration
+                        SelectedConfiguration = this.SelectedConfiguration.Name ?? string.Empty
                     }
                 }
             };
@@ -245,6 +284,28 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 this.Configurations = viewModel.Configurations;
             }
+        }
+
+        /// <summary>Initialises the config parameters.</summary>
+        /// <param name="solution">The selected solution.</param>
+        private void IntConfigParameter(Solution solution)
+        {
+            this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
+            this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
+            this.SelectedConfiguration = this.Configurations.SingleOrDefault(c => c.Name == solution.SelectedConfiguration);
+
+            // If there is no selected configuration, we do nothing.
+            if (this.SelectedConfiguration == null)
+            {
+                return;
+            }
+
+            this.CompilerAll = this.SelectedConfiguration.All;
+            this.CompilerDebug = this.SelectedConfiguration.Debug;
+            this.CompilerOptimize = this.SelectedConfiguration.Optimize;
+            this.CompilerQuiet = this.SelectedConfiguration.Quiet;
+            this.FlagsFile = this.SelectedConfiguration.FlagFile;
+            this.SelectedAssemblyOption = this.SelectedConfiguration.AssemblyOption;
         }
     }
 }
