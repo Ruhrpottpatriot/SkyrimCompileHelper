@@ -1,12 +1,12 @@
 ﻿<UserControl x:Class="SkyrimCompileHelper.Views.SolutionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:cal="http://www.caliburnproject.org"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:SkyrimCompileHelper.ViewModels"
              xmlns:converter="clr-namespace:SkyrimCompileHelper.Common.Converter"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:SolutionViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
@@ -21,11 +21,11 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <StackPanel Margin="0,0,3,3"
@@ -42,12 +42,8 @@
             <TextBlock Text="Version:" />
             <TextBox MinWidth="75"
                      Text="{Binding Version, Converter={StaticResource SemVersionToStringConverter}}"
+                     cal:Message.Attach="[Event MouseDoubleClick] = [Action ChangeVersion]"
                      IsReadOnly="True">
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="MouseDoubleClick">
-                        <cal:ActionMessage MethodName="ChangeVersion" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
             </TextBox>
         </StackPanel>
 
@@ -56,11 +52,11 @@
                     Margin="0,3,0,3"
                     Grid.ColumnSpan="2">
             <TextBlock Text="Solution Path:" />
-            <TextBox x:Name="SolutionPath" 
-                     Margin="0,0,0,3"/>
+            <TextBox x:Name="SolutionPath"
+                     Margin="0,0,0,3" />
             <Button x:Name="OpenSolutionFolder"
                     Content="Open Solution Folder"
-                    Margin="0,3,0,0"/>
+                    Margin="0,3,0,0" />
         </StackPanel>
 
         <StackPanel Grid.Row="2"
@@ -81,16 +77,74 @@
             </ComboBox>
         </StackPanel>
 
-        <StackPanel Grid.Row="3"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="0,3,0,5">
-            <CheckBox x:Name="EnableCustomFlags"
-                      Content="Enable Cumstom Flags" 
-                      IsEnabled="False"/>
-            <TextBox x:Name="CompilerFlags"
-                     IsEnabled="{Binding IsChecked, ElementName=EnableCustomFlags}" />
-        </StackPanel>
+        <Grid Grid.Row="3"
+              Grid.Column="0"
+              Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Margin="0,3,0,5"
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Grid.ColumnSpan="2">
+                <CheckBox x:Name="EnableCustomFlags"
+                          Content="Enable Cumstom Flags File"
+                          IsEnabled="True" />
+                <TextBox x:Name="FlagsFile"
+                         IsEnabled="{Binding IsChecked, ElementName=EnableCustomFlags}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="LostFocus">
+                            <cal:ActionMessage MethodName="SaveConfiguration" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </TextBox>
+            </StackPanel>
+
+            <CheckBox x:Name="CompilerAll"
+                      Margin="0,3,3,3"
+                      Grid.Row="1"
+                      Grid.Column="0"
+                      IsEnabled="False"
+                      Content="All"
+                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+            <CheckBox x:Name="CompilerQuiet"
+                      Margin="3,3,0,3"
+                      Grid.Row="1"
+                      Grid.Column="1"
+                      Content="Quiet"
+                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+            <CheckBox x:Name="CompilerDebug"
+                      Margin="0,3,3,3"
+                      Grid.Row="2"
+                      Grid.Column="0"
+                      Content="Debug"
+                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+            <CheckBox x:Name="CompilerOptimize"
+                      Margin="3,3,0,3"
+                      Grid.Row="2"
+                      Grid.Column="1"
+                      Content="Optimize"
+                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+            <StackPanel Margin="0,3,0,3"
+                        Grid.Row="3"
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2">
+                <TextBlock Margin="0,0,0,2"
+                           Text="Assembly Options" />
+                <ComboBox x:Name="CompilerAssemblyOptions"
+                          SelectedItem="{Binding SelectedAssemblyOption}"
+                          Margin="0,2,0,0"
+                          cal:Message.Attach="[Event SelectionChanged] = [Action SaveConfiguration]" />
+            </StackPanel>
+        </Grid>
 
         <Button x:Name="Compile"
                 Grid.Column="0"
