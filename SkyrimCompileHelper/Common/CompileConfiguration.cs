@@ -18,6 +18,21 @@ namespace SkyrimCompileHelper.Common
         public string Name { get; set; }
 
         /// <summary>Gets or sets the compiler flags.</summary>
-        public string CompilerFlags { get; set; }
+        public string FlagFile { get; set; }
+        
+        /// <summary>Gets or sets a value indicating whether the compiler should compile a folder or single file.</summary>
+        public bool All { get; set; }
+
+        /// <summary> Gets or sets a value indicating whether the compiler should supress the output.</summary>
+        public bool Quiet { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether the compiler should output debug information.</summary>
+        public bool Debug { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether the compiler optimize should optimize the scripts.</summary>
+        public bool Optimize { get; set; }
+
+        /// <summary>Gets or sets the assembly option.</summary>
+        public string AssemblyOption { get; set; }
     }
 }

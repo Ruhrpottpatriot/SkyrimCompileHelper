@@ -18,7 +18,7 @@ namespace SkyrimCompileHelper.ViewModels
     /// <summary>ViewModel containing methods and properties to create new configurations.</summary>
     public class AddConfigurationViewModel : Screen
     {
-        /// <summary>Initializes a new instance of the <see cref="AddConfigurationViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="AddConfigurationViewModel"/> class.</summary>
         public AddConfigurationViewModel()
         {
             if (Execute.InDesignMode)
@@ -49,7 +49,11 @@ namespace SkyrimCompileHelper.ViewModels
             return new CompileConfiguration
             {
                 Name = this.ConfigurationName,
-                CompilerFlags = "TESV_Papyrus_Flags.flg"
+                FlagFile = "TESV_Papyrus_Flags.flg",
+                All = true,
+                Quiet = false,
+                Debug = true,
+                Optimize = false
             };
         }
     }

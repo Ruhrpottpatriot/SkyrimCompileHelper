@@ -29,7 +29,7 @@ namespace SkyrimCompileHelper.Compiler
         /// <summary>The path to the compiler.</summary>
         private readonly string skyrimPath;
 
-        /// <summary>Initializes a new instance of the <see cref="Compiler"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="Compiler"/> class.</summary>
         /// <param name="skyrimPath">The absolute path to skyrims main folder.</param>
         /// <param name="logWriter">The log writer.</param>
         public Compiler(string skyrimPath, LogWriter logWriter)
@@ -59,7 +59,7 @@ namespace SkyrimCompileHelper.Compiler
         public bool Optimize { get; set; }
 
         /// <summary>Gets or sets the assembly options.</summary>
-        public AssemblyOptions AssemblyOptions { get; set; }
+        public string AssemblyOptions { get; set; }
 
         /// <summary>Gets or sets the input folders.</summary>
         /// <remarks>This property lists all folders that the compiler gets the script files from.
@@ -161,15 +161,17 @@ namespace SkyrimCompileHelper.Compiler
             }
 
             // Check what we want to do with the assembly files afterwards.
+            // The "Assemble and Delete" option will not be appended to the argument string,
+            // as it has no representing argument.
             switch (this.AssemblyOptions)
             {
-                case AssemblyOptions.NoAssembly:
+                case "No Assembly":
                     argumentsBuilder.Append(" -noasm");
                     break;
-                case AssemblyOptions.AssembleAndKeep:
+                case "Assemble and Keep":
                     argumentsBuilder.Append(" -keepasm");
                     break;
-                case AssemblyOptions.GenerateOnly:
+                case "Generate only":
                     argumentsBuilder.Append(" -asmonly");
                     break;
             }
@@ -188,7 +190,7 @@ namespace SkyrimCompileHelper.Compiler
             argumentsBuilder.Append(" -flags= \"" + this.Flags + "\"");
 
             argumentsBuilder.Append(" -output=\"" + this.OutputFolder + "\"");
-            
+
             return argumentsBuilder.ToString();
         }
 
