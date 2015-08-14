@@ -1,9 +1,12 @@
 <StyleCopSettings Version="105">
   <GlobalSettings>
-    <StringProperty Name="Culture">en-GB</StringProperty>
     <CollectionProperty Name="RecognizedWords">
-      <Value>modding</Value>
+      <Value>bootstrapper</Value>
+      <Value>mef</Value>
+      <Value>skyrim</Value>
+      <Value>skyrims</Value>
     </CollectionProperty>
+    <StringProperty Name="Culture">en-GB</StringProperty>
   </GlobalSettings>
   <Analyzers>
     <Analyzer AnalyzerId="StyleCop.CSharp.DocumentationRules">
