@@ -171,7 +171,7 @@ namespace SkyrimCompileHelper
 
             config.AddLogSource("General", SourceLevels.All, true, rollingFileListener);
             config.AddLogSource("Compiler", SourceLevels.All, true, rollingFileListener);
-            config.AddLogSource("Error", SourceLevels.Error, true, errorFileListener);
+            config.AddLogSource("Error", SourceLevels.Warning, true, errorFileListener);
 
             return config;
         }

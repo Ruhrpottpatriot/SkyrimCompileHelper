@@ -196,7 +196,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             this.SelectedConfiguration = configuration;
-            
+
             this.SaveSolution();
         }
 
@@ -226,14 +226,14 @@ namespace SkyrimCompileHelper.ViewModels
 
             IEnumerable<string> inputFolders = new List<string>
             {
-                 Path.Combine(this.SolutionPath, "src"),
                  Path.Combine(skyrimPath, @"Data\Scripts\Source")
             };
 
-            Compiler compiler = new Compiler(skyrimPath, this.logWriter)
+            CompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.FlagsFile,
-                InputFolders = inputFolders.ToList(),
+                ImportFolders = inputFolders.ToList(),
+                CompilerTarget = Path.Combine(this.SolutionPath, "src"),
                 OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name),
                 All = this.CompilerAll,
                 Quiet = this.CompilerQuiet,
@@ -245,7 +245,7 @@ namespace SkyrimCompileHelper.ViewModels
             int build = Convert.ToInt32(string.IsNullOrEmpty(this.Version.Build) ? "0" : this.Version.Build) + 1;
             this.Version = this.Version.Change(build: build.ToString());
 
-            compiler.Compile();
+            compilerFactory.Compile();
         }
 
         /// <summary>Saves the selected solution to the solution repository.</summary>
