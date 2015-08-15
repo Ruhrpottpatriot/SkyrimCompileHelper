@@ -25,7 +25,7 @@ namespace SkyrimCompileHelper.Compiler
     using PCompiler;
 
     /// <summary>This class contains methods and properties to compile script files into their binary representation used by Skyrim.</summary>
-    public class CompilerFactory
+    public class CompilerFactory : ICompilerFactory
     {
         /// <summary>The log writer.</summary>
         private readonly LogWriter logWriter;
@@ -53,7 +53,6 @@ namespace SkyrimCompileHelper.Compiler
         /// <param name="logWriter">The log writer.</param>
         public CompilerFactory(string skyrimPath, LogWriter logWriter)
         {
-            this.ErrorCount = 0;
             this.logWriter = logWriter;
             this.skyrimPath = skyrimPath;
             this.failureMutex = new Mutex();
@@ -85,14 +84,11 @@ namespace SkyrimCompileHelper.Compiler
         public string CompilerTarget { get; set; }
 
         /// <summary>Gets or sets the import folders.</summary>
-        public List<string> ImportFolders { get; set; }
+        public IEnumerable<string> ImportFolders { get; set; }
 
         /// <summary>Gets or sets the output folder.</summary>
         public string OutputFolder { get; set; }
-
-        /// <summary>Gets the compile error count.</summary>
-        public int ErrorCount { get; private set; }
-
+        
         /// <summary>Starts the Skyrim script compiler with the specified settings.</summary>
         /// <exception cref="CompilerFlagsException">Raised when the specified flags are empty.</exception>
         /// <exception cref="CompilerFolderException">Raised when input or output folders are not specified or emtpy.</exception>
@@ -205,7 +201,7 @@ namespace SkyrimCompileHelper.Compiler
                 bDebug = this.Debug,
                 bQuiet = this.Quiet,
                 eAsmOption = assemblyOption,
-                ImportFolders = this.ImportFolders,
+                ImportFolders = this.ImportFolders.ToList(),
                 OutputFolder = this.OutputFolder
             };
 
@@ -317,6 +313,7 @@ namespace SkyrimCompileHelper.Compiler
                 Categories = { "General" },
                 Severity = TraceEventType.Error
             };
+            this.logWriter.Write(assemblyMissingEntry);
             
             // Get the assembly name for the full name.
             string assemblyName = args.Name.Split(",".ToCharArray())[0];

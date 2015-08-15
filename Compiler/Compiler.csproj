@@ -58,6 +58,7 @@
     <Compile Include="CompilerFlagsException.cs" />
     <Compile Include="CompilerFolderException.cs" />
     <Compile Include="CompilingCompleteEventArgs.cs" />
+    <Compile Include="ICompilerFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
