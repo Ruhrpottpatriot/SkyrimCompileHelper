@@ -9,6 +9,7 @@
                 <ResourceDictionary>
                     <skyrimCompileHelper:MefBootstrapper x:Key="bootstrapper" />
                 </ResourceDictionary>
+                <ResourceDictionary Source="/Resources/Icons.xaml" />
                 <ResourceDictionary>
                     <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
                                                             True="Visible"
