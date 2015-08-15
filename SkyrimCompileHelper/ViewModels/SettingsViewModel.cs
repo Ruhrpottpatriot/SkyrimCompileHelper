@@ -86,11 +86,13 @@
         public void ChangeOrganizerPath()
         {
             this.OrganizerPath = this.SelectFolder();
+            this.SaveSettings();
         }
 
         public void ChangeSkyrimPath()
         {
             this.SkyrimPath = this.SelectFolder();
+            this.SaveSettings();
         }
 
         private string SelectFolder()
