@@ -42,7 +42,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The writer.</summary>
         private readonly LogWriter writer;
 
-        /// <summary>Initializes a new instance of the <see cref="ShellViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="ShellViewModel"/> class.</summary>
         public ShellViewModel()
         {
             if (Execute.InDesignMode)
@@ -54,7 +54,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ShellViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="ShellViewModel"/> class.</summary>
         /// <param name="windowManager">The window Manager.</param>
         /// <param name="settingsRepository">The settings repository.</param>
         /// <param name="solutionRepository">The solution repository.</param>
@@ -83,6 +83,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Gets or sets the selected solution.</summary>
         public SolutionViewModel SelectedSolution { get; set; }
 
+        /// <summary>Gets or sets the settings.</summary>
         public SettingsViewModel Settings { get; set; }
 
         /// <summary>Changes a solution based on the users selection.</summary>

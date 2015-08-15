@@ -21,9 +21,7 @@ namespace SkyrimCompileHelper.ViewModels
     [ImplementPropertyChanged]
     public class ChangeVersionViewModel : Screen
     {
-        private readonly SemVersion oldVersion;
-
-        /// <summary>Initializes a new instance of the <see cref="ChangeVersionViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="ChangeVersionViewModel"/> class.</summary>
         public ChangeVersionViewModel()
         {
             if (Execute.InDesignMode)
@@ -36,10 +34,10 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
+        /// <summary>Initialises a new instance of the <see cref="ChangeVersionViewModel"/> class.</summary>
+        /// <param name="version">The version that is going to be changed.</param>
         public ChangeVersionViewModel(SemVersion version)
         {
-            this.oldVersion = version;
-
             this.Major = version.Major;
             this.Minor = version.Minor;
             this.Patch = version.Patch;

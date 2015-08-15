@@ -39,17 +39,16 @@ namespace SkyrimCompileHelper
         private CompositionContainer container;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="MefBootstrapper"/> class.
+        /// Initialises a new instance of the <see cref="MefBootstrapper"/> class.
         /// </summary>
         public MefBootstrapper()
         {
             this.Initialize();
         }
 
-        /// <summary>
-        /// Override this to add custom behavior to execute after the application starts.
-        /// </summary>
-        /// <param name="sender">The sender.</param><param name="e">The args.</param>
+        /// <summary>Override this to add custom behaviour to execute after the application starts.</summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The args.</param>
         protected override void OnStartup(object sender, StartupEventArgs e)
         {
             this.DisplayRootViewFor<ShellViewModel>();

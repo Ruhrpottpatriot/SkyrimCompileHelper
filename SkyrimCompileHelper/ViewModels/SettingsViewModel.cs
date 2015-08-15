@@ -1,6 +1,16 @@
-﻿namespace SkyrimCompileHelper.ViewModels
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="SettingsViewModel.cs" company="Robert Logiewa">
+//   The MIT License (MIT)
+//   
+//   Copyright (c) 2015 Robert Logiewa
+// </copyright>
+// <summary>
+//   Provides methods and properties to show the settings view.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace SkyrimCompileHelper.ViewModels
 {
-    using System;
     using System.IO;
     using System.Windows.Forms;
 
@@ -10,11 +20,14 @@
 
     using SkyrimCompileHelper.Common;
 
+    /// <summary>Provides methods and properties to show the settings view.</summary>
     [ImplementPropertyChanged]
     public class SettingsViewModel
     {
+        /// <summary>Holds a reference to the settings repository.</summary>
         private readonly ISettingsRepository settingsRepository;
 
+        /// <summary>Initialises a new instance of the <see cref="SettingsViewModel"/> class.</summary>
         public SettingsViewModel()
         {
             if (Execute.InDesignMode)
@@ -24,6 +37,8 @@
             }
         }
 
+        /// <summary>Initialises a new instance of the <see cref="SettingsViewModel"/> class.</summary>
+        /// <param name="settingsRepository">The settings repository.</param>
         public SettingsViewModel(ISettingsRepository settingsRepository)
         {
             this.settingsRepository = settingsRepository;
@@ -83,18 +98,22 @@
             this.settingsRepository.Update(settings);
         }
 
+        /// <summary>Changes the organizer path.</summary>
         public void ChangeOrganizerPath()
         {
             this.OrganizerPath = this.SelectFolder();
             this.SaveSettings();
         }
 
+        /// <summary>Changes the Skyrim path.</summary>
         public void ChangeSkyrimPath()
         {
             this.SkyrimPath = this.SelectFolder();
             this.SaveSettings();
         }
 
+        /// <summary>Opens a <see cref="FolderBrowserDialog"/> returning the selected path.</summary>
+        /// <returns>A <see cref="string"/> representing the path.</returns>
         private string SelectFolder()
         {
             FolderBrowserDialog dialogue = new FolderBrowserDialog();

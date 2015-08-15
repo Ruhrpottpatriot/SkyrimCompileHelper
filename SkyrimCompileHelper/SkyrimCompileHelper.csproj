@@ -98,8 +98,12 @@
     <Compile Include="Common\Converter\BooleanConverter.cs" />
     <Compile Include="Common\Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Common\Converter\SemVersionToStringConverter.cs" />
-    <Compile Include="Common\DictionaryRange.cs" />
-    <Compile Include="Common\IDictionaryRange.cs" />
+    <Compile Include="Common\DictionaryRange.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
+    <Compile Include="Common\IDictionaryRange.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="Common\IRepository.cs" />
     <Compile Include="MefBootstrapper.cs" />
     <Compile Include="Common\Repositories\IRepository.cs" />
@@ -149,6 +153,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="Common\CompileConfiguration.cs" />
     <Compile Include="Common\Solution.cs" />
@@ -161,6 +166,7 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
