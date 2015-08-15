@@ -227,7 +227,7 @@ namespace SkyrimCompileHelper.ViewModels
                  Path.Combine(this.settingsRepository.Read()["SkyrimPath"].ToString(), @"Data\scripts\Source")   
             };
 
-            CompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
+            ICompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.FlagsFile,
                 ImportFolders = inputFolders.ToList(),
