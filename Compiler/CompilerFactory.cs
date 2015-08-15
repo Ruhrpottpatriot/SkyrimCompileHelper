@@ -317,7 +317,8 @@ namespace SkyrimCompileHelper.Compiler
                 Categories = { "General" },
                 Severity = TraceEventType.Error
             };
-            
+            this.logWriter.Write(assemblyMissingEntry);
+
             // Get the assembly name for the full name.
             string assemblyName = args.Name.Split(",".ToCharArray())[0];
 

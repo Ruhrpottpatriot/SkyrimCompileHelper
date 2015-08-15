@@ -18,21 +18,21 @@ namespace SkyrimCompileHelper.Compiler
     /// <summary>This exception is thrown when the flags passed to the compiler are invalid.</summary>
     public class CompilerFlagsException : Exception
     {
-        /// <summary>Initializes a new instance of the <see cref="CompilerFlagsException"/> class.</summary>
-        [SuppressMessage("ReSharper", "RedundantBaseConstructorCall", Justification = "Needed for proper constructo chaining.")]
+        /// <summary>Initialises a new instance of the <see cref="CompilerFlagsException"/> class.</summary>
+        [SuppressMessage("ReSharper", "RedundantBaseConstructorCall", Justification = "Needed for proper constructor chaining.")]
         public CompilerFlagsException()
             : base()
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="CompilerFlagsException"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="CompilerFlagsException"/> class.</summary>
         /// <param name="message">The exception message.</param>
         public CompilerFlagsException(string message)
             : base(message)
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="CompilerFlagsException"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="CompilerFlagsException"/> class.</summary>
         /// <param name="message">The exception message.</param>
         /// <param name="innerException">The inner exception.</param>
         public CompilerFlagsException(string message, Exception innerException)
@@ -40,10 +40,11 @@ namespace SkyrimCompileHelper.Compiler
         {
         }
 
-        /// <summary>Initializes a new instance of the <see cref="CompilerFlagsException"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="CompilerFlagsException"/> class.</summary>
         /// <param name="info">The serialisation info.</param>
         /// <param name="context">The streaming context.</param>
         protected CompilerFlagsException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }
