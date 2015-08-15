@@ -18,6 +18,7 @@ namespace SkyrimCompileHelper.Compiler
     using System.Linq;
     using System.Reflection;
     using System.Threading;
+    using System.Threading.Tasks;
 
     using Microsoft.Practices.EnterpriseLibrary.Logging;
 
@@ -43,6 +44,9 @@ namespace SkyrimCompileHelper.Compiler
 
         /// <summary>A list of files that should be compiled.</summary>
         private IList<string> filesToCompile;
+
+        /// <summary>Index of the last file that was compiled. This variable is shared across threads.</summary>
+        private int lastFileNumber = -1;
 
         /// <summary>Initialises a new instance of the <see cref="CompilerFactory"/> class.</summary>
         /// <param name="skyrimPath">The absolute path to skyrims main folder.</param>
@@ -135,14 +139,14 @@ namespace SkyrimCompileHelper.Compiler
                 this.filesToCompile = new[] { this.CompilerTarget };
             }
 
-            int length = Math.Min(this.filesToCompile.Count, Environment.ProcessorCount + 1);
+            int compileTaskCount = Math.Min(this.filesToCompile.Count, Environment.ProcessorCount + 1);
             if (!this.Quiet)
             {
                 LogEntry compileStartEntry = new LogEntry
                 {
-                    EventId = 30000, 
+                    EventId = 30000,
                     Title = "Starting Compilation",
-                    Message = string.Format("Starting {0} compile threads for {1} files...", length, this.filesToCompile.Count),
+                    Message = string.Format("Starting {0} compile threads for {1} files...", compileTaskCount, this.filesToCompile.Count),
                     Categories = { "Compiler" },
                     Severity = TraceEventType.Information
                 };
@@ -150,17 +154,15 @@ namespace SkyrimCompileHelper.Compiler
             }
 
             // Generate the thread for the compilation
-            var threads = new Thread[length];
-            for (int i = 0; i < length; i++)
+            Task[] tasks = new Task[compileTaskCount];
+            for (int i = 0; i < compileTaskCount; i++)
             {
-                threads[i] = new Thread(this.CompilerThread);
-                threads[i].Start();
+                var lastTask = new Task(this.CompilerThread);
+                lastTask.Start();
+                tasks[i] = lastTask;
             }
 
-            foreach (Thread thread in threads)
-            {
-                thread.Join();
-            }
+            Task.WaitAll(tasks);
 
             if (!this.Quiet)
             {
@@ -189,7 +191,6 @@ namespace SkyrimCompileHelper.Compiler
             }
         }
 
-
         /// <summary>Compiles a single script file into the corresponding binary and assembly representation.</summary>
         private void CompilerThread()
         {
@@ -212,8 +213,7 @@ namespace SkyrimCompileHelper.Compiler
             compiler.CompilerNotifyHandler += this.CompilerNotifyHandler;
 
             int index;
-            int lastFileNumber = -1;
-            while ((index = Interlocked.Increment(ref lastFileNumber)) < this.filesToCompile.Count)
+            while ((index = Interlocked.Increment(ref this.lastFileNumber)) < this.filesToCompile.Count)
             {
                 string fileToCompile = this.filesToCompile[index];
 
@@ -309,10 +309,17 @@ namespace SkyrimCompileHelper.Compiler
         /// <returns>The loaded <see cref="Assembly"/>.</returns>
         private Assembly CurrentDomainAssemblyResolve(object sender, ResolveEventArgs args)
         {
+            LogEntry assemblyMissingEntry = new LogEntry
+            {
+                EventId = 00100,
+                Title = "Assembly Missing",
+                Message = string.Format("The assembly \"{0}\" is missing. Trying to resolve.", args.Name),
+                Categories = { "General" },
+                Severity = TraceEventType.Error
+            };
+            
             // Get the assembly name for the full name.
             string assemblyName = args.Name.Split(",".ToCharArray())[0];
-
-            string lookupDirectory;
 
             // Check if we want to load the papyrus compiler
             if (assemblyName.StartsWith("Microsoft.Practices.EnterpriseLibrary"))
@@ -320,10 +327,17 @@ namespace SkyrimCompileHelper.Compiler
                 return null;
             }
 
-            // Log the loading of the missing assembly. Bug: Logging does not work, since logging framework is not loaded.
-            // LogEntry missingAssemblyLoadedEntry = new LogEntry { Message = "Resolving missing libary: " + args.Name, EventId = 01, Categories = { "General" } };
-            // this.logWriter.Write(missingAssemblyLoadedEntry);
-            var assembly = Assembly.LoadFile( Path.Combine(this.skyrimPath, "Papyrus Compiler", assemblyName + ".dll"));
+            Assembly assembly = Assembly.LoadFile(Path.Combine(this.skyrimPath, "Papyrus Compiler", assemblyName + ".dll"));
+            
+            LogEntry missingAssemblyLoadedEntry = new LogEntry
+            {
+                EventId = 00101,
+                Title = "Resolving Missing Assembly",
+                Message = string.Format("Assembly \"{0}\" was loaded", args.Name),
+                Categories = { "General" },
+                Severity = TraceEventType.Information
+            };
+            this.logWriter.Write(missingAssemblyLoadedEntry);
 
             return assembly;
         }
