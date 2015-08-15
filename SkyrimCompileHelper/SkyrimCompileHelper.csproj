@@ -109,7 +109,7 @@
     <Compile Include="Common\Repositories\SettingsRepository.cs" />
     <Compile Include="Common\Repositories\SolutionRepository.cs" />
     <Compile Include="ViewModels\AddConfigurationViewModel.cs" />
-	
+	<Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
 	<Page Include="Resources\Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -127,7 +127,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-	
+	<Page Include="Views\SettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\SolutionManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
