@@ -21,7 +21,7 @@ namespace SkyrimCompileHelper.ViewModels
 
     using PropertyChanged;
 
-    using SkyrimCompileHelper.Common;
+    using SkyrimCompileHelper.Core;
 
     /// <summary>ViewModel containing methods and properties to manage configurations.</summary>
     [ImplementPropertyChanged]

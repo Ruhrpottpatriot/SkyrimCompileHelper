@@ -29,7 +29,7 @@ namespace SkyrimCompileHelper
     using Microsoft.Practices.EnterpriseLibrary.Logging.Formatters;
     using Microsoft.Practices.EnterpriseLibrary.Logging.TraceListeners;
 
-    using SkyrimCompileHelper.Common;
+    using SkyrimCompileHelper.Core.Repositories;
     using SkyrimCompileHelper.ViewModels;
 
     /// <summary>The bootstrapper.</summary>

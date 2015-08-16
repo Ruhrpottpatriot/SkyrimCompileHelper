@@ -94,17 +94,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Common\Constants.cs" />
-    <Compile Include="Common\Converter\SemVersionToStringConverter.cs" />
-    <Compile Include="Common\DictionaryRange.cs" />
-    <Compile Include="Common\IDictionaryRange.cs" />
-    <Compile Include="Common\IRepository.cs" />
     <Compile Include="MefBootstrapper.cs" />
-    <Compile Include="Common\Repositories\IRepository.cs" />
-    <Compile Include="Common\Repositories\ISettingsRepository.cs" />
-    <Compile Include="Common\Repositories\ISolutionRepository.cs" />
-    <Compile Include="Common\Repositories\SettingsRepository.cs" />
-    <Compile Include="Common\Repositories\SolutionRepository.cs" />
     <Compile Include="ViewModels\AddConfigurationViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Page Include="Views\AddConfigurationView.xaml">
@@ -139,8 +129,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Common\CompileConfiguration.cs" />
-    <Compile Include="Common\Solution.cs" />
     <Compile Include="ViewModels\ChangeVersionViewModel.cs" />
     <Compile Include="ViewModels\ConfigurationManagerViewModel.cs" />
     <Compile Include="ViewModels\SolutionManagerViewModel.cs" />
@@ -182,6 +170,10 @@
     <ProjectReference Include="..\Compiler\Compiler.csproj">
       <Project>{aa767a0f-f961-4f68-a38e-f9beed8bad77}</Project>
       <Name>Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{4d07678a-bfd9-4d7b-8625-9aac541bb6f1}</Project>
+      <Name>Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

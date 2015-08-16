@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompileHelper.Common
+namespace SkyrimCompileHelper.Core
 {
     /// <summary>Contains application wide constants.</summary>
     public static class Constants
