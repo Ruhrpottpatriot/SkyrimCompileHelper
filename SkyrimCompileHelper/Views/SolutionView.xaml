@@ -5,13 +5,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:SkyrimCompileHelper.ViewModels"
-             xmlns:converter="clr-namespace:SkyrimCompileHelper.Common.Converter"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:converter1="clr-namespace:SkyrimCompileHelper.Core.Converter;assembly=Core"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:SolutionViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
     <UserControl.Resources>
-        <converter:SemVersionToStringConverter x:Key="SemVersionToStringConverter" />
+        <converter1:SemVersionToStringConverter x:Key="SemVersionToStringConverter" />
     </UserControl.Resources>
 
     <Grid Margin="5">

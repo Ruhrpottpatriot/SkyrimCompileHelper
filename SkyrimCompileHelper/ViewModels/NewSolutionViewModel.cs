@@ -22,7 +22,7 @@ namespace SkyrimCompileHelper.ViewModels
 
     using Semver;
 
-    using SkyrimCompileHelper.Common;
+    using SkyrimCompileHelper.Core;
 
     using Screen = Caliburn.Micro.Screen;
 

@@ -13,7 +13,7 @@ namespace SkyrimCompileHelper.ViewModels
 {
     using Caliburn.Micro;
 
-    using SkyrimCompileHelper.Common;
+    using SkyrimCompileHelper.Core;
 
     /// <summary>ViewModel containing methods and properties to create new configurations.</summary>
     public class AddConfigurationViewModel : Screen

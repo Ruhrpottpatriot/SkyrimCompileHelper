@@ -6,7 +6,7 @@
 //   Represents a subset of keys and values.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace SkyrimCompileHelper.Common
+namespace SkyrimCompileHelper.Core
 {
     using System;
     using System.Collections.Generic;

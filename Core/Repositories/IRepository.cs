@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompileHelper.Common
+namespace SkyrimCompileHelper.Core.Repositories
 {
     using System.Collections.Generic;
 

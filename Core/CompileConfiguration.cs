@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompileHelper.Common
+namespace SkyrimCompileHelper.Core
 {
     /// <summary>Represents a compiler configuration.</summary>
     public class CompileConfiguration
@@ -23,7 +23,7 @@ namespace SkyrimCompileHelper.Common
         /// <summary>Gets or sets a value indicating whether the compiler should compile a folder or single file.</summary>
         public bool All { get; set; }
 
-        /// <summary> Gets or sets a value indicating whether the compiler should supress the output.</summary>
+        /// <summary> Gets or sets a value indicating whether the compiler should suppress the output.</summary>
         public bool Quiet { get; set; }
 
         /// <summary>Gets or sets a value indicating whether the compiler should output debug information.</summary>

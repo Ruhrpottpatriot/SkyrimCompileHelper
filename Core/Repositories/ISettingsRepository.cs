@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompileHelper.Common
+namespace SkyrimCompileHelper.Core.Repositories
 {
     /// <summary>Provides the interface for the settings repository.</summary>
     public interface ISettingsRepository : IRepository<string, object>

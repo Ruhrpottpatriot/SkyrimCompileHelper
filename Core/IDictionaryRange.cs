@@ -6,7 +6,7 @@
 //   Provides the interface for <see cref="IDictionary{TKey,TValue}" /> types that represent a range.
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
-namespace SkyrimCompileHelper.Common
+namespace SkyrimCompileHelper.Core
 {
     using System.Collections.Generic;
 

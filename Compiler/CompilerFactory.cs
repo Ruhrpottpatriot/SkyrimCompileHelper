@@ -268,7 +268,28 @@ namespace SkyrimCompileHelper.Compiler
                     this.failedCompilations.Add(this.filesToCompile[index]);
                     this.failureMutex.ReleaseMutex();
                 }
+
+                // ToDo: Create log entry for this task.
+                // Get the debug files
+                if (this.Debug)
+                {
+                    string appPath = Assembly.GetExecutingAssembly().CodeBase;
+
+                    IEnumerable<string> debugFiles = new DirectoryInfo(appPath).GetFiles("*.dot").Select(f => f.ToString());
+
+                    foreach (string debugFile in debugFiles)
+                    {
+                        string fileName = Path.GetFileName(debugFile);
+
+                        // File.Move(debugFile, );
+                    }
+                }
             }
+        }
+
+        private void MoveDebugFiles()
+        {
+            
         }
 
         /// <summary>Raised when the compiler outputs an informational message.</summary>
