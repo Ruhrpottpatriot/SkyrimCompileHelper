@@ -27,7 +27,7 @@ namespace SkyrimCompileHelper.Core
         /// <summary>Initialises a new instance of the <see cref="SolutionRepository"/> class.</summary>
         public SolutionRepository()
         {
-            this.solutionPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SHC\Solutions");
+            this.solutionPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SCH\Solutions");
         }
 
         /// <summary>Creates a new set of items inside the repository.</summary>

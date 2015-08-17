@@ -11,6 +11,8 @@
 
 namespace SkyrimCompileHelper.ViewModels
 {
+    using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Windows.Forms;
 
@@ -110,6 +112,11 @@ namespace SkyrimCompileHelper.ViewModels
         {
             this.SkyrimPath = this.SelectFolder();
             this.SaveSettings();
+        }
+
+        public void OpenAppDataFolder()
+        {
+            Process.Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SCH"));
         }
 
         /// <summary>Opens a <see cref="FolderBrowserDialog"/> returning the selected path.</summary>

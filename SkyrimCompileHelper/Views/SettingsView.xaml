@@ -137,6 +137,7 @@
             </Rectangle>
         </Grid>
             <Button Content="Open Application Data Folder"
+                    x:Name="OpenAppDataFolder"
                     Grid.Row="1"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"

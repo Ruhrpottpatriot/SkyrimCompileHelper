@@ -141,7 +141,7 @@ namespace SkyrimCompileHelper
             CategoryFilter categoryFilter = new CategoryFilter("CategoryFilter", categories, CategoryFilterMode.AllowAllExceptDenied);
 
             RollingFlatFileTraceListener rollingFileListener = new RollingFlatFileTraceListener(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SHC\Logs\Everything.log"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SCH\Logs\Everything.log"),
                 "----------------------------------------",
                 "----------------------------------------",
                 formatter,
@@ -152,7 +152,7 @@ namespace SkyrimCompileHelper
                 5);
 
             RollingFlatFileTraceListener errorFileListener = new RollingFlatFileTraceListener(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SHC\Logs\Errors.log"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SCH\Logs\Errors.log"),
                 "----------------------------------------",
                 "----------------------------------------",
                 formatter,

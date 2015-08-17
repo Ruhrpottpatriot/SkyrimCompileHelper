@@ -31,8 +31,8 @@ namespace SkyrimCompileHelper.Core
         public SettingsRepository()
         {
             string environmentPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            this.settingsFilePath = Path.Combine(environmentPath, @"SHC\settings.json");
-            this.settingsFolderPath = Path.Combine(environmentPath, "SHC");
+            this.settingsFilePath = Path.Combine(environmentPath, @"SCH\settings.json");
+            this.settingsFolderPath = Path.Combine(environmentPath, "SCH");
         }
 
         /// <summary>Creates a new set of items inside the repository.</summary>
