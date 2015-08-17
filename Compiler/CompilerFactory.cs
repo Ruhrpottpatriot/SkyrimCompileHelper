@@ -22,7 +22,7 @@ namespace SkyrimCompileHelper.Compiler
 
     using Microsoft.Practices.EnterpriseLibrary.Logging;
 
-    using PCompiler;
+    using PapyrusCompiler;
 
     /// <summary>This class contains methods and properties to compile script files into their binary representation used by Skyrim.</summary>
     public class CompilerFactory : ICompilerFactory
@@ -77,7 +77,7 @@ namespace SkyrimCompileHelper.Compiler
         public bool Optimize { get; set; }
 
         /// <summary>Gets or sets the assembly options.</summary>
-        public string AssemblyOptions { get; set; }
+        public AssemblyOption AssemblyOptions { get; set; }
 
         /// <summary>Gets or sets the file to be compiled.</summary>
         /// <remarks>If <see cref="All"/> is set to true, this property must point to a directory.</remarks>
@@ -88,7 +88,7 @@ namespace SkyrimCompileHelper.Compiler
 
         /// <summary>Gets or sets the output folder.</summary>
         public string OutputFolder { get; set; }
-        
+
         /// <summary>Starts the Skyrim script compiler with the specified settings.</summary>
         /// <exception cref="CompilerFlagsException">Raised when the specified flags are empty.</exception>
         /// <exception cref="CompilerFolderException">Raised when input or output folders are not specified or emtpy.</exception>
@@ -99,7 +99,7 @@ namespace SkyrimCompileHelper.Compiler
                 DirectoryInfo directoryInfo = new DirectoryInfo(this.CompilerTarget);
                 if (directoryInfo.Exists)
                 {
-                    this.filesToCompile = directoryInfo.GetFiles("*.psc").Select(f => f.ToString()).ToList();
+                    this.filesToCompile = directoryInfo.GetFiles("*.psc", SearchOption.AllDirectories).Select(f => f.ToString()).ToList();
 
                     if (!this.filesToCompile.Any())
                     {
@@ -190,17 +190,11 @@ namespace SkyrimCompileHelper.Compiler
         /// <summary>Compiles a single script file into the corresponding binary and assembly representation.</summary>
         private void CompilerThread()
         {
-            Compiler.AssemblyOption assemblyOption;
-            if (!Enum.TryParse(this.AssemblyOptions, out assemblyOption))
+            var compiler = new PapyrusCompiler
             {
-                assemblyOption = Compiler.AssemblyOption.AssembleAndDelete;
-            }
-
-            Compiler compiler = new Compiler
-            {
-                bDebug = this.Debug,
-                bQuiet = this.Quiet,
-                eAsmOption = assemblyOption,
+                Debug = this.Debug,
+                Quiet = this.Quiet,
+                AssemblyOption = this.AssemblyOptions,
                 ImportFolders = this.ImportFolders.ToList(),
                 OutputFolder = this.OutputFolder
             };
@@ -276,7 +270,7 @@ namespace SkyrimCompileHelper.Compiler
              {
                  EventId = 30103,
                  Title = "Compilation Message",
-                 Message = eventArgs.sMessage,
+                 Message = eventArgs.Message,
                  Categories = { "Compiler" },
                  Severity = TraceEventType.Information
              };
@@ -292,7 +286,7 @@ namespace SkyrimCompileHelper.Compiler
             {
                 EventId = 30103,
                 Title = "File Contained Errors",
-                Message = string.Format("{0}({1},{2}): {3}", compilerEventArgs.Filename, compilerEventArgs.LineNumber, compilerEventArgs.ColumnNumber, compilerEventArgs.Message),
+                Message = string.Format("{0}({1},{2}): {3}", compilerEventArgs.FileName, compilerEventArgs.LineNumber, compilerEventArgs.ColumnNumber, compilerEventArgs.Message),
                 Categories = { "Compiler", "Error" },
                 Severity = TraceEventType.Warning
             };
@@ -314,7 +308,7 @@ namespace SkyrimCompileHelper.Compiler
                 Severity = TraceEventType.Error
             };
             this.logWriter.Write(assemblyMissingEntry);
-            
+
             // Get the assembly name for the full name.
             string assemblyName = args.Name.Split(",".ToCharArray())[0];
 
@@ -325,7 +319,7 @@ namespace SkyrimCompileHelper.Compiler
             }
 
             Assembly assembly = Assembly.LoadFile(Path.Combine(this.skyrimPath, "Papyrus Compiler", assemblyName + ".dll"));
-            
+
             LogEntry missingAssemblyLoadedEntry = new LogEntry
             {
                 EventId = 00101,
