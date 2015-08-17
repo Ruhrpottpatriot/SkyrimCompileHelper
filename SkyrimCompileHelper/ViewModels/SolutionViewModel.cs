@@ -13,6 +13,7 @@ namespace SkyrimCompileHelper.ViewModels
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Reflection;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -234,7 +235,7 @@ namespace SkyrimCompileHelper.ViewModels
                 Flags = this.FlagsFile,
                 ImportFolders = inputFolders.ToList(),
                 CompilerTarget = Path.Combine(this.SolutionPath, "src"),
-                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name),
+                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name, "scripts"),
                 All = this.CompilerAll,
                 Quiet = this.CompilerQuiet,
                 Debug = this.CompilerDebug,
@@ -246,6 +247,72 @@ namespace SkyrimCompileHelper.ViewModels
             this.Version = this.Version.Change(build: build.ToString());
 
             compilerFactory.Compile();
+            this.MoveCompileFiles();
+        }
+
+        public void CleanOutputFolders()
+        {
+            string modOrganizerSolutionPath = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
+
+            foreach (string file in Directory.GetFiles(modOrganizerSolutionPath))
+            {
+                File.Delete(file);
+            }
+
+            string binPath = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name);
+
+            foreach (string file in Directory.GetFiles(binPath))
+            {
+                File.Delete(file);
+            }
+        }
+
+        private void MoveCompileFiles()
+        {
+            // Move the optimize files from, the application folder to the solution folder where they belong.
+            string appPath = Path.GetDirectoryName(Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path));
+
+            if (appPath != null)
+            {
+                IEnumerable<string> optimizerFiles = Directory.GetFiles(appPath, "*.dot");
+
+                foreach (string file in optimizerFiles)
+                {
+                    string fileName = Path.GetFileName(file);
+
+                    if (!string.IsNullOrEmpty(fileName))
+                    {
+                        string destination = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name, fileName);
+
+                        if (File.Exists(destination))
+                        {
+                            File.Delete(destination);
+                        }
+
+                        File.Move(file, destination);
+                    }
+                }
+            }
+
+            // Move the compiled files to the ModOrganizer Folder
+            IEnumerable<string> sourceFiles = Directory.GetFiles(Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name));
+
+            string destinationFolder = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
+
+            if (!Directory.Exists(destinationFolder))
+            {
+                Directory.CreateDirectory(destinationFolder);
+            }
+
+            foreach (string file in sourceFiles)
+            {
+                string fileName = Path.GetFileName(file);
+
+                if (!string.IsNullOrEmpty(fileName))
+                {
+                    File.Copy(file, Path.Combine(destinationFolder, fileName), true);
+                }
+            }
         }
 
         /// <summary>Saves the selected solution to the solution repository.</summary>

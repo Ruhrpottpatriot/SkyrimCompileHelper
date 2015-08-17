@@ -26,58 +26,79 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Margin="0,0,3,3"
-                    Grid.Column="0"
-                    Grid.Row="0">
-            <TextBlock Text="Name:" />
-            <TextBox x:Name="SolutionName"
-                     MinWidth="75" />
-        </StackPanel>
+        <TextBlock Text="Name:"
+                   Grid.Row="0"
+                   Grid.Column="0"
+                   Margin="0,0,3,0" />
+        <TextBox x:Name="SolutionName"
+                 MinWidth="75"
+                 Grid.Row="1"
+                 Grid.Column="0"
+                 Margin="0,0,3,3" />
 
-        <StackPanel Margin="3,0,0,3"
-                    Grid.Row="0"
-                    Grid.Column="1">
-            <TextBlock Text="Version:" />
-            <TextBox MinWidth="75"
-                     Text="{Binding Version, Converter={StaticResource SemVersionToStringConverter}}"
-                     cal:Message.Attach="[Event MouseDoubleClick] = [Action ChangeVersion]"
-                     IsReadOnly="True">
-            </TextBox>
-        </StackPanel>
+        <TextBlock Text="Version:"
+                   Grid.Row="0"
+                   Grid.Column="1"
+                   Margin="3,0,0,0" />
+        <TextBox MinWidth="75"
+                 Text="{Binding Version, Converter={StaticResource SemVersionToStringConverter}}"
+                 cal:Message.Attach="[Event MouseDoubleClick] = [Action ChangeVersion]"
+                 IsReadOnly="True"
+                 Grid.Row="1"
+                 Grid.Column="1"
+                 Margin="3,0,0,3" />
 
-        <StackPanel Grid.Row="1"
-                    Grid.Column="0"
-                    Margin="0,3,0,3"
-                    Grid.ColumnSpan="2">
-            <TextBlock Text="Solution Path:" />
-            <TextBox x:Name="SolutionPath"
-                     Margin="0,0,0,3" />
-            <Button x:Name="OpenSolutionFolder"
-                    Content="Open Solution Folder"
-                    Margin="0,3,0,0" />
-        </StackPanel>
+        <TextBlock Text="Solution Path:"
+                   Grid.Row="2"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
+                   Margin="0,3,0,0" />
+        <TextBox x:Name="SolutionPath"
+                 Grid.Row="3"
+                 Grid.Column="0"
+                 Grid.ColumnSpan="2"
+                 Margin="0,0,0,3" 
+                 cal:Message.Attach="[Event LostFocus] = [Action "/>
 
-        <StackPanel Grid.Row="2"
-                    Grid.Column="0"
-                    Grid.ColumnSpan="2"
-                    Margin="0,3,0,3">
-            <TextBlock Text="Configuration:" />
-            <ComboBox x:Name="Configurations"
-                      SelectedItem="{Binding SelectedConfiguration}"
-                      MinWidth="150"
-                      cal:Message.Attach="[Event SelectionChanged] = [Action ChangeConfiguration($source)]"
-                      HorizontalAlignment="Left">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-        </StackPanel>
+        <Button x:Name="OpenSolutionFolder"
+                Content="Open Folder"
+                Grid.Row="4"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Margin="0,3,3,3" />
+        
+        <TextBlock Text="Configuration:"
+                   Grid.Row="5"
+                   Grid.Column="0"
+                   Margin="0,3,0,3" />
+        <ComboBox x:Name="Configurations"
+                  Grid.Row="6"
+                  Grid.Column="0"
+                  SelectedItem="{Binding SelectedConfiguration}"
+                  MinWidth="150"
+                  cal:Message.Attach="[Event SelectionChanged] = [Action ChangeConfiguration($source)]"
+                  HorizontalAlignment="Left"
+                  Margin="0,0,3,3">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
 
-        <Grid Grid.Row="3"
+        <Button x:Name="CleanOutputFolders"
+                Content="Clean"
+                Grid.Row="6"
+                Grid.Column="1"
+                Margin="3,0,0,3" />
+
+        <Grid Grid.Row="7"
               Grid.Column="0"
               Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
@@ -148,9 +169,9 @@
 
         <Button x:Name="Compile"
                 Grid.Column="0"
-                Grid.Row="4"
+                Grid.Row="8"
                 Grid.ColumnSpan="2"
-                Margin="0,5,0,0"
+                Margin="0,5,3,0"
                 Content="Compile" />
     </Grid>
 </UserControl>
