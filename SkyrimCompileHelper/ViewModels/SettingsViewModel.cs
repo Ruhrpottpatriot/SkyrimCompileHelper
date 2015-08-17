@@ -18,7 +18,7 @@ namespace SkyrimCompileHelper.ViewModels
 
     using PropertyChanged;
 
-    using SkyrimCompileHelper.Common;
+    using SkyrimCompileHelper.Core;
 
     /// <summary>Provides methods and properties to show the settings view.</summary>
     [ImplementPropertyChanged]

@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompileHelper.Core.Converter
+namespace SkyrimCompileHelper.Core
 {
     using System;
     using System.Globalization;

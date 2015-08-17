@@ -94,20 +94,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-<<<<<<< HEAD
-=======
-    <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Converter\BooleanConverter.cs" />
     <Compile Include="Common\Converter\BooleanToVisibilityConverter.cs" />
-    <Compile Include="Common\Converter\SemVersionToStringConverter.cs" />
-    <Compile Include="Common\DictionaryRange.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-    </Compile>
-    <Compile Include="Common\IDictionaryRange.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-    </Compile>
-    <Compile Include="Common\IRepository.cs" />
->>>>>>> SettingsDialog
     <Compile Include="MefBootstrapper.cs" />
     <Compile Include="ViewModels\AddConfigurationViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />

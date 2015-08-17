@@ -6,12 +6,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:SkyrimCompileHelper.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
-             xmlns:converter1="clr-namespace:SkyrimCompileHelper.Core.Converter;assembly=Core"
+             xmlns:core="clr-namespace:SkyrimCompileHelper.Core;assembly=Core"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:SolutionViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
     <UserControl.Resources>
-        <converter1:SemVersionToStringConverter x:Key="SemVersionToStringConverter" />
+        <core:SemVersionToStringConverter x:Key="SemVersionToStringConverter" />
     </UserControl.Resources>
 
     <Grid Margin="5">

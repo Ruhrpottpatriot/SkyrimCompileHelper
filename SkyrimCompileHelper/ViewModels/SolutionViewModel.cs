@@ -27,7 +27,6 @@ namespace SkyrimCompileHelper.ViewModels
 
     using SkyrimCompileHelper.Core;
     using SkyrimCompileHelper.Compiler;
-    using SkyrimCompileHelper.Core.Repositories;
 
     /// <summary>ViewModel containing methods and properties to work with a solution.</summary>
     [ImplementPropertyChanged]
