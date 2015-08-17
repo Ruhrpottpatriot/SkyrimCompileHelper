@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:skyrimCompileHelper="clr-namespace:SkyrimCompileHelper"
-             xmlns:converter="clr-namespace:SkyrimCompileHelper.Common.Converter">
+             xmlns:core="clr-namespace:SkyrimCompileHelper.Core;assembly=Core">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -11,10 +11,10 @@
                 </ResourceDictionary>
                 <ResourceDictionary Source="/Resources/Icons.xaml" />
                 <ResourceDictionary>
-                    <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
+                    <core:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"
                                                             True="Visible"
                                                             False="Collapsed" />
-                    <converter:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
+                    <core:BooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"
                                                             True="Collapsed"
                                                             False="Visible" />
                 </ResourceDictionary>

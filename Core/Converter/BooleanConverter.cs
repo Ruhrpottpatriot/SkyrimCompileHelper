@@ -9,7 +9,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace SkyrimCompileHelper.Common.Converter
+namespace SkyrimCompileHelper.Core
 {
     using System;
     using System.Collections.Generic;

@@ -35,6 +35,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="PropertyChanged">
       <HintPath>..\packages\PropertyChanged.Fody.1.50.1\Lib\portable-net4+sl4+wp8+win8+wpa81+MonoAndroid16+MonoTouch40\PropertyChanged.dll</HintPath>
@@ -54,6 +55,8 @@
   <ItemGroup>
     <Compile Include="CompileConfiguration.cs" />
     <Compile Include="Constants.cs" />
+    <Compile Include="Converter\BooleanConverter.cs" />
+    <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\SemVersionToStringConverter.cs" />
     <Compile Include="DictionaryRange.cs" />
     <Compile Include="IDictionaryRange.cs" />

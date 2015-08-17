@@ -94,8 +94,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Common\Converter\BooleanConverter.cs" />
-    <Compile Include="Common\Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="MefBootstrapper.cs" />
     <Compile Include="ViewModels\AddConfigurationViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
