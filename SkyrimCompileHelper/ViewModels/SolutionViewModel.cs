@@ -232,7 +232,7 @@ namespace SkyrimCompileHelper.ViewModels
                  Path.Combine(skyrimPath, @"Data\Scripts\Source")
             };
 
-            CompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
+            ICompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.FlagsFile,
                 ImportFolders = inputFolders.ToList(),

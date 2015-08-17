@@ -57,9 +57,8 @@
     <Compile Include="CompilerFactory.cs" />
     <Compile Include="CompilerFlagsException.cs" />
     <Compile Include="CompilerFolderException.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
-    </Compile>
+    <Compile Include="ICompilerFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
