@@ -3,6 +3,7 @@
     <CollectionProperty Name="RecognizedWords">
       <Value>bootstrapper</Value>
       <Value>mef</Value>
+      <Value>prerelease</Value>
       <Value>skyrim</Value>
       <Value>skyrims</Value>
     </CollectionProperty>

@@ -1,4 +1,15 @@
-﻿namespace SkyrimCompileHelper.Core
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="Solution.cs" company="Robert Logiewa">
+//   The MIT License (MIT)
+//   
+//   Copyright (c) 2015 Robert Logiewa
+// </copyright>
+// <summary>
+//   Represents a solution.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace SkyrimCompileHelper.Common
 {
     using System.Collections.Generic;
 
@@ -6,10 +17,11 @@
 
     using Semver;
 
+    /// <summary>Represents a solution.</summary>
     [ImplementPropertyChanged]
     public class Solution
     {
-        /// <summary>Initializes a new instance of the <see cref="Solution"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="Solution"/> class.</summary>
         public Solution()
         {
             this.Version = new SemVersion(0);

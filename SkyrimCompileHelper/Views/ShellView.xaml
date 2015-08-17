@@ -12,57 +12,44 @@
         Title="MainWindow"
         SizeToContent="WidthAndHeight"
         ResizeMode="CanMinimize">
-    
-    <Grid Margin="5">
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-        </Grid.RowDefinitions>
+    <TabControl Margin="5">
+        <TabItem Header="Solutions">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal"
-                    Grid.Row="0">
-            <StackPanel  Margin="0,0,3,5">
-                <Label Content="Skyrim Path:" />
-                <TextBox x:Name="SkyrimPath">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="LostFocus">
-                            <cal:ActionMessage MethodName="SaveSettings" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-            </StackPanel>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
 
-            <StackPanel Margin="3,0,0,5">
-                <Label Content="Mod Organizer Path:" />
-                <TextBox x:Name="OrganizerPath">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="LostFocus">
-                            <cal:ActionMessage MethodName="SaveSettings" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-            </StackPanel>
-        </StackPanel>
+                <TextBlock Text="Solution:"
+                           Grid.Column="0"
+                           Grid.Row="0"
+                           Margin="0,0,3,0" />
+                <ComboBox x:Name="Solutions"
+                          MinWidth="100"
+                          Grid.Column="1"
+                          Grid.Row="0"
+                          Margin="3,0,0,0"
+                          cal:Message.Attach="[Event SelectionChanged] = [Action ChangeSolution($source)]">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
 
-        <StackPanel Orientation="Horizontal"
-                    Grid.Row="1"
-                    Margin="0,5,0,5">
-            <TextBlock Text="Solution:"
-                       Margin="0,0,3,0" />
-            <ComboBox x:Name="Solutions"
-                      MinWidth="100"
-                      Margin="3,0,0,0"
-                      cal:Message.Attach="[Event SelectionChanged] = [Action ChangeSolution($source)]">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}" />
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-        </StackPanel>
-
-        <ContentControl x:Name="SelectedSolution"
-                        Grid.Row="2" />
-    </Grid>
+                <ContentControl x:Name="SelectedSolution"
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2" />
+            </Grid>
+        </TabItem>
+        <TabItem Header="Settings">
+            <ContentControl x:Name="Settings" />
+        </TabItem>
+    </TabControl>
 </Window>

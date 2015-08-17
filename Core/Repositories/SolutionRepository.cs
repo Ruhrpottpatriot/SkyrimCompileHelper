@@ -24,7 +24,7 @@ namespace SkyrimCompileHelper.Core.Repositories
         /// <summary>The solution path.</summary>
         private readonly string solutionPath;
 
-        /// <summary>Initializes a new instance of the <see cref="SolutionRepository"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="SolutionRepository"/> class.</summary>
         public SolutionRepository()
         {
             this.solutionPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SHC\Solutions");
@@ -57,9 +57,8 @@ namespace SkyrimCompileHelper.Core.Repositories
                 return new DictionaryRange<string, Solution>(0);
             }
 
-            var files = Directory.GetFiles(this.solutionPath);
-
-
+            string[] files = Directory.GetFiles(this.solutionPath);
+            
             var solutions = new DictionaryRange<string, Solution>();
             foreach (string file in files)
             {

@@ -43,14 +43,11 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The writer.</summary>
         private readonly LogWriter writer;
 
-        /// <summary>Initializes a new instance of the <see cref="ShellViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="ShellViewModel"/> class.</summary>
         public ShellViewModel()
         {
             if (Execute.InDesignMode)
             {
-                this.SkyrimPath = @"C:\Skyrim";
-                this.OrganizerPath = @"C:\Organizer";
-
                 this.Solutions = new List<Solution>
                 {
                     new Solution { Name = "Outfits of Skyrim", Version = "0.1.0", Path = @"C:\Outfits" }
@@ -58,7 +55,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ShellViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="ShellViewModel"/> class.</summary>
         /// <param name="windowManager">The window Manager.</param>
         /// <param name="settingsRepository">The settings repository.</param>
         /// <param name="solutionRepository">The solution repository.</param>
@@ -73,26 +70,22 @@ namespace SkyrimCompileHelper.ViewModels
 
             this.Solutions = new List<Solution> { new Solution { Name = Constants.EditConst } };
 
+            this.Settings = new SettingsViewModel(settingsRepository);
+
             foreach (Solution solution in solutionRepository.Read().Values)
             {
                 this.Solutions.Add(solution);
             }
-
-            this.SkyrimPath = settingsRepository.Read()["SkyrimPath"].ToString();
-            this.OrganizerPath = settingsRepository.Read()["ModOrganizerPath"].ToString();
         }
-
-        /// <summary>Gets or sets skyrims path.</summary>
-        public string SkyrimPath { get; set; }
-
-        /// <summary>Gets or sets mod organizers path.</summary>
-        public string OrganizerPath { get; set; }
 
         /// <summary>Gets or sets the repositories.</summary>
         public IList<Solution> Solutions { get; set; }
 
         /// <summary>Gets or sets the selected solution.</summary>
         public SolutionViewModel SelectedSolution { get; set; }
+
+        /// <summary>Gets or sets the settings.</summary>
+        public SettingsViewModel Settings { get; set; }
 
         /// <summary>Changes a solution based on the users selection.</summary>
         /// <param name="sender">The ComboBox containing the selection.</param>
@@ -132,18 +125,6 @@ namespace SkyrimCompileHelper.ViewModels
 
             Solution selectedSolution = this.Solutions.Single(s => s.Name == solutionName);
             this.SelectedSolution = new SolutionViewModel(this.windowManager, this.settingsRepository, this.solutionRepository, selectedSolution, this.writer);
-        }
-
-        /// <summary>Saves the settings to the repository.</summary>
-        public void SaveSettings()
-        {
-            var settings = new DictionaryRange<string, object>
-            {
-                { "SkyrimPath", this.SkyrimPath },
-                { "ModOrganizerPath", this.OrganizerPath }
-            };
-
-            this.settingsRepository.Update(settings);
         }
     }
 }

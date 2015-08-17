@@ -27,7 +27,7 @@ namespace SkyrimCompileHelper.Core.Repositories
         /// <summary>The path to the settings file.</summary>
         private readonly string settingsFilePath;
 
-        /// <summary>Initializes a new instance of the <see cref="SettingsRepository"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="SettingsRepository"/> class.</summary>
         public SettingsRepository()
         {
             string environmentPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);

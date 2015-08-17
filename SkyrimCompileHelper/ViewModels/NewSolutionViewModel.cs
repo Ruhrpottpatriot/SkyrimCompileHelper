@@ -11,7 +11,6 @@
 
 namespace SkyrimCompileHelper.ViewModels
 {
-    using System;
     using System.Collections.Generic;
     using System.Windows;
     using System.Windows.Forms;
@@ -33,7 +32,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
 
-        /// <summary>Initializes a new instance of the <see cref="NewSolutionViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="NewSolutionViewModel"/> class.</summary>
         public NewSolutionViewModel()
         {
             if (Execute.InDesignMode)
@@ -45,7 +44,7 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="NewSolutionViewModel"/> class.
+        /// Initialises a new instance of the <see cref="NewSolutionViewModel"/> class.
         /// </summary>
         /// <param name="windowManager">
         /// The window manager.
@@ -95,7 +94,6 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>Changes the version of the solution.</summary>
-        /// <exception cref="NotImplementedException" />
         public void ChangeVersion()
         {
             ChangeVersionViewModel viewModel = new ChangeVersionViewModel(this.Version);

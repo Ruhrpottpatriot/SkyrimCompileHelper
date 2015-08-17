@@ -1,0 +1,145 @@
+﻿<UserControl x:Class="SkyrimCompileHelper.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:viewModels="clr-namespace:SkyrimCompileHelper.ViewModels"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewModels:SettingsViewModel, IsDesignTimeCreatable=True}"
+             cal:Bind.AtDesignTime="True">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid Margin="0,0,3,0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Skyrim Path:"
+                   Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="3" />
+            <TextBox x:Name="SkyrimPath"
+                     Grid.Row="1"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="LostFocus">
+                        <cal:ActionMessage MethodName="SaveSettings" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+            <Button x:Name="ChangeSkyrimPath"
+                    Content="Change"
+                    Margin="0,3,0,3"
+                    Grid.Row="2"
+                    Grid.Column="0" />
+
+            <TextBlock Text="Skyrim Installed:"
+                       Grid.Row="3"
+                       Grid.Column="0"
+                       TextAlignment="Right" />
+            <Rectangle Stretch="Uniform"
+                       Grid.Row="3"
+                       Grid.Column="1"
+                       Margin="4,0,0,0"
+                       Visibility="{Binding SkyrimInstalled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Rectangle.Fill>
+                    <VisualBrush Visual="{StaticResource appbar_check}" />
+                </Rectangle.Fill>
+            </Rectangle>
+
+            <TextBlock Text="Compiler Installed:"
+                       Grid.Row="4"
+                       Grid.Column="0"
+                       TextAlignment="Right" />
+            <Rectangle Stretch="Uniform"
+                       Grid.Row="4"
+                       Grid.Column="1"
+                       Margin="4,0,0,0"
+                       Visibility="{Binding CompilerInstalled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Rectangle.Fill>
+                    <VisualBrush Visual="{StaticResource appbar_check}" />
+                </Rectangle.Fill>
+            </Rectangle>
+        </Grid>
+
+        <Grid Margin="3,0,0,0"
+              Grid.Column="1"
+              Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Content="Mod Organizer Path:"
+                   Grid.Row="0"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="3" />
+            <TextBox x:Name="OrganizerPath"
+                     Grid.Row="1"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="LostFocus">
+                        <cal:ActionMessage MethodName="SaveSettings" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+
+            <Button x:Name="ChangeOrganizerPath"
+                    Content="Change"
+                    Margin="0,3,0,3"
+                    Grid.Row="2"
+                    Grid.Column="0" />
+
+            <TextBlock Text="Mod Organizer Installed:"
+                       Grid.Row="3"
+                       Grid.Column="0"
+                       TextAlignment="Right" />
+
+            <Rectangle Stretch="Uniform"
+                       Grid.Row="3"
+                       Grid.Column="1"
+                       Margin="4,0,0,0"
+                       Visibility="{Binding OrganizerInstalled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Rectangle.Fill>
+                    <VisualBrush Visual="{StaticResource appbar_check}" />
+                </Rectangle.Fill>
+            </Rectangle>
+        </Grid>
+            <Button Content="Open Application Data Folder"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="0,5,0,0"/>
+    </Grid>
+</UserControl>

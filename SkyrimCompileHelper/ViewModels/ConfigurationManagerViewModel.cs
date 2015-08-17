@@ -30,7 +30,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
 
-        /// <summary>Initializes a new instance of the <see cref="ConfigurationManagerViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="ConfigurationManagerViewModel"/> class.</summary>
         public ConfigurationManagerViewModel()
         {
             if (Execute.InDesignMode)
@@ -45,7 +45,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
-        /// <summary>Initializes a new instance of the <see cref="ConfigurationManagerViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="ConfigurationManagerViewModel"/> class.</summary>
         /// <param name="windowManager">The window manager.</param>
         /// <param name="configurations">The already existing configurations.</param>
         public ConfigurationManagerViewModel(IWindowManager windowManager, IList<CompileConfiguration> configurations)

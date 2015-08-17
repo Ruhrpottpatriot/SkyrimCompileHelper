@@ -34,6 +34,8 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
+        /// <summary>Initialises a new instance of the <see cref="ChangeVersionViewModel"/> class.</summary>
+        /// <param name="version">The version that is going to be changed.</param>
         public ChangeVersionViewModel(SemVersion version)
         {
             this.Major = version.Major;

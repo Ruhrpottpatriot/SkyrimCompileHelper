@@ -25,7 +25,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
 
-        /// <summary>Initializes a new instance of the <see cref="SolutionManagerViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="SolutionManagerViewModel"/> class.</summary>
         public SolutionManagerViewModel()
         {
             if (Execute.InDesignMode)
@@ -34,7 +34,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
-        /// <summary>Initializes a new instance of the <see cref="SolutionManagerViewModel"/> class.</summary>
+        /// <summary>Initialises a new instance of the <see cref="SolutionManagerViewModel"/> class.</summary>
         /// <param name="windowManager">The window manager.</param>
         /// <param name="solutions">The solutions.</param>
         public SolutionManagerViewModel(IWindowManager windowManager, IList<Solution> solutions)
