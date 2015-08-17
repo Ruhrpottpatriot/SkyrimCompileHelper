@@ -40,7 +40,8 @@
                  MinWidth="75"
                  Grid.Row="1"
                  Grid.Column="0"
-                 Margin="0,0,3,3" />
+                 Margin="0,0,3,3"
+                 cal:Message.Attach="[Event LostFocus] = [Action SaveSolution]" />
 
         <TextBlock Text="Version:"
                    Grid.Row="0"
@@ -64,7 +65,7 @@
                  Grid.Column="0"
                  Grid.ColumnSpan="2"
                  Margin="0,0,0,3" 
-                 cal:Message.Attach="[Event LostFocus] = [Action "/>
+                 cal:Message.Attach="[Event LostFocus] = [Action SaveSolution]"/>
 
         <Button x:Name="OpenSolutionFolder"
                 Content="Open Folder"

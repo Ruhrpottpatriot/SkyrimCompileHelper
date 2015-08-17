@@ -159,6 +159,8 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 this.Version = viewModel.GetVersion();
             }
+
+            this.SaveSolution();
         }
 
         /// <summary>Changes the compile configuration for the current solution.</summary>
