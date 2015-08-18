@@ -7,6 +7,7 @@
              xmlns:vm="clr-namespace:SkyrimCompileHelper.ViewModels"
              xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:core="clr-namespace:SkyrimCompileHelper.Core;assembly=Core"
+             xmlns:papyrusCompiler="clr-namespace:PapyrusCompiler;assembly=PapyrusCompilerWrapper"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:SolutionViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">
@@ -157,7 +158,7 @@
                       Content="Optimize"
                       cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
             <CheckBox x:Name="CopySourceFiles"
-                      Margin="3,3,0,3"
+                      Margin="0,3,3,3"
                       Grid.Row="3"
                       Grid.Column="0"
                       Content="Copy Source Files"
@@ -170,6 +171,7 @@
                 <TextBlock Margin="0,0,0,2"
                            Text="Assembly Options" />
                 <ComboBox x:Name="CompilerAssemblyOptions"
+                          ItemsSource="{core:EnumList papyrusCompiler:AssemblyOption}"
                           SelectedItem="{Binding SelectedAssemblyOption}"
                           Margin="0,2,0,0"
                           cal:Message.Attach="[Event SelectionChanged] = [Action SaveConfiguration]" />

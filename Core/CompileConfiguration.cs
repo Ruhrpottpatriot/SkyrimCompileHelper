@@ -11,6 +11,8 @@
 
 namespace SkyrimCompileHelper.Core
 {
+    using PapyrusCompiler;
+
     /// <summary>Represents a compiler configuration.</summary>
     public class CompileConfiguration
     {
@@ -33,6 +35,6 @@ namespace SkyrimCompileHelper.Core
         public bool Optimize { get; set; }
 
         /// <summary>Gets or sets the assembly option.</summary>
-        public string AssemblyOption { get; set; }
+        public AssemblyOption AssemblyOption { get; set; }
     }
 }

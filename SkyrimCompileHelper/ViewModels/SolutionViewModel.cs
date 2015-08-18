@@ -21,6 +21,8 @@ namespace SkyrimCompileHelper.ViewModels
 
     using Microsoft.Practices.EnterpriseLibrary.Logging;
 
+    using PapyrusCompiler;
+
     using PropertyChanged;
 
     using Semver;
@@ -81,13 +83,6 @@ namespace SkyrimCompileHelper.ViewModels
             this.SolutionPath = solution.Path;
             this.Version = solution.Version;
             this.CompilerAll = true;
-            this.CompilerAssemblyOptions = new List<string>
-            {
-                "Assemble and Delete",
-                "Assemble and Keep",
-                "Generate only",
-                "No Assembly"
-            };
 
             // Initialize the configuration parameters
             this.IntConfigParameter(solution);
@@ -125,12 +120,9 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Gets or sets a value indicating whether the compiler should optimize the script files.</summary>
         public bool CompilerOptimize { get; set; }
-
-        /// <summary>Gets or sets the compiler assembly options.</summary>
-        public IList<string> CompilerAssemblyOptions { get; set; }
-
+        
         /// <summary>Gets or sets the selected assembly option.</summary>
-        public string SelectedAssemblyOption { get; set; }
+        public AssemblyOption SelectedAssemblyOption { get; set; }
 
         /// <summary>Opens the solution folder in the windows explorer.</summary>
         /// <exception cref="NotImplementedException">Not yet implemented</exception>
