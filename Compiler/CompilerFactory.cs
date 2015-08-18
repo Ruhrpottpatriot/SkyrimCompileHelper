@@ -26,19 +26,19 @@ namespace SkyrimCompileHelper.Compiler
 
     /// <summary>This class contains methods and properties to compile script files into their binary representation used by Skyrim.</summary>
     /// ToDo: Implement IDisposable (warning: breaking change!)
-    public class CompilerFactory : ICompilerFactory
+    public class CompilerFactory : ICompilerFactory, IDisposable
     {
         /// <summary>The log writer.</summary>
-        private readonly LogWriter logWriter;
+        private LogWriter logWriter;
 
         /// <summary>The absolute path to skyrims install directory.</summary>
         private readonly string skyrimPath;
 
-        /// <summary>Used to synchronize failure data.</summary>
-        private readonly Mutex failureMutex;
-
         /// <summary>A list of files that couldn't be compiled.</summary>
         private readonly IList<string> failedCompilations;
+
+        /// <summary>Used to synchronize failure data.</summary>
+        private Mutex failureMutex;
 
         /// <summary>The number of successful compilations.</summary>
         private int sucessfulCompilations;
@@ -332,6 +332,33 @@ namespace SkyrimCompileHelper.Compiler
             this.logWriter.Write(missingAssemblyLoadedEntry);
 
             return assembly;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.failureMutex != null)
+                {
+                    this.failureMutex.Dispose();
+                    this.failureMutex = null;
+                }
+
+                if (this.logWriter != null)
+                {
+                    this.logWriter.Dispose();
+                    this.logWriter = null;
+                }
+            }
         }
     }
 }
