@@ -13,6 +13,8 @@ namespace SkyrimCompileHelper.Compiler
 {
     using System.Collections.Generic;
 
+    using PapyrusCompiler;
+
     /// <summary>Provides the interface to the Papyrus compiler.</summary>
     public interface ICompilerFactory
     {
@@ -32,7 +34,7 @@ namespace SkyrimCompileHelper.Compiler
         bool Optimize { get; set; }
 
         /// <summary>Gets or sets the assembly options.</summary>
-        string AssemblyOptions { get; set; }
+        AssemblyOption AssemblyOptions { get; set; }
 
         /// <summary>Gets or sets the file to be compiled.</summary>
         /// <remarks>If <see cref="All"/> is set to true, this property must point to a directory.</remarks>

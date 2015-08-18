@@ -242,7 +242,7 @@ namespace SkyrimCompileHelper.ViewModels
                 Quiet = this.CompilerQuiet,
                 Debug = this.CompilerDebug,
                 Optimize = this.CompilerOptimize,
-                AssemblyOptions = this.SelectedAssemblyOption
+                // AssemblyOptions = this.SelectedAssemblyOption
             };
 
             int build = Convert.ToInt32(string.IsNullOrEmpty(this.Version.Build) ? "0" : this.Version.Build) + 1;
@@ -297,6 +297,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             // Move the compiled files to the ModOrganizer Folder
+            // Bug: Needs folder check
             IEnumerable<string> sourceFiles = Directory.GetFiles(Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name));
 
             string destinationFolder = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
@@ -318,7 +319,7 @@ namespace SkyrimCompileHelper.ViewModels
         }
 
         /// <summary>Saves the selected solution to the solution repository.</summary>
-        private void SaveSolution()
+        public void SaveSolution()
         {
             IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>
             {
