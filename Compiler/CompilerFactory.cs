@@ -190,7 +190,7 @@ namespace SkyrimCompileHelper.Compiler
         /// <summary>Compiles a single script file into the corresponding binary and assembly representation.</summary>
         private void CompilerThread()
         {
-            var compiler = new PapyrusCompiler
+            IPapyrusCompiler compiler = new PapyrusCompiler
             {
                 Debug = this.Debug,
                 Quiet = this.Quiet,
