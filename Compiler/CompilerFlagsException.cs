@@ -16,6 +16,7 @@ namespace SkyrimCompileHelper.Compiler
     using System.Runtime.Serialization;
 
     /// <summary>This exception is thrown when the flags passed to the compiler are invalid.</summary>
+    [Serializable]
     public class CompilerFlagsException : Exception
     {
         /// <summary>Initialises a new instance of the <see cref="CompilerFlagsException"/> class.</summary>

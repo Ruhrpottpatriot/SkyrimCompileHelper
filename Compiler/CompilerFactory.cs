@@ -25,6 +25,7 @@ namespace SkyrimCompileHelper.Compiler
     using PCompiler;
 
     /// <summary>This class contains methods and properties to compile script files into their binary representation used by Skyrim.</summary>
+    /// ToDo: Implement IDisposable (warning: breaking change!)
     public class CompilerFactory : ICompilerFactory
     {
         /// <summary>The log writer.</summary>
