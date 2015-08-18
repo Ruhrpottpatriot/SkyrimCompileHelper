@@ -64,8 +64,8 @@
                  Grid.Row="3"
                  Grid.Column="0"
                  Grid.ColumnSpan="2"
-                 Margin="0,0,0,3" 
-                 cal:Message.Attach="[Event LostFocus] = [Action SaveSolution]"/>
+                 Margin="0,0,0,3"
+                 cal:Message.Attach="[Event LostFocus] = [Action SaveSolution]" />
 
         <Button x:Name="OpenSolutionFolder"
                 Content="Open Folder"
@@ -73,7 +73,7 @@
                 Grid.Column="0"
                 Grid.ColumnSpan="2"
                 Margin="0,3,3,3" />
-        
+
         <TextBlock Text="Configuration:"
                    Grid.Row="5"
                    Grid.Column="0"
@@ -107,6 +107,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -155,8 +156,15 @@
                       Grid.Column="1"
                       Content="Optimize"
                       cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+            <CheckBox x:Name="CopySourceFiles"
+                      Margin="3,3,0,3"
+                      Grid.Row="3"
+                      Grid.Column="0"
+                      Content="Copy Source Files"
+                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+
             <StackPanel Margin="0,3,0,3"
-                        Grid.Row="3"
+                        Grid.Row="4"
                         Grid.Column="0"
                         Grid.ColumnSpan="2">
                 <TextBlock Margin="0,0,0,2"

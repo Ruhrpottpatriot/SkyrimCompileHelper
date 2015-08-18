@@ -25,8 +25,8 @@ namespace SkyrimCompileHelper.ViewModels
 
     using Semver;
 
-    using SkyrimCompileHelper.Core;
     using SkyrimCompileHelper.Compiler;
+    using SkyrimCompileHelper.Core;
 
     /// <summary>ViewModel containing methods and properties to work with a solution.</summary>
     [ImplementPropertyChanged]
@@ -119,6 +119,9 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Gets or sets a value indicating whether the compiler should print debug information.</summary>
         public bool CompilerDebug { get; set; }
+
+        /// <summary>Gets or sets a value indicating whether the source files should be copied after a compile.</summary>
+        public bool CopySourceFiles { get; set; }
 
         /// <summary>Gets or sets a value indicating whether the compiler should optimize the script files.</summary>
         public bool CompilerOptimize { get; set; }
@@ -252,23 +255,23 @@ namespace SkyrimCompileHelper.ViewModels
             this.MoveCompileFiles();
         }
 
+        /// <summary>Cleans the output folder from any leftover files.</summary>
         public void CleanOutputFolders()
         {
             string modOrganizerSolutionPath = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
-
-            foreach (string file in Directory.GetFiles(modOrganizerSolutionPath))
-            {
-                File.Delete(file);
-            }
-
+            Directory.Delete(modOrganizerSolutionPath, true);
+            Directory.CreateDirectory(modOrganizerSolutionPath);
+            
             string binPath = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name);
-
-            foreach (string file in Directory.GetFiles(binPath))
-            {
-                File.Delete(file);
-            }
+            Directory.Delete(binPath, true);
+            Directory.CreateDirectory(binPath);
         }
 
+        /// <summary>Moves the compiled script and remaining source files from the compilation folder to the ModOrganizer folder.</summary>
+        /// <remarks>This method copies the content of the selected binary folder of the selected configuration to the mod organizer folder.
+        /// To copy all relevant files this method first copies the optimize files (if existing) to the bin folder of the selected configuration.
+        /// After that the script source files are copied to the bin folder (if selected). At the end the content of the folder is copied to the
+        /// ModOrganizer folder.</remarks>
         private void MoveCompileFiles()
         {
             // Move the optimize files from, the application folder to the solution folder where they belong.
@@ -276,9 +279,7 @@ namespace SkyrimCompileHelper.ViewModels
 
             if (appPath != null)
             {
-                IEnumerable<string> optimizerFiles = Directory.GetFiles(appPath, "*.dot");
-
-                foreach (string file in optimizerFiles)
+                foreach (string file in Directory.GetFiles(appPath, "*.dot", SearchOption.TopDirectoryOnly))
                 {
                     string fileName = Path.GetFileName(file);
 
@@ -296,24 +297,30 @@ namespace SkyrimCompileHelper.ViewModels
                 }
             }
 
-            // Move the compiled files to the ModOrganizer Folder
-            IEnumerable<string> sourceFiles = Directory.GetFiles(Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name));
-
-            string destinationFolder = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
-
-            if (!Directory.Exists(destinationFolder))
+            // Now we check if the user wants to copy the script source files and copy them if necessary.
+            if (this.CopySourceFiles)
             {
-                Directory.CreateDirectory(destinationFolder);
+                this.CopyFilesWithSubFolders(Path.Combine(this.SolutionPath, @"src\scripts"), Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name, @"scripts\source"), true);
             }
 
-            foreach (string file in sourceFiles)
-            {
-                string fileName = Path.GetFileName(file);
+            // Lastly we copy the whole configuration folder to the ModOrganizerFolder
+            this.CopyFilesWithSubFolders(Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name), Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName), true);
+        }
 
-                if (!string.IsNullOrEmpty(fileName))
-                {
-                    File.Copy(file, Path.Combine(destinationFolder, fileName), true);
-                }
+        /// <summary>Copies the content of a folder with the contents of all the sub-folders from one path to another.</summary>
+        /// <param name="sourcePath">The source path.</param>
+        /// <param name="destinationPath">The destination path.</param>
+        /// <param name="overwrite">True, if existing files should be overwritten, otherwise false.</param>
+        private void CopyFilesWithSubFolders(string sourcePath, string destinationPath, bool overwrite = false)
+        {
+            foreach (string directoryPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
+            {
+                Directory.CreateDirectory(directoryPath.Replace(sourcePath, destinationPath));
+            }
+
+            foreach (string filePath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
+            {
+                File.Copy(filePath, filePath.Replace(sourcePath, destinationPath), overwrite);
             }
         }
 
