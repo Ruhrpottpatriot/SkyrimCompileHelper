@@ -43,9 +43,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\EnterpriseLibrary.Logging.6.0.1304.0\lib\NET45\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
     </Reference>
-    <Reference Include="PCompiler">
-      <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Skyrim\Papyrus Compiler\PCompiler.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="PapyrusCompilerWrapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PapyrusCompilerWrapper.1.0.0\lib\portable-net45+win+wpa81\PapyrusCompilerWrapper.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
