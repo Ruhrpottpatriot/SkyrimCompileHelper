@@ -9,9 +9,10 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:ShellViewModel, IsDesignTimeCreatable=True}"
         cal:Bind.AtDesignTime="True"
-        Title="MainWindow"
+        Title="Skyrim Compile Helper"
         SizeToContent="WidthAndHeight"
-        ResizeMode="CanMinimize">
+        ResizeMode="CanMinimize"
+        MinWidth="400">
     <TabControl Margin="5">
         <TabItem Header="Solutions">
             <StackPanel>

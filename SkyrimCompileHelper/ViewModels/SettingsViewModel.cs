@@ -71,7 +71,20 @@ namespace SkyrimCompileHelper.ViewModels
                     return false;
                 }
 
-                return Directory.Exists(Path.Combine(this.SkyrimPath, "Papyrus Compiler"));
+                return File.Exists(Path.Combine(this.SkyrimPath, @"Papyrus Compiler\PCompiler.dll"));
+            }
+        }
+
+        public bool AssemblerInstalled
+        {
+            get
+            {
+                if (!this.SkyrimInstalled)
+                {
+                    return false;
+                }
+
+                return File.Exists(Path.Combine(this.SkyrimPath, @"Papyrus Compiler\PapyrusAssembler.exe"));
             }
         }
 
