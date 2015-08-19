@@ -38,9 +38,7 @@ namespace SkyrimCompileHelper
         /// <summary>The container.</summary>
         private CompositionContainer container;
 
-        /// <summary>
-        /// Initialises a new instance of the <see cref="MefBootstrapper"/> class.
-        /// </summary>
+        /// <summary>Initialises a new instance of the <see cref="MefBootstrapper"/> class.</summary>
         public MefBootstrapper()
         {
             this.Initialize();
@@ -54,9 +52,7 @@ namespace SkyrimCompileHelper
             this.DisplayRootViewFor<ShellViewModel>();
         }
 
-        /// <summary>
-        /// Override to configure the framework and setup your IoC container.
-        /// </summary>
+        /// <summary>Override to configure the framework and setup your IoC container.</summary>
         protected override void Configure()
         {
             // Add the assembly source to the catalog.
@@ -104,7 +100,7 @@ namespace SkyrimCompileHelper
         }
 
         /// <summary>Override this to provide an IoC specific implementation</summary>
-        /// <param name="serviceType">The service to locate.</param> 
+        /// <param name="serviceType">The service to locate.</param>
         /// <returns>The located services.</returns>
         protected override IEnumerable<object> GetAllInstances(Type serviceType)
         {
@@ -112,7 +108,7 @@ namespace SkyrimCompileHelper
         }
 
         /// <summary>Override this to provide an IoC specific implementation.</summary>
-        /// <param name="instance"> The instance to perform injection on.</param>
+        /// <param name="instance">The instance to perform injection on.</param>
         protected override void BuildUp(object instance)
         {
             this.container.SatisfyImportsOnce(instance);
@@ -141,25 +137,25 @@ namespace SkyrimCompileHelper
             CategoryFilter categoryFilter = new CategoryFilter("CategoryFilter", categories, CategoryFilterMode.AllowAllExceptDenied);
 
             RollingFlatFileTraceListener rollingFileListener = new RollingFlatFileTraceListener(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SCH\Logs\Everything.log"),
-                "----------------------------------------",
-                "----------------------------------------",
-                formatter,
-                20,
-                "yyyy-MM-dd",
-                RollFileExistsBehavior.Increment,
-                RollInterval.None,
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SCH\Logs\Everything.log"), 
+                "----------------------------------------", 
+                "----------------------------------------", 
+                formatter, 
+                200, 
+                "yyyy-MM-dd", 
+                RollFileExistsBehavior.Increment, 
+                RollInterval.None, 
                 5);
 
             RollingFlatFileTraceListener errorFileListener = new RollingFlatFileTraceListener(
-                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SCH\Logs\Errors.log"),
-                "----------------------------------------",
-                "----------------------------------------",
-                formatter,
-                20,
-                "yyyy-MM-dd",
-                RollFileExistsBehavior.Increment,
-                RollInterval.None,
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"SCH\Logs\Errors.log"), 
+                "----------------------------------------", 
+                "----------------------------------------", 
+                formatter, 
+                200, 
+                "yyyy-MM-dd", 
+                RollFileExistsBehavior.Increment, 
+                RollInterval.None, 
                 2);
 
             // Build Configuration
@@ -168,9 +164,9 @@ namespace SkyrimCompileHelper
             config.Filters.Add(logEnabledFilter);
             config.Filters.Add(categoryFilter);
 
-            config.AddLogSource("General", SourceLevels.All, true, rollingFileListener);
-            config.AddLogSource("Compiler", SourceLevels.All, true, rollingFileListener);
-            config.AddLogSource("Error", SourceLevels.Warning, true, errorFileListener);
+            config.AddLogSource(LoggingConstants.CategoryGeneralConst, SourceLevels.All, true, rollingFileListener);
+            config.AddLogSource(LoggingConstants.CategoryCompilerConst, SourceLevels.All, true, rollingFileListener);
+            config.AddLogSource(LoggingConstants.CategoryErrorConst, SourceLevels.Warning, true, errorFileListener);
 
             return config;
         }
