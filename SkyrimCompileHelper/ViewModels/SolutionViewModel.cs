@@ -172,12 +172,25 @@ namespace SkyrimCompileHelper.ViewModels
 
             if (configurationName == Constants.EditConst)
             {
-                this.OpenConfigurationManager();
+                IEnumerable<CompileConfiguration> configurations = this.Configurations.Where(c => c.Name != Constants.EditConst);
 
-                if (this.Configurations.All(c => c.Name != Constants.EditConst))
+                ConfigurationManagerViewModel viewModel = new ConfigurationManagerViewModel(this.windowManager, configurations.ToList());
+
+                Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
                 {
-                    this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
+                    { "ResizeMode", ResizeMode.NoResize }
+                };
+
+                bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
+
+                if (answer.HasValue && answer.Value)
+                {
+                    this.Configurations = viewModel.Configurations;
                 }
+
+                this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
+
+                this.SaveSolution();
 
                 return;
             }
@@ -328,40 +341,19 @@ namespace SkyrimCompileHelper.ViewModels
         {
             IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>
             {
-                {
-                    this.SolutionName,
-                    new Solution
+                { 
+                    this.SolutionName, new Solution
                     {
                         Name = this.SolutionName,
                         Path = this.SolutionPath,
                         Version = this.Version,
                         CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList(),
-                        SelectedConfiguration = this.SelectedConfiguration.Name ?? string.Empty
+                        SelectedConfiguration = this.SelectedConfiguration != null ? this.SelectedConfiguration.Name : string.Empty
                     }
                 }
             };
 
             this.solutionRepository.Update(solutions);
-        }
-
-        /// <summary>Opens the configuration manager.</summary>
-        private void OpenConfigurationManager()
-        {
-            IEnumerable<CompileConfiguration> configurations = this.Configurations.Where(c => c.Name != Constants.EditConst);
-
-            ConfigurationManagerViewModel viewModel = new ConfigurationManagerViewModel(this.windowManager, configurations.ToList());
-
-            Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
-            {
-                { "ResizeMode", ResizeMode.NoResize }
-            };
-
-            bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
-
-            if (answer.HasValue && answer.Value)
-            {
-                this.Configurations = viewModel.Configurations;
-            }
         }
 
         /// <summary>Initialises the config parameters.</summary>
