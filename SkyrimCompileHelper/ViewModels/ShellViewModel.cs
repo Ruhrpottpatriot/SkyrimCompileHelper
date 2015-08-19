@@ -67,15 +67,15 @@ namespace SkyrimCompileHelper.ViewModels
             this.solutionRepository = solutionRepository;
             this.writer = writer;
             this.DisplayName = "Skyrim Compile Helper";
-
-            this.Solutions = new List<Solution> { new Solution { Name = Constants.EditConst } };
-
             this.Settings = new SettingsViewModel(settingsRepository);
+            this.Solutions = new List<Solution>();
 
             foreach (Solution solution in solutionRepository.Read().Values)
             {
                 this.Solutions.Add(solution);
             }
+
+            this.Solutions.Add(new Solution { Name = Constants.EditConst });
         }
 
         /// <summary>Gets or sets the repositories.</summary>
@@ -101,7 +101,7 @@ namespace SkyrimCompileHelper.ViewModels
             if (solutionName == Constants.EditConst)
             {
                 // Create a copy of the solution list excluding the edit item.
-                IList<Solution> solutions = this.Solutions.Where(s => s.Name != Constants.EditConst).ToList();
+                IEnumerable<Solution> solutions = this.Solutions.Where(s => s.Name != Constants.EditConst);
 
                 SolutionManagerViewModel viewModel = new SolutionManagerViewModel(this.windowManager, solutions);
 
