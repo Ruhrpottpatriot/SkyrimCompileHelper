@@ -37,7 +37,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Initialises a new instance of the <see cref="SolutionManagerViewModel"/> class.</summary>
         /// <param name="windowManager">The window manager.</param>
         /// <param name="solutions">The solutions.</param>
-        public SolutionManagerViewModel(IWindowManager windowManager, IList<Solution> solutions)
+        public SolutionManagerViewModel(IWindowManager windowManager, IEnumerable<Solution> solutions)
         {
             this.DisplayName = "Solution Manager";
 
