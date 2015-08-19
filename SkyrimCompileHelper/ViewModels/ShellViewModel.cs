@@ -28,7 +28,7 @@ namespace SkyrimCompileHelper.ViewModels
     /// <summary>Provides methods and properties to show the shell view.</summary>
     [ImplementPropertyChanged]
     [Export(typeof(ShellViewModel))]
-    public sealed class ShellViewModel : PropertyChangedBase
+    public sealed class ShellViewModel : Screen
     {
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
@@ -66,6 +66,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.settingsRepository = settingsRepository;
             this.solutionRepository = solutionRepository;
             this.writer = writer;
+            this.DisplayName = "Skyrim Compile Helper";
 
             this.Solutions = new List<Solution> { new Solution { Name = Constants.EditConst } };
 

@@ -27,7 +27,7 @@ namespace SkyrimCompileHelper.ViewModels
 
     /// <summary>ViewModel containing methods and properties to create a new solution.</summary>
     [ImplementPropertyChanged]
-    public class NewSolutionViewModel : Screen
+    public sealed class NewSolutionViewModel : Screen
     {
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
@@ -53,6 +53,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             this.windowManager = windowManager;
             this.Version = new SemVersion(0);
+            this.DisplayName = "Add Solution";
         }
 
         /// <summary>Gets or sets the name.</summary>

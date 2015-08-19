@@ -16,7 +16,7 @@ namespace SkyrimCompileHelper.ViewModels
     using SkyrimCompileHelper.Core;
 
     /// <summary>ViewModel containing methods and properties to create new configurations.</summary>
-    public class AddConfigurationViewModel : Screen
+    public sealed class AddConfigurationViewModel : Screen
     {
         /// <summary>Initialises a new instance of the <see cref="AddConfigurationViewModel"/> class.</summary>
         public AddConfigurationViewModel()
@@ -25,6 +25,8 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 this.ConfigurationName = "Test Configuration Name";
             }
+
+            this.DisplayName = "Add Configuration";
         }
 
         /// <summary>Gets or sets the configuration name.</summary>

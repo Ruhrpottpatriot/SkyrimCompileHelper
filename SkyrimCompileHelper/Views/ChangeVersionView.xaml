@@ -8,7 +8,9 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=vm:ChangeVersionViewModel, IsDesignTimeCreatable=True}"
         cal:Bind.AtDesignTime="True"
-        SizeToContent="WidthAndHeight">
+        SizeToContent="WidthAndHeight"
+        ResizeMode="NoResize"
+        Title="{Binding DisplayName}">
     <Grid Margin="5">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />

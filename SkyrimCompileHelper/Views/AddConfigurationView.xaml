@@ -8,9 +8,10 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance Type=viewModels:AddConfigurationViewModel, IsDesignTimeCreatable=True}"
         cal:Bind.AtDesignTime="True"
-        Title="Add Configuration"
+        MinWidth="200"
         SizeToContent="WidthAndHeight"
-        MinWidth="150">
+        ResizeMode="NoResize"
+        Title="{Binding DisplayName}">
     
     <Grid Margin="5">
         <Grid.RowDefinitions>

@@ -19,7 +19,7 @@ namespace SkyrimCompileHelper.ViewModels
 
     /// <summary>ViewModel containing methods and properties to change the version.</summary>
     [ImplementPropertyChanged]
-    public class ChangeVersionViewModel : Screen
+    public sealed class ChangeVersionViewModel : Screen
     {
         /// <summary>Initialises a new instance of the <see cref="ChangeVersionViewModel"/> class.</summary>
         public ChangeVersionViewModel()
@@ -32,6 +32,8 @@ namespace SkyrimCompileHelper.ViewModels
                 this.Prerelease = "alpha";
                 this.Build = "1";
             }
+
+            this.DisplayName = "Change Version";
         }
 
         /// <summary>Initialises a new instance of the <see cref="ChangeVersionViewModel"/> class.</summary>
