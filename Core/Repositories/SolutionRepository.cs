@@ -96,6 +96,11 @@ namespace SkyrimCompileHelper.Core
                 return;
             }
 
+            if (identifiers == null)
+            {
+                return;
+            }
+
             foreach (string identifier in identifiers)
             {
                 string solutionPath = Path.Combine(this.solutionPath, identifier + ".smsln");
