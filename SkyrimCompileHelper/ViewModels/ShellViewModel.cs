@@ -116,7 +116,8 @@ namespace SkyrimCompileHelper.ViewModels
                 {
                     this.Solutions = viewModel.GetSolutions();
                     this.solutionRepository.Update(new DictionaryRange<string, Solution>(this.Solutions.ToDictionary(s => s.Name, s => s)));
-
+                    this.solutionRepository.Delete(viewModel.DeletedSolutions);
+                    
                     this.Solutions.Add(new Solution { Name = Constants.EditConst });
                 }
 
