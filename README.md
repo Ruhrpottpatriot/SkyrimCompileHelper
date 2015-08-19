@@ -2,7 +2,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/ciac125gj43w4yb9/branch/master?svg=true)](https://ci.appveyor.com/project/Ruhrpottpatriot/skyrimcompilehelper/branch/master)
 
 # Skyrim Compile Helper
-The _kyrim Compiler Helper_ is s simple tool designed to help modders with their script compilation process. It features convention over configuration to make the whole process as smooth as possible.
+The _Skyrim Compiler Helper_ is s simple tool designed to help modders with their script compilation process. It features convention over configuration to make the whole process as smooth as possible.
 
 At the centre of a compilation process stands a simple _Git_ repository which contains the source files, a Readme and a License as well as the compiled files. However the repository is not only intended for scripts it can be used for other modding files as well (such as textures, and models). The application will recognize that those files are present and then act accordingly.
 
