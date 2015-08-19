@@ -13,6 +13,7 @@ namespace SkyrimCompileHelper.ViewModels
 {
     using System.Collections.Generic;
     using System.ComponentModel.Composition;
+    using System.Diagnostics;
     using System.Linq;
     using System.Windows;
     using System.Windows.Controls;
@@ -40,7 +41,7 @@ namespace SkyrimCompileHelper.ViewModels
         private readonly ISolutionRepository solutionRepository;
 
         /// <summary>The writer.</summary>
-        private readonly LogWriter writer;
+        private readonly LogWriter logWriter;
 
         /// <summary>Initialises a new instance of the <see cref="ShellViewModel"/> class.</summary>
         public ShellViewModel()
@@ -58,14 +59,14 @@ namespace SkyrimCompileHelper.ViewModels
         /// <param name="windowManager">The window Manager.</param>
         /// <param name="settingsRepository">The settings repository.</param>
         /// <param name="solutionRepository">The solution repository.</param>
-        /// <param name="writer">The log writer.</param>
+        /// <param name="logWriter">The log writer.</param>
         [ImportingConstructor]
-        public ShellViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, ISolutionRepository solutionRepository, LogWriter writer)
+        public ShellViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, ISolutionRepository solutionRepository, LogWriter logWriter)
         {
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
             this.solutionRepository = solutionRepository;
-            this.writer = writer;
+            this.logWriter = logWriter;
             this.DisplayName = "Skyrim Compile Helper";
             this.Settings = new SettingsViewModel(settingsRepository);
             this.Solutions = new List<Solution>();
@@ -115,17 +116,38 @@ namespace SkyrimCompileHelper.ViewModels
                 if (answer.HasValue && answer.Value)
                 {
                     this.Solutions = viewModel.GetSolutions();
+
+                    LogEntry updatingSolutionsEntry = new LogEntry
+                    {
+                        EventId = 00207,
+                        Title = "Updating Repository",
+                        Message = "Updating solutions in the repository with changed information.",
+                        Categories = { LoggingConstants.CategoryGeneralConst },
+                        Severity = TraceEventType.Information
+                    };
+
                     this.solutionRepository.Update(new DictionaryRange<string, Solution>(this.Solutions.ToDictionary(s => s.Name, s => s)));
                     this.solutionRepository.Delete(viewModel.DeletedSolutions);
-                    
+
                     this.Solutions.Add(new Solution { Name = Constants.EditConst });
                 }
 
                 return;
             }
 
+
+            LogEntry changedSolutionEntry = new LogEntry
+            {
+                EventId = 00201,
+                Title = "Changed Solution",
+                Message = string.Format("The solution was changed to \"{0}\"", solutionName),
+                Categories = { LoggingConstants.CategoryGeneralConst },
+                Severity = TraceEventType.Information
+            };
+            this.logWriter.Write(changedSolutionEntry);
+
             Solution selectedSolution = this.Solutions.Single(s => s.Name == solutionName);
-            this.SelectedSolution = new SolutionViewModel(this.windowManager, this.settingsRepository, this.solutionRepository, selectedSolution, this.writer);
+            this.SelectedSolution = new SolutionViewModel(this.windowManager, this.settingsRepository, this.solutionRepository, selectedSolution, this.logWriter);
         }
     }
 }
