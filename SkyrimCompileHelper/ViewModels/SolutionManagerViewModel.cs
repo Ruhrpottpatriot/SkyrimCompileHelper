@@ -41,6 +41,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             this.DisplayName = "Solution Manager";
 
+            this.DeletedSolutions = new List<string>();
             this.windowManager = windowManager;
             this.Solutions = new ObservableCollection<Solution>(solutions);
         }
@@ -50,6 +51,9 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Gets or sets the solutions.</summary>
         public ObservableCollection<Solution> Solutions { get; set; }
+
+        /// <summary>Gets or sets the deleted solutions.</summary>
+        public IList<string> DeletedSolutions { get; set; }
 
         /// <summary>Adds a new solution to the list.</summary>
         public void AddSolution()
@@ -72,7 +76,11 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Deletes a solution from the list.</summary>
         public void DeleteSolution()
         {
-            this.Solutions.Remove(this.SelectedSolution);
+            if (this.SelectedSolution != null)
+            {
+                this.DeletedSolutions.Add(this.SelectedSolution.Name);
+                this.Solutions.Remove(this.SelectedSolution);
+            }
         }
 
         /// <summary>Compiles and returns the solutions to the user.</summary>
