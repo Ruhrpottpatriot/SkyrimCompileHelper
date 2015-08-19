@@ -11,6 +11,7 @@
 
 namespace SkyrimCompileHelper.ViewModels
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel.Composition;
     using System.Diagnostics;
@@ -115,8 +116,10 @@ namespace SkyrimCompileHelper.ViewModels
 
                 if (answer.HasValue && answer.Value)
                 {
+                    // Get the solutions from the view model
                     this.Solutions = viewModel.GetSolutions();
 
+                    // Write to the log, that we are updating the solutions
                     LogEntry updatingSolutionsEntry = new LogEntry
                     {
                         EventId = 00207,
@@ -125,16 +128,45 @@ namespace SkyrimCompileHelper.ViewModels
                         Categories = { LoggingConstants.CategoryGeneralConst },
                         Severity = TraceEventType.Information
                     };
+                    this.logWriter.Write(updatingSolutionsEntry);
 
+                    // Actually update the solutions
                     this.solutionRepository.Update(new DictionaryRange<string, Solution>(this.Solutions.ToDictionary(s => s.Name, s => s)));
-                    this.solutionRepository.Delete(viewModel.DeletedSolutions);
+
+                    // Get the names of the solutions we want to delete
+                    IList<string> deletedSolutions = viewModel.DeletedSolutions;
+
+                    // Write to the log, that we are deleting solutions
+                    LogEntry deletingSolutionsEntry = new LogEntry
+                    {
+                        EventId = 00207,
+                        Title = "Deleting Solutions",
+                        Message = string.Format("Deleting {0} solutions from the file system. Additional information below.", deletedSolutions.Count),
+                        Categories = { LoggingConstants.CategoryGeneralConst },
+                        Severity = TraceEventType.Information
+                    };
+                    this.logWriter.Write(deletingSolutionsEntry);
+
+                    foreach (string deletedSolution in deletedSolutions)
+                    {
+                        LogEntry deletingSolutionEntry = new LogEntry
+                        {
+                            EventId = 00207,
+                            Title = "Deleting Solution",
+                            Message = string.Format("Deleting solution \"{0}\" from the file system", deletedSolution),
+                            Categories = { LoggingConstants.CategoryGeneralConst},
+                            Severity = TraceEventType.Information
+                        };
+                        this.logWriter.Write(deletingSolutionEntry);
+                    }
+
+                    this.solutionRepository.Delete(deletedSolutions);
 
                     this.Solutions.Add(new Solution { Name = Constants.EditConst });
                 }
 
                 return;
             }
-
 
             LogEntry changedSolutionEntry = new LogEntry
             {
