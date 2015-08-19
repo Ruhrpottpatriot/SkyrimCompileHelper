@@ -120,7 +120,7 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Gets or sets a value indicating whether the compiler should optimize the script files.</summary>
         public bool CompilerOptimize { get; set; }
-        
+
         /// <summary>Gets or sets the selected assembly option.</summary>
         public AssemblyOption SelectedAssemblyOption { get; set; }
 
@@ -251,11 +251,18 @@ namespace SkyrimCompileHelper.ViewModels
         public void CleanOutputFolders()
         {
             string modOrganizerSolutionPath = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
-            Directory.Delete(modOrganizerSolutionPath, true);
+            if (Directory.Exists(modOrganizerSolutionPath))
+            {
+                Directory.Delete(modOrganizerSolutionPath, true);
+            }
+
             Directory.CreateDirectory(modOrganizerSolutionPath);
-            
+
             string binPath = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name);
-            Directory.Delete(binPath, true);
+            if (Directory.Exists(binPath))
+            {
+                Directory.Delete(binPath, true);
+            }
             Directory.CreateDirectory(binPath);
         }
 
