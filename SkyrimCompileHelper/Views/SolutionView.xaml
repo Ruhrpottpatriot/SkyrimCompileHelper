@@ -100,83 +100,128 @@
                 Grid.Column="1"
                 Margin="3,0,0,3" />
 
-        <Grid Grid.Row="7"
-              Grid.Column="0"
-              Grid.ColumnSpan="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+        <TabControl Grid.Row="7"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2">
+            <TabItem Header="General">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-            <StackPanel Margin="0,3,0,5"
-                        Grid.Column="0"
-                        Grid.Row="0"
-                        Grid.ColumnSpan="2">
-                <CheckBox x:Name="EnableCustomFlags"
-                          Content="Enable Cumstom Flags File"
-                          IsEnabled="True" />
-                <TextBox x:Name="FlagsFile"
-                         IsEnabled="{Binding IsChecked, ElementName=EnableCustomFlags}">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="LostFocus">
-                            <cal:ActionMessage MethodName="SaveConfiguration" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                </TextBox>
-            </StackPanel>
+                    <StackPanel Margin="0,3,0,5"
+                                Grid.Column="0"
+                                Grid.Row="0"
+                                Grid.ColumnSpan="2">
+                        <CheckBox x:Name="EnableCustomFlags"
+                                  Content="Enable Cumstom Flags File"
+                                  IsEnabled="True" />
+                        <TextBox x:Name="FlagsFile"
+                                 IsEnabled="{Binding IsChecked, ElementName=EnableCustomFlags}">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="LostFocus">
+                                    <cal:ActionMessage MethodName="SaveConfiguration" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </TextBox>
+                    </StackPanel>
 
-            <CheckBox x:Name="CompilerAll"
-                      Margin="0,3,3,3"
-                      Grid.Row="1"
-                      Grid.Column="0"
-                      IsEnabled="False"
-                      Content="All"
-                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
-            <CheckBox x:Name="CompilerQuiet"
-                      Margin="3,3,0,3"
-                      Grid.Row="1"
-                      Grid.Column="1"
-                      Content="Quiet"
-                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
-            <CheckBox x:Name="CompilerDebug"
-                      Margin="0,3,3,3"
-                      Grid.Row="2"
-                      Grid.Column="0"
-                      Content="Debug"
-                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
-            <CheckBox x:Name="CompilerOptimize"
-                      Margin="3,3,0,3"
-                      Grid.Row="2"
-                      Grid.Column="1"
-                      Content="Optimize"
-                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
-            <CheckBox x:Name="CopySourceFiles"
-                      Margin="0,3,3,3"
-                      Grid.Row="3"
-                      Grid.Column="0"
-                      Content="Copy Source Files"
-                      cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+                    <CheckBox x:Name="CompilerAll"
+                              Margin="0,3,3,3"
+                              Grid.Row="1"
+                              Grid.Column="0"
+                              IsEnabled="False"
+                              Content="All"
+                              cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+                    <CheckBox x:Name="CompilerQuiet"
+                              Margin="3,3,0,3"
+                              Grid.Row="1"
+                              Grid.Column="1"
+                              Content="Quiet"
+                              cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+                    <CheckBox x:Name="CompilerDebug"
+                              Margin="0,3,3,3"
+                              Grid.Row="2"
+                              Grid.Column="0"
+                              Content="Debug"
+                              cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+                    <CheckBox x:Name="CompilerOptimize"
+                              Margin="3,3,0,3"
+                              Grid.Row="2"
+                              Grid.Column="1"
+                              Content="Optimize"
+                              cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
+                    <CheckBox x:Name="CopySourceFiles"
+                              Margin="0,3,3,3"
+                              Grid.Row="3"
+                              Grid.Column="0"
+                              Content="Copy Source Files"
+                              cal:Message.Attach="[Event Click] = [Action SaveConfiguration]" />
 
-            <StackPanel Margin="0,3,0,3"
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        Grid.ColumnSpan="2">
-                <TextBlock Margin="0,0,0,2"
-                           Text="Assembly Options" />
-                <ComboBox x:Name="CompilerAssemblyOptions"
-                          ItemsSource="{core:EnumList papyrusCompiler:AssemblyOption}"
-                          SelectedItem="{Binding SelectedAssemblyOption}"
-                          Margin="0,2,0,0"
-                          cal:Message.Attach="[Event SelectionChanged] = [Action SaveConfiguration]" />
-            </StackPanel>
-        </Grid>
+                    <StackPanel Margin="0,3,0,3"
+                                Grid.Row="4"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2">
+                        <TextBlock Margin="0,0,0,2"
+                                   Text="Assembly Options" />
+                        <ComboBox x:Name="CompilerAssemblyOptions"
+                                  ItemsSource="{core:EnumList papyrusCompiler:AssemblyOption}"
+                                  SelectedItem="{Binding SelectedAssemblyOption}"
+                                  Margin="0,2,0,0"
+                                  cal:Message.Attach="[Event SelectionChanged] = [Action SaveConfiguration]" />
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Import Folders">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <ListBox x:Name="ImportFolders"
+                             SelectedItem="{Binding SelectedImportFolder}"
+                             Grid.Column="0"
+                             Grid.Row="0"
+                             Grid.RowSpan="3"
+                             Margin="0,5,3,0"
+                             MinHeight="100"
+                             cal:Message.Attach="[Event MouseDoubleClick] = [Action EditImportFolder]">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Button x:Name="AddImportFolder"
+                            Content="Add"
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            Margin="3,5,0,3" />
+                    <Button x:Name="RemoveImportFolder"
+                            Content="Remove"
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Margin="3,3,0,0" />
+
+                </Grid>
+            </TabItem>
+        </TabControl>
 
         <Button x:Name="Compile"
                 Grid.Column="0"

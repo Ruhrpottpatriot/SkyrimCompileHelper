@@ -10,6 +10,7 @@ namespace SkyrimCompileHelper.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -61,6 +62,12 @@ namespace SkyrimCompileHelper.ViewModels
                     new CompileConfiguration { Name = "Release" },
                     new CompileConfiguration { Name = Constants.EditConst }
                 };
+
+                this.ImportFolders = new ObservableCollection<ImportFolder>
+                {
+                    new ImportFolder { FolderPath = @"C:\Test" },
+                    new ImportFolder { FolderPath = @"D:\Mods" }
+                };
             }
         }
 
@@ -83,6 +90,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.SolutionPath = solution.Path;
             this.Version = solution.Version;
             this.CompilerAll = true;
+            this.ImportFolders = new ObservableCollection<ImportFolder>();
 
             // Initialize the configuration parameters
             this.IntConfigParameter(solution);
@@ -124,19 +132,11 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Gets or sets the selected assembly option.</summary>
         public AssemblyOption SelectedAssemblyOption { get; set; }
 
-        /// <summary>Opens the solution folder in the windows explorer.</summary>
-        /// <exception cref="NotImplementedException">Not yet implemented</exception>
-        public void OpenSolutionFolder()
-        {
-            try
-            {
-                Process.Start(this.SolutionPath);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Could not open solution directory. Please check, if the path is valid.");
-            }
-        }
+        /// <summary>Gets or sets the import folders.</summary>
+        public ObservableCollection<ImportFolder> ImportFolders { get; set; }
+
+        /// <summary>Gets or sets the selected import folder.</summary>
+        public ImportFolder SelectedImportFolder { get; set; }
 
         /// <summary>Changes the version of a solution.</summary>
         public void ChangeVersion()
@@ -156,6 +156,68 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             this.SaveSolution();
+        }
+
+        /// <summary>Edits the selected import folder.</summary>
+        public void EditImportFolder()
+        {
+            if (this.SelectedImportFolder == null)
+            {
+                return;
+            }
+
+            ImportFolderManagerViewModel viewModel = new ImportFolderManagerViewModel(this.SelectedImportFolder);
+
+            bool? answer = this.windowManager.ShowDialog(viewModel);
+
+            if (answer.HasValue && answer.Value)
+            {
+                this.ImportFolders.Remove(this.SelectedImportFolder);
+                this.ImportFolders.Add(viewModel.Folder);
+                this.SelectedImportFolder = null;
+            }
+
+            this.SaveSolution();
+        }
+
+        /// <summary>Adds an import folder to the list.</summary>
+        public void AddImportFolder()
+        {
+            ImportFolderManagerViewModel viewModel = new ImportFolderManagerViewModel();
+
+            bool? answer = this.windowManager.ShowDialog(viewModel);
+            if (answer.HasValue && answer.Value)
+            {
+                this.ImportFolders.Add(viewModel.Folder);
+            }
+
+            this.SaveConfiguration();
+        }
+
+        /// <summary>Removes an import folder from the list.</summary>
+        public void RemoveImportFolder()
+        {
+            if (this.SelectedImportFolder == null)
+            {
+                return;
+            }
+
+            this.ImportFolders.Remove(this.SelectedImportFolder);
+            this.SaveConfiguration();
+        }
+
+        /// <summary>Opens the solution folder in the windows explorer.</summary>
+        /// <exception cref="NotImplementedException">Not yet implemented</exception>
+        public void OpenSolutionFolder()
+        {
+            try
+            {
+                Process.Start(this.SolutionPath);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Could not open solution directory. Please check, if the path is valid.");
+            }
         }
 
         /// <summary>Changes the compile configuration for the current solution.</summary>
@@ -222,6 +284,7 @@ namespace SkyrimCompileHelper.ViewModels
             compConfig.FlagFile = this.FlagsFile;
             compConfig.Optimize = this.CompilerOptimize;
             compConfig.Quiet = this.CompilerQuiet;
+            compConfig.ImportFolders = this.ImportFolders;
 
             this.SelectedConfiguration = compConfig;
             this.Configurations.Remove(compConfig);
@@ -235,10 +298,8 @@ namespace SkyrimCompileHelper.ViewModels
         {
             string skyrimPath = this.settingsRepository.Read()["SkyrimPath"].ToString();
 
-            IEnumerable<string> inputFolders = new List<string>
-            {
-                 Path.Combine(skyrimPath, @"Data\Scripts\Source")
-            };
+            List<string> inputFolders = new List<string> { Path.Combine(skyrimPath, @"Data\Scripts\Source") };
+            inputFolders.AddRange(this.ImportFolders.Select(f => f.FolderPath));
 
             ICompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
@@ -276,7 +337,28 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 Directory.Delete(binPath, true);
             }
+
             Directory.CreateDirectory(binPath);
+        }
+        
+        /// <summary>Saves the selected solution to the solution repository.</summary>
+        public void SaveSolution()
+        {
+            IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>
+            {
+                { 
+                    this.SolutionName, new Solution
+                    {
+                        Name = this.SolutionName,
+                        Path = this.SolutionPath,
+                        Version = this.Version,
+                        CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList(),
+                        SelectedConfiguration = this.SelectedConfiguration != null ? this.SelectedConfiguration.Name : string.Empty
+                    }
+                }
+            };
+
+            this.solutionRepository.Update(solutions);
         }
 
         /// <summary>Moves the compiled script and remaining source files from the compilation folder to the ModOrganizer folder.</summary>
@@ -336,26 +418,6 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
-        /// <summary>Saves the selected solution to the solution repository.</summary>
-        private void SaveSolution()
-        {
-            IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>
-            {
-                { 
-                    this.SolutionName, new Solution
-                    {
-                        Name = this.SolutionName,
-                        Path = this.SolutionPath,
-                        Version = this.Version,
-                        CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList(),
-                        SelectedConfiguration = this.SelectedConfiguration != null ? this.SelectedConfiguration.Name : string.Empty
-                    }
-                }
-            };
-
-            this.solutionRepository.Update(solutions);
-        }
-
         /// <summary>Initialises the config parameters.</summary>
         /// <param name="solution">The selected solution.</param>
         private void IntConfigParameter(Solution solution)
@@ -370,6 +432,7 @@ namespace SkyrimCompileHelper.ViewModels
                 return;
             }
 
+            this.ImportFolders = this.SelectedConfiguration.ImportFolders == null ? new ObservableCollection<ImportFolder>() : new ObservableCollection<ImportFolder>(this.SelectedConfiguration.ImportFolders);
             this.CompilerAll = this.SelectedConfiguration.All;
             this.CompilerDebug = this.SelectedConfiguration.Debug;
             this.CompilerOptimize = this.SelectedConfiguration.Optimize;

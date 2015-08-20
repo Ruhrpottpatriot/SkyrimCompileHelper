@@ -100,6 +100,7 @@
     </ApplicationDefinition>
     <Compile Include="MefBootstrapper.cs" />
     <Compile Include="ViewModels\AddConfigurationViewModel.cs" />
+    <Compile Include="ViewModels\ImportFolderManagerViewModel.cs" />
     <Compile Include="ViewModels\SettingsViewModel.cs" />
     <Compile Include="ViewModels\SolutionViewModel.cs" />
     <Page Include="Resources\Icons.xaml">
@@ -115,6 +116,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ConfigurationManagerView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ImportFolderManagerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
