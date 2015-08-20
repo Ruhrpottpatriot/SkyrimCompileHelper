@@ -11,7 +11,13 @@
 
 namespace SkyrimCompileHelper.Core
 {
+    using System.Collections.Generic;
+
+    using Newtonsoft.Json;
+
     using PapyrusCompiler;
+
+    using SkyrimCompileHelper.Core.JSON;
 
     /// <summary>Represents a compiler configuration.</summary>
     public class CompileConfiguration
@@ -36,5 +42,8 @@ namespace SkyrimCompileHelper.Core
 
         /// <summary>Gets or sets the assembly option.</summary>
         public AssemblyOption AssemblyOption { get; set; }
+
+        [JsonConverter(typeof(ImportFolderConverter))]
+        public IEnumerable<ImportFolder> ImportFolders { get; set; }
     }
 }
