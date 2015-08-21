@@ -1,18 +1,32 @@
-﻿namespace SkyrimCompileHelper.ViewModels
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ImportFolderViewModel.cs" company="Robert Logiewa">
+//   The MIT License (MIT)
+//   
+//   Copyright (c) 2015 Robert Logiewa
+// </copyright>
+// <summary>
+//   Contains methods and properties to show and manipulate a collection of <see cref="ImportFolder">Import Folders</see>.
+// </summary>
+// --------------------------------------------------------------------------------------------------------------------
+
+namespace SkyrimCompileHelper.ViewModels
 {
     using System.Collections.ObjectModel;
+    using System.Threading.Tasks;
 
     using Caliburn.Micro;
 
     using SkyrimCompileHelper.Core;
+    using SkyrimCompileHelper.Core.EventHandles;
 
+    /// <summary>Contains methods and properties to show and manipulate a collection of <see cref="ImportFolder">Import Folders</see>.</summary>
     public class ImportFolderViewModel
     {
-        /// <summary>The settings repository.</summary>
-        private readonly ISettingsRepository settingsRepository;
-
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
+
+        /// <summary>The event aggregator.</summary>
+        private readonly IEventAggregator eventAggregator;
 
         /// <summary>Initialises a new instance of the <see cref="ImportFolderViewModel"/> class.</summary>
         public ImportFolderViewModel()
@@ -28,12 +42,14 @@
         }
 
         /// <summary>Initialises a new instance of the <see cref="ImportFolderViewModel"/> class.</summary>
-        /// <param name="settingsRepository">The settings repository.</param>
         /// <param name="windowManager">The window manager.</param>
-        public ImportFolderViewModel(ISettingsRepository settingsRepository, IWindowManager windowManager)
+        /// <param name="eventAggregator">The event aggregator.</param>
+        public ImportFolderViewModel(IWindowManager windowManager, IEventAggregator eventAggregator)
         {
-            this.settingsRepository = settingsRepository;
             this.windowManager = windowManager;
+            this.eventAggregator = eventAggregator;
+
+            this.ImportFolders = new ObservableCollection<ImportFolder>();
         }
 
         /// <summary>Gets or sets the import folders.</summary>
@@ -41,7 +57,7 @@
 
         /// <summary>Gets or sets the selected import folder.</summary>
         public ImportFolder SelectedImportFolder { get; set; }
-        
+
         /// <summary>Edits the selected import folder.</summary>
         public void EditImportFolder()
         {
@@ -61,7 +77,7 @@
                 this.SelectedImportFolder = null;
             }
 
-            // this.SaveSolution();
+            this.SaveSolution();
         }
 
         /// <summary>Adds an import folder to the list.</summary>
@@ -75,7 +91,7 @@
                 this.ImportFolders.Add(viewModel.Folder);
             }
 
-           // this.SaveConfiguration();
+            this.SaveSolution();
         }
 
         /// <summary>Removes an import folder from the list.</summary>
@@ -87,7 +103,13 @@
             }
 
             this.ImportFolders.Remove(this.SelectedImportFolder);
-            // this.SaveConfiguration();
+            this.SaveSolution();
+        }
+
+        /// <summary>Publishes a message to the event aggregator telling all subscribers to save the solution.</summary>
+        private void SaveSolution()
+        {
+            this.eventAggregator.Publish(new SaveSolutionEvenHandle(), action => { Task.Factory.StartNew(action); });
         }
     }
 }
