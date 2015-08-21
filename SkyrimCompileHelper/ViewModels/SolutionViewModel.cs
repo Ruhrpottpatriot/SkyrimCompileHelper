@@ -29,10 +29,11 @@ namespace SkyrimCompileHelper.ViewModels
 
     using SkyrimCompileHelper.Compiler;
     using SkyrimCompileHelper.Core;
+    using SkyrimCompileHelper.Core.EventHandles;
 
     /// <summary>ViewModel containing methods and properties to work with a solution.</summary>
     [ImplementPropertyChanged]
-    public class SolutionViewModel : PropertyChangedBase
+    public class SolutionViewModel : PropertyChangedBase, IHandle<SaveSolutionEvenHandle>
     {
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
@@ -276,7 +277,15 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 Directory.Delete(binPath, true);
             }
+
             Directory.CreateDirectory(binPath);
+        }
+
+        /// <summary>Handles the message.</summary>
+        /// <param name="message">The message.</param>
+        public void Handle(SaveSolutionEvenHandle message)
+        {
+            this.SaveSolution();
         }
 
         /// <summary>Moves the compiled script and remaining source files from the compilation folder to the ModOrganizer folder.</summary>
