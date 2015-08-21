@@ -66,6 +66,7 @@
     <Compile Include="Converter\BooleanToVisibilityConverter.cs" />
     <Compile Include="Converter\SemVersionToStringConverter.cs" />
     <Compile Include="DictionaryRange.cs" />
+    <Compile Include="EventHandles\SaveSolutionEvenHandle.cs" />
     <Compile Include="IDictionaryRange.cs" />
     <Compile Include="ImportFolder.cs" />
     <Compile Include="LoggingConstants.cs" />

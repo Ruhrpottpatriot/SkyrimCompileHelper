@@ -10,7 +10,6 @@ namespace SkyrimCompileHelper.ViewModels
 {
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -30,10 +29,11 @@ namespace SkyrimCompileHelper.ViewModels
 
     using SkyrimCompileHelper.Compiler;
     using SkyrimCompileHelper.Core;
+    using SkyrimCompileHelper.Core.EventHandles;
 
     /// <summary>ViewModel containing methods and properties to work with a solution.</summary>
     [ImplementPropertyChanged]
-    public class SolutionViewModel : PropertyChangedBase
+    public class SolutionViewModel : PropertyChangedBase, IHandle<SaveSolutionEvenHandle>
     {
         /// <summary>The window manager.</summary>
         private readonly IWindowManager windowManager;
@@ -87,8 +87,6 @@ namespace SkyrimCompileHelper.ViewModels
 
             // Initialize the configuration parameters
             this.IntConfigParameter(solution);
-
-            this.ImportFolderView = new ImportFolderViewModel(settingsRepository, windowManager);
         }
 
         /// <summary>Gets or sets the solution name.</summary>
@@ -127,7 +125,19 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Gets or sets the selected assembly option.</summary>
         public AssemblyOption SelectedAssemblyOption { get; set; }
 
-        public ImportFolderViewModel ImportFolderView { get; set; }
+        /// <summary>Opens the solution folder in the windows explorer.</summary>
+        /// <exception cref="NotImplementedException">Not yet implemented</exception>
+        public void OpenSolutionFolder()
+        {
+            try
+            {
+                Process.Start(this.SolutionPath);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Could not open solution directory. Please check, if the path is valid.");
+            }
+        }
 
         /// <summary>Changes the version of a solution.</summary>
         public void ChangeVersion()
@@ -147,20 +157,6 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             this.SaveSolution();
-        }
-
-        /// <summary>Opens the solution folder in the windows explorer.</summary>
-        /// <exception cref="NotImplementedException">Not yet implemented</exception>
-        public void OpenSolutionFolder()
-        {
-            try
-            {
-                Process.Start(this.SolutionPath);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Could not open solution directory. Please check, if the path is valid.");
-            }
         }
 
         /// <summary>Changes the compile configuration for the current solution.</summary>
@@ -227,7 +223,6 @@ namespace SkyrimCompileHelper.ViewModels
             compConfig.FlagFile = this.FlagsFile;
             compConfig.Optimize = this.CompilerOptimize;
             compConfig.Quiet = this.CompilerQuiet;
-            compConfig.ImportFolders = this.ImportFolderView.ImportFolders;
 
             this.SelectedConfiguration = compConfig;
             this.Configurations.Remove(compConfig);
@@ -241,8 +236,10 @@ namespace SkyrimCompileHelper.ViewModels
         {
             string skyrimPath = this.settingsRepository.Read()["SkyrimPath"].ToString();
 
-            List<string> inputFolders = new List<string> { Path.Combine(skyrimPath, @"Data\Scripts\Source") };
-            inputFolders.AddRange(this.ImportFolderView.ImportFolders.Select(f => f.FolderPath));
+            IEnumerable<string> inputFolders = new List<string>
+            {
+                 Path.Combine(skyrimPath, @"Data\Scripts\Source")
+            };
 
             ICompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
@@ -284,24 +281,11 @@ namespace SkyrimCompileHelper.ViewModels
             Directory.CreateDirectory(binPath);
         }
 
-        /// <summary>Saves the selected solution to the solution repository.</summary>
-        public void SaveSolution()
+        /// <summary>Handles the message.</summary>
+        /// <param name="message">The message.</param>
+        public void Handle(SaveSolutionEvenHandle message)
         {
-            IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>
-            {
-                { 
-                    this.SolutionName, new Solution
-                    {
-                        Name = this.SolutionName,
-                        Path = this.SolutionPath,
-                        Version = this.Version,
-                        CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList(),
-                        SelectedConfiguration = this.SelectedConfiguration != null ? this.SelectedConfiguration.Name : string.Empty
-                    }
-                }
-            };
-
-            this.solutionRepository.Update(solutions);
+            this.SaveSolution();
         }
 
         /// <summary>Moves the compiled script and remaining source files from the compilation folder to the ModOrganizer folder.</summary>
@@ -359,6 +343,26 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 File.Copy(filePath, filePath.Replace(sourcePath, destinationPath), overwrite);
             }
+        }
+
+        /// <summary>Saves the selected solution to the solution repository.</summary>
+        private void SaveSolution()
+        {
+            IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>
+            {
+                { 
+                    this.SolutionName, new Solution
+                    {
+                        Name = this.SolutionName,
+                        Path = this.SolutionPath,
+                        Version = this.Version,
+                        CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList(),
+                        SelectedConfiguration = this.SelectedConfiguration != null ? this.SelectedConfiguration.Name : string.Empty
+                    }
+                }
+            };
+
+            this.solutionRepository.Update(solutions);
         }
 
         /// <summary>Initialises the config parameters.</summary>
