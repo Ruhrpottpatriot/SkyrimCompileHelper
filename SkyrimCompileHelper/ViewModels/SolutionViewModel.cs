@@ -65,8 +65,8 @@ namespace SkyrimCompileHelper.ViewModels
 
                 this.ImportFolders = new ObservableCollection<ImportFolder>
                 {
-                    new ImportFolder { FolderPath = @"C:\Test" },
-                    new ImportFolder { FolderPath = @"D:\Mods" }
+                    new ImportFolder(@"C:\Test"),
+                    new ImportFolder(@"D:\Mods")
                 };
             }
         }
@@ -340,7 +340,7 @@ namespace SkyrimCompileHelper.ViewModels
 
             Directory.CreateDirectory(binPath);
         }
-        
+
         /// <summary>Saves the selected solution to the solution repository.</summary>
         public void SaveSolution()
         {

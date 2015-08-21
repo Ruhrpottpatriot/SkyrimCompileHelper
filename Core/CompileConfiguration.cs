@@ -43,7 +43,7 @@ namespace SkyrimCompileHelper.Core
         /// <summary>Gets or sets the assembly option.</summary>
         public AssemblyOption AssemblyOption { get; set; }
 
-        [JsonConverter(typeof(ImportFolderConverter))]
+        /// <summary>Gets or sets the import folders.</summary>
         public IEnumerable<ImportFolder> ImportFolders { get; set; }
     }
 }

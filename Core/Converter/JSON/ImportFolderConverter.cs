@@ -45,7 +45,7 @@ namespace SkyrimCompileHelper.Core.JSON
         {
             IEnumerable<string> obj = serializer.Deserialize<IEnumerable<string>>(reader);
 
-            return obj.Select(path => new ImportFolder { FolderPath = path });
+            return obj.Select(path => new ImportFolder(path));
         }
 
         /// <summary>Determines whether this instance can convert the specified object type.</summary>

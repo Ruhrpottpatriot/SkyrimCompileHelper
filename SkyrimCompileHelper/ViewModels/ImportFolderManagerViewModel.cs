@@ -25,10 +25,10 @@ namespace SkyrimCompileHelper.ViewModels
         public ImportFolderManagerViewModel()
         {
             this.DisplayName = "Edit Import Folder";
-            this.Folder = new ImportFolder();
+            this.Folder = new ImportFolder(string.Empty);
             if (Execute.InDesignMode)
             {
-                this.Folder = new ImportFolder { FolderPath = @"C:\SomePath" };
+                this.Folder = new ImportFolder(@"C:\SomePath");
             }
         }
 
