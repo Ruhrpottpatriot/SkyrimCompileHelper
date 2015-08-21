@@ -24,7 +24,7 @@ namespace SkyrimCompileHelper.Core
         public ImportFolder(string path)
         {
             this.FolderPath = path;
-            this.Name = Path.GetFileName(Path.GetFullPath(this.FolderPath).TrimEnd(Path.DirectorySeparatorChar));
+            this.Name = string.IsNullOrWhiteSpace(path) ? string.Empty : Path.GetFileName(Path.GetFullPath(this.FolderPath).TrimEnd(Path.DirectorySeparatorChar));
         }
 
         /// <summary>Initialises a new instance of the <see cref="ImportFolder"/> class. </summary>
