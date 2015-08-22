@@ -43,7 +43,12 @@ namespace SkyrimCompileHelper.Core
             {
                 using (StreamWriter writer = File.CreateText(Path.Combine(this.solutionPath, pair.Key + ".smsln")))
                 {
-                    new JsonSerializer().Serialize(writer, pair.Value);
+                    using (JsonWriter jsonWriter = new JsonTextWriter(writer))
+                    {
+                        jsonWriter.Formatting = Formatting.Indented;
+
+                        new JsonSerializer().Serialize(jsonWriter, pair.Value);
+                    }
                 }
             }
         }
@@ -58,7 +63,7 @@ namespace SkyrimCompileHelper.Core
             }
 
             string[] files = Directory.GetFiles(this.solutionPath);
-            
+
             var solutions = new DictionaryRange<string, Solution>();
             foreach (string file in files)
             {
@@ -79,10 +84,7 @@ namespace SkyrimCompileHelper.Core
         /// <param name="items">An <see cref="IDictionaryRange{TKey,TValue}"/> containing the items to update.</param>
         public void Update(IDictionaryRange<string, Solution> items)
         {
-            foreach (var path in items.Select(item => Path.Combine(this.solutionPath, item.Key + ".smsln")).Where(File.Exists))
-            {
-                File.Delete(path);
-            }
+            this.Delete(items.Keys);
 
             this.Create(items);
         }
@@ -101,14 +103,9 @@ namespace SkyrimCompileHelper.Core
                 return;
             }
 
-            foreach (string identifier in identifiers)
+            foreach (string solutionPath in identifiers.Select(identifier => Path.Combine(this.solutionPath, identifier + ".smsln")).Where(File.Exists))
             {
-                string solutionPath = Path.Combine(this.solutionPath, identifier + ".smsln");
-
-                if (File.Exists(solutionPath))
-                {
-                    File.Delete(solutionPath);
-                }
+                File.Delete(solutionPath);
             }
         }
     }
