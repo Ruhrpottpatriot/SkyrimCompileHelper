@@ -11,7 +11,6 @@
 
 namespace SkyrimCompileHelper.ViewModels
 {
-    using System;
     using System.Collections.Generic;
     using System.ComponentModel.Composition;
     using System.Diagnostics;
@@ -44,6 +43,9 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The writer.</summary>
         private readonly LogWriter logWriter;
 
+        /// <summary>The event aggregator.</summary>
+        private readonly IEventAggregator eventAggregator;
+
         /// <summary>Initialises a new instance of the <see cref="ShellViewModel"/> class.</summary>
         public ShellViewModel()
         {
@@ -61,13 +63,15 @@ namespace SkyrimCompileHelper.ViewModels
         /// <param name="settingsRepository">The settings repository.</param>
         /// <param name="solutionRepository">The solution repository.</param>
         /// <param name="logWriter">The log writer.</param>
+        /// <param name="eventAggregator">The event Aggregator.</param>
         [ImportingConstructor]
-        public ShellViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, ISolutionRepository solutionRepository, LogWriter logWriter)
+        public ShellViewModel(IWindowManager windowManager, ISettingsRepository settingsRepository, ISolutionRepository solutionRepository, LogWriter logWriter, IEventAggregator eventAggregator)
         {
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
             this.solutionRepository = solutionRepository;
             this.logWriter = logWriter;
+            this.eventAggregator = eventAggregator;
             this.DisplayName = "Skyrim Compile Helper";
             this.Settings = new SettingsViewModel(settingsRepository);
             this.Solutions = new List<Solution>();
@@ -154,7 +158,7 @@ namespace SkyrimCompileHelper.ViewModels
                             EventId = 00207,
                             Title = "Deleting Solution",
                             Message = string.Format("Deleting solution \"{0}\" from the file system", deletedSolution),
-                            Categories = { LoggingConstants.CategoryGeneralConst},
+                            Categories = { LoggingConstants.CategoryGeneralConst },
                             Severity = TraceEventType.Information
                         };
                         this.logWriter.Write(deletingSolutionEntry);
@@ -179,7 +183,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.logWriter.Write(changedSolutionEntry);
 
             Solution selectedSolution = this.Solutions.Single(s => s.Name == solutionName);
-            this.SelectedSolution = new SolutionViewModel(this.windowManager, this.settingsRepository, this.solutionRepository, selectedSolution, this.logWriter);
+            this.SelectedSolution = new SolutionViewModel(this.windowManager, this.settingsRepository, this.solutionRepository, selectedSolution, this.logWriter, this.eventAggregator);
         }
     }
 }

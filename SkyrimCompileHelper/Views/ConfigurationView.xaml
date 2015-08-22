@@ -1,0 +1,89 @@
+﻿<UserControl x:Class="SkyrimCompileHelper.Views.ConfigurationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:cal="http://www.caliburnproject.org"
+             xmlns:viewModels="clr-namespace:SkyrimCompileHelper.ViewModels"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:core="clr-namespace:SkyrimCompileHelper.Core;assembly=Core"
+             xmlns:papyrusCompiler="clr-namespace:PapyrusCompiler;assembly=PapyrusCompilerWrapper"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewModels:ConfigurationViewModel, IsDesignTimeCreatable=True}"
+             cal:Bind.AtDesignTime="True">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Margin="0,3,0,5"
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Grid.ColumnSpan="2">
+            <CheckBox x:Name="EnableCustomFlags"
+                      Content="Enable Cumstom Flags File"
+                      IsEnabled="True" />
+            <TextBox x:Name="FlagsFile"
+                     IsEnabled="{Binding IsChecked, ElementName=EnableCustomFlags}">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="LostFocus">
+                        <cal:ActionMessage MethodName="SaveSolution" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </TextBox>
+        </StackPanel>
+
+        <CheckBox x:Name="All"
+                  Margin="0,3,3,3"
+                  Grid.Row="1"
+                  Grid.Column="0"
+                  IsEnabled="False"
+                  Content="All"
+                  cal:Message.Attach="[Event Click] = [Action SaveSolution]" />
+        <CheckBox x:Name="Quiet"
+                  Margin="3,3,0,3"
+                  Grid.Row="1"
+                  Grid.Column="1"
+                  Content="Quiet"
+                  cal:Message.Attach="[Event Click] = [Action SaveSolution]" />
+        <CheckBox x:Name="Debug"
+                  Margin="0,3,3,3"
+                  Grid.Row="2"
+                  Grid.Column="0"
+                  Content="Debug"
+                  cal:Message.Attach="[Event Click] = [Action SaveSolution]" />
+        <CheckBox x:Name="Optimize"
+                  Margin="3,3,0,3"
+                  Grid.Row="2"
+                  Grid.Column="1"
+                  Content="Optimize"
+                  cal:Message.Attach="[Event Click] = [Action SaveSolution]" />
+        <CheckBox x:Name="CopySourceFiles"
+                  Margin="0,3,3,3"
+                  Grid.Row="3"
+                  Grid.Column="0"
+                  Content="Copy Source Files"
+                  cal:Message.Attach="[Event Click] = [Action SaveSolution]" />
+
+        <StackPanel Margin="0,3,0,3"
+                    Grid.Row="4"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2">
+            <TextBlock Margin="0,0,0,2"
+                       Text="Assembly Options" />
+            <ComboBox ItemsSource="{core:EnumList papyrusCompiler:AssemblyOption}"
+                      SelectedItem="{Binding SelectedAssemblyOption}"
+                      Margin="0,2,0,0"
+                      cal:Message.Attach="[Event SelectionChanged] = [Action SaveSolution]" />
+        </StackPanel>
+    </Grid>
+</UserControl>
