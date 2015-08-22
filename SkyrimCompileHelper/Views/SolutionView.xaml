@@ -5,9 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:vm="clr-namespace:SkyrimCompileHelper.ViewModels"
-             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:core="clr-namespace:SkyrimCompileHelper.Core;assembly=Core"
-             xmlns:papyrusCompiler="clr-namespace:PapyrusCompiler;assembly=PapyrusCompilerWrapper"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance Type=vm:SolutionViewModel, IsDesignTimeCreatable=True}"
              cal:Bind.AtDesignTime="True">

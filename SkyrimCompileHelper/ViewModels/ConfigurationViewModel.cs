@@ -71,6 +71,11 @@ namespace SkyrimCompileHelper.ViewModels
         /// <param name="configuration">The configuration containing the property values.</param>
         public void InitConfigiguration(CompileConfiguration configuration)
         {
+            if (configuration == null)
+            {
+                return;
+            }
+
             this.All = configuration.All;
             this.Debug = configuration.Debug;
             this.Optimize = configuration.Optimize;

@@ -10,6 +10,7 @@ namespace SkyrimCompileHelper.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel;
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
@@ -20,7 +21,7 @@ namespace SkyrimCompileHelper.ViewModels
     using Caliburn.Micro;
 
     using Microsoft.Practices.EnterpriseLibrary.Logging;
-    
+
     using PropertyChanged;
 
     using Semver;
@@ -44,6 +45,9 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>The log writer.</summary>
         private readonly LogWriter logWriter;
+
+        /// <summary>Stores the old solution name, so the repository is able to properly delete it after a rename.</summary>
+        private string oldSolutionName;
 
         /// <summary>Initialises a new instance of the <see cref="SolutionViewModel"/> class.</summary>
         public SolutionViewModel()
@@ -89,6 +93,7 @@ namespace SkyrimCompileHelper.ViewModels
 
             // Init the parameters
             this.SolutionName = solution.Name;
+            this.oldSolutionName = solution.Name;
             this.SolutionPath = solution.Path;
             this.Version = solution.Version;
 
@@ -191,9 +196,10 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             CompileConfiguration configuration = this.Configurations.SingleOrDefault(c => c.Name == configurationName);
+            this.oldSolutionName = configurationName;
 
             this.ConfigurationView.InitConfigiguration(configuration);
-            
+
             this.SelectedConfiguration = configuration;
 
             this.SaveSolution();
@@ -205,7 +211,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             IList<string> inputFolders = new List<string>(this.ImportFolderView.ImportFolders.Select(f => f.FolderPath));
             inputFolders.Add(Path.Combine(this.settingsRepository.Read()["SkyrimPath"].ToString(), @"Data\Scripts\Source"));
-            
+
             ICompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.ConfigurationView.FlagsFile,
@@ -256,7 +262,10 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Saves the selected solution to the solution repository.</summary>
         public void SaveSolution()
         {
-            this.UpdateConfigurations();
+            if (this.SelectedConfiguration != null)
+            {
+                this.UpdateConfigurations();
+            }
 
             Solution solutionToSave = new Solution
             {
@@ -270,7 +279,16 @@ namespace SkyrimCompileHelper.ViewModels
             IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>();
             solutions.Add(this.SolutionName, solutionToSave);
 
-            this.solutionRepository.Update(solutions);
+            if (this.oldSolutionName != this.SolutionName)
+            {
+                this.solutionRepository.Delete(new List<string> { this.oldSolutionName });
+                this.solutionRepository.Create(solutions);
+                this.oldSolutionName = solutionToSave.Name;
+            }
+            else
+            {
+                this.solutionRepository.Update(solutions);
+            }
         }
 
         /// <summary>Moves the compiled script and remaining source files from the compilation folder to the ModOrganizer folder.</summary>
@@ -329,7 +347,7 @@ namespace SkyrimCompileHelper.ViewModels
                 File.Copy(filePath, filePath.Replace(sourcePath, destinationPath), overwrite);
             }
         }
-        
+
         /// <summary>Saves a configuration to the repository.</summary>
         private void UpdateConfigurations()
         {
@@ -343,7 +361,7 @@ namespace SkyrimCompileHelper.ViewModels
                 Quiet = this.ConfigurationView.Quiet,
                 ImportFolders = this.ImportFolderView.ImportFolders
             };
-            
+
             this.SelectedConfiguration = compConfig;
             this.Configurations.Remove(compConfig);
             this.Configurations.Add(compConfig);
