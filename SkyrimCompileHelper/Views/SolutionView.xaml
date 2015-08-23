@@ -103,7 +103,7 @@
                     Grid.ColumnSpan="2"
                     Margin="0,3,0,3">
             <TabItem Header="General">
-                <ContentControl x:Name="ConfigurationView"></ContentControl>
+                <ContentControl x:Name="ConfigurationView" />
             </TabItem>
 
             <TabItem Header="Import Folders">
