@@ -4,6 +4,13 @@ E.g. the event 01010
 ## EventId List
 ### General (0xxyy)
 * 0: General
+  * 0: General
+  * 1: Created Folder
+  * 2: Delete Folder
+  * 3: Created File
+  * 4: Moved File
+  * 5: Copied File
+  * 6: Deleted File  
 * 1: Missing Library
   * 0: Could not resolve missing Library
   * 1: Missing library resolved
@@ -21,6 +28,7 @@ E.g. the event 01010
   * 1: Switched
   * 2: Deleted
   * 3: Changed Settings
+  * 4: General
 
 ### Compiler (3xxyy)
 * 0: Compiler Message
