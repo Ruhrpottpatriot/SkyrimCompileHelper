@@ -10,8 +10,8 @@ namespace SkyrimCompileHelper.ViewModels
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Diagnostics;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Reflection;
@@ -46,10 +46,14 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>The log writer.</summary>
         private readonly LogWriter logWriter;
 
+        /// <summary>The event aggregator.</summary>
+        private readonly IEventAggregator eventAggregator;
+
         /// <summary>Stores the old solution name, so the repository is able to properly delete it after a rename.</summary>
         private string oldSolutionName;
 
         /// <summary>Initialises a new instance of the <see cref="SolutionViewModel"/> class.</summary>
+        [SuppressMessage("ReSharper", "UnusedMember.Global", Justification = "Used for Caliburn.Micro design time support.")]
         public SolutionViewModel()
         {
             if (Execute.InDesignMode)
@@ -80,28 +84,35 @@ namespace SkyrimCompileHelper.ViewModels
         {
             // Subscribe to the event aggregator
             eventAggregator.Subscribe(this);
+            this.eventAggregator = eventAggregator;
 
-            // Intialise sub ViewModels
-            this.ImportFolderView = new ImportFolderViewModel(windowManager, eventAggregator);
-            this.ConfigurationView = new ConfigurationViewModel(eventAggregator);
-
-            // Initilaize readonly fields
+            // Initialise readonly fields
             this.windowManager = windowManager;
             this.settingsRepository = settingsRepository;
             this.solutionRepository = solutionRepository;
             this.logWriter = logWriter;
 
-            // Init the parameters
+            // Set the solution parameters
             this.SolutionName = solution.Name;
             this.oldSolutionName = solution.Name;
             this.SolutionPath = solution.Path;
             this.Version = solution.Version;
 
+            // Set the configuration parameters
             this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
             this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
-            this.SelectedConfiguration = this.Configurations.SingleOrDefault(c => c.Name == solution.SelectedConfiguration);
-            this.ConfigurationView.InitConfigiguration(this.SelectedConfiguration);
+            this.SelectedConfiguration = solution.SelectedConfiguration;
+
+            // Intialise sub ViewModels
+            this.ImportFolderView = new ImportFolderViewModel(windowManager, eventAggregator);
+            this.ConfigurationView = new ConfigurationViewModel(eventAggregator, this.Configurations.SingleOrDefault(c => c.Name == this.SelectedConfiguration));
         }
+
+        /// <summary>Gets or sets the import folder view.</summary>
+        public ImportFolderViewModel ImportFolderView { get; set; }
+
+        /// <summary>Gets or sets the configuration view.</summary>
+        public ConfigurationViewModel ConfigurationView { get; set; }
 
         /// <summary>Gets or sets the solution name.</summary>
         public string SolutionName { get; set; }
@@ -116,18 +127,129 @@ namespace SkyrimCompileHelper.ViewModels
         public IList<CompileConfiguration> Configurations { get; set; }
 
         /// <summary>Gets or sets the selected configuration.</summary>
-        public CompileConfiguration SelectedConfiguration { get; set; }
+        public string SelectedConfiguration { get; set; }
 
-        /// <summary>Gets or sets the import folder view.</summary>
-        public ImportFolderViewModel ImportFolderView { get; set; }
+        /// <summary>Changes the compile configuration for the current solution.</summary>
+        /// <param name="sender">The <see cref="ComboBox"/> that holds the selected item.</param>
+        public void ChangeConfiguration(ComboBox sender)
+        {
+            // If the selected item is null, we do nothing.
+            if (sender.SelectedItem == null)
+            {
+                return;
+            }
 
-        /// <summary>Gets or sets the configuration view.</summary>
-        public ConfigurationViewModel ConfigurationView { get; set; }
+            // Get the name of the selected compile configuration
+            string configurationName = ((CompileConfiguration)sender.SelectedItem).Name;
+
+            // If then name is equal to <edit...> then we open the configuration manager
+            if (configurationName == Constants.EditConst)
+            {
+                // Filter out the <edit...> item so we don't pass it over to the manager
+                var filteredConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList();
+
+                // Create a new ViewModel
+                var viewModel = new ConfigurationManagerViewModel(this.windowManager, filteredConfigurations);
+
+                // Get how the window was closed
+                bool? answer = this.windowManager.ShowDialog(viewModel);
+
+                // If the window was closed with "true" we want to handle the data coming back
+                if (answer.HasValue && answer.Value)
+                {
+                    this.Configurations = viewModel.Configurations;
+                }
+
+                // Since we just replaced the whole configurations list, we need to re add the <edit...> item
+                this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
+
+                // After adding a new configuration to the solution we need to save it.
+                this.SaveSolution();
+
+                // We don't want to do anything more, so we return.
+                return;
+            }
+
+            // If the user didn't select the <edit...> item, we simply set the new selected configuration
+            this.SelectedConfiguration = configurationName;
+
+            // After that we want to show the user the configuration view
+            this.ConfigurationView = new ConfigurationViewModel(this.eventAggregator, this.Configurations.Single(c => c.Name == this.SelectedConfiguration));
+
+            // Again, we want to save the changes in the solution.
+            this.SaveSolution();
+        }
+
+        /// <summary>Saves the selected solution to the solution repository.</summary>
+        public void SaveSolution()
+        {
+            // Generate solution object with the most basic details we know we have.
+            Solution sln = new Solution
+            {
+                Path = this.SolutionPath,
+                Name = this.SolutionName,
+                Version = this.Version
+            };
+
+            // If there is no configuration selected the user didn't change anything,
+            // thus we can savely assume that nothing changed
+            if (string.IsNullOrEmpty(this.SelectedConfiguration))
+            {
+                sln.CompileConfigurations = this.Configurations;
+            }
+            else
+            {
+                sln.SelectedConfiguration = this.SelectedConfiguration;
+
+                var config = this.GenerateConfigurationDetails();
+                config.Name = this.SelectedConfiguration;
+                this.Configurations.Remove(config);
+                this.Configurations.Add(config);
+                sln.CompileConfigurations = this.Configurations;
+            }
+
+            // Now we need to pass the solution to the repository. Since it only accepts DictionaryRanges
+            // we need to wrap the solution.
+            IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>();
+            solutions.Add(this.SolutionName, sln);
+
+            // We also need to check if the solution ame changed and handle it properly.
+            if (this.oldSolutionName != this.SolutionName)
+            {
+                this.solutionRepository.Delete(new List<string> { this.oldSolutionName });
+                this.solutionRepository.Create(solutions);
+                this.oldSolutionName = sln.Name;
+            }
+            else
+            {
+                this.solutionRepository.Update(solutions);
+            }
+        }
+
+        /// <summary>Changes the version of a solution.</summary>
+        public void ChangeVersion()
+        {
+            // Create the ViewModel
+            ChangeVersionViewModel viewModel = new ChangeVersionViewModel(this.Version);
+
+            // Get how the window was closed
+            bool? answer = this.windowManager.ShowDialog(viewModel);
+
+            // Do a switch based on the closed value.
+            if (answer.HasValue && answer.Value)
+            {
+                this.Version = viewModel.GetVersion();
+            }
+
+            // Since the version changed we need to save the solution.
+            this.SaveSolution();
+        }
 
         /// <summary>Opens the solution folder in the windows explorer.</summary>
         /// <exception cref="NotImplementedException">Not yet implemented</exception>
         public void OpenSolutionFolder()
         {
+            // Since we don't know if the path is valid, we have to be careful of exceptions
             try
             {
                 Process.Start(this.SolutionPath);
@@ -138,86 +260,51 @@ namespace SkyrimCompileHelper.ViewModels
             }
         }
 
-        /// <summary>Changes the version of a solution.</summary>
-        public void ChangeVersion()
+        /// <summary>Cleans the output folder from any leftover files.</summary>
+        public void CleanOutputFolders()
         {
-            ChangeVersionViewModel viewModel = new ChangeVersionViewModel(this.Version);
-
-            Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
+            // Get the path of the mod inside the ModOrganizer installation folder,
+            string modOrganizerSolutionPath = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
+            
+            // If the directory exists, we delete it.
+            if (Directory.Exists(modOrganizerSolutionPath))
             {
-                { "ResizeMode", ResizeMode.NoResize } 
-            };
-
-            bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
-
-            if (answer.HasValue && answer.Value)
-            {
-                this.Version = viewModel.GetVersion();
+                Directory.Delete(modOrganizerSolutionPath, true);
             }
 
-            this.SaveSolution();
-        }
+            // Since the directory either does not exist, or was recently deleted we need to recreate it
+            Directory.CreateDirectory(modOrganizerSolutionPath);
 
-        /// <summary>Changes the compile configuration for the current solution.</summary>
-        /// <param name="sender">The <see cref="ComboBox"/> that holds the selected item.</param>
-        /// <exception cref="NotImplementedException">Thrown when the configuration manger is selected.</exception>
-        public void ChangeConfiguration(ComboBox sender)
-        {
-            if (sender.SelectedItem == null)
+            // Now the only folder remaining is the bin folder inside the repository folder.
+            string binPath = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration);
+
+            // Again, check if the folder does exist, we delete it
+            if (Directory.Exists(binPath))
             {
-                return;
+                Directory.Delete(binPath, true);
             }
 
-            string configurationName = ((CompileConfiguration)sender.SelectedItem).Name;
-
-            if (configurationName == Constants.EditConst)
-            {
-                IEnumerable<CompileConfiguration> configurations = this.Configurations.Where(c => c.Name != Constants.EditConst);
-
-                ConfigurationManagerViewModel viewModel = new ConfigurationManagerViewModel(this.windowManager, configurations.ToList());
-
-                Dictionary<string, object> settingsDictionary = new Dictionary<string, object>
-                {
-                    { "ResizeMode", ResizeMode.NoResize }
-                };
-
-                bool? answer = this.windowManager.ShowDialog(viewModel, null, settingsDictionary);
-
-                if (answer.HasValue && answer.Value)
-                {
-                    this.Configurations = viewModel.Configurations;
-                }
-
-                this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
-
-                this.SaveSolution();
-
-                return;
-            }
-
-            CompileConfiguration configuration = this.Configurations.SingleOrDefault(c => c.Name == configurationName);
-            this.oldSolutionName = configurationName;
-
-            this.ConfigurationView.InitConfigiguration(configuration);
-
-            this.SelectedConfiguration = configuration;
-
-            this.SaveSolution();
+            // And again, recreate the folder
+            Directory.CreateDirectory(binPath);
         }
 
         /// <summary>Compiles the source files with the selected configuration.</summary>
         /// <exception cref="NotImplementedException">Not yet implemented.</exception>
         public void Compile()
         {
+            // Get the list of input folders the user added himself
             IList<string> inputFolders = new List<string>(this.ImportFolderView.ImportFolders.Select(f => f.FolderPath));
+            
+            // We always want to add skyrims data folder, if only for the flags file.
             inputFolders.Add(Path.Combine(this.settingsRepository.Read()["SkyrimPath"].ToString(), @"Data\Scripts\Source"));
 
+            // Create a new Compiler factory and pass down the parameters
             ICompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.ConfigurationView.FlagsFile,
                 ImportFolders = inputFolders,
                 CompilerTarget = Path.Combine(this.SolutionPath, "src"),
-                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name, "scripts"),
+                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration, "scripts"),
                 All = this.ConfigurationView.All,
                 Quiet = this.ConfigurationView.Quiet,
                 Debug = this.ConfigurationView.Debug,
@@ -225,70 +312,20 @@ namespace SkyrimCompileHelper.ViewModels
                 AssemblyOptions = this.ConfigurationView.SelectedAssemblyOption
             };
 
+            // Increase the build by one per compile
             int build = Convert.ToInt32(string.IsNullOrEmpty(this.Version.Build) ? "0" : this.Version.Build) + 1;
             this.Version = this.Version.Change(build: build.ToString());
 
+            // Compile and move
             compilerFactory.Compile();
             this.MoveCompileFiles();
         }
-
-        /// <summary>Cleans the output folder from any leftover files.</summary>
-        public void CleanOutputFolders()
-        {
-            string modOrganizerSolutionPath = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
-            if (Directory.Exists(modOrganizerSolutionPath))
-            {
-                Directory.Delete(modOrganizerSolutionPath, true);
-            }
-
-            Directory.CreateDirectory(modOrganizerSolutionPath);
-
-            string binPath = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name);
-            if (Directory.Exists(binPath))
-            {
-                Directory.Delete(binPath, true);
-            }
-
-            Directory.CreateDirectory(binPath);
-        }
-
-        /// <summary>Handles the message.</summary>
+        
+        /// <summary>Handle the save solution messages.</summary>
         /// <param name="message">The message.</param>
         public void Handle(SaveSolutionEvenHandle message)
         {
             this.SaveSolution();
-        }
-
-        /// <summary>Saves the selected solution to the solution repository.</summary>
-        public void SaveSolution()
-        {
-            if (this.SelectedConfiguration != null)
-            {
-                this.UpdateConfigurations();
-            }
-
-            Solution solutionToSave = new Solution
-            {
-                Path = this.SolutionPath,
-                Name = this.SolutionName,
-                Version = this.Version,
-                SelectedConfiguration = this.SelectedConfiguration != null ? this.SelectedConfiguration.Name : string.Empty,
-                CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList()
-            };
-
-            IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>();
-            solutions.Add(this.SolutionName, solutionToSave);
-
-            if (this.oldSolutionName != this.SolutionName)
-            {
-                this.solutionRepository.Delete(new List<string> { this.oldSolutionName });
-                this.solutionRepository.Create(solutions);
-                this.oldSolutionName = solutionToSave.Name;
-            }
-            else
-            {
-                this.solutionRepository.Update(solutions);
-            }
         }
 
         /// <summary>Moves the compiled script and remaining source files from the compilation folder to the ModOrganizer folder.</summary>
@@ -298,60 +335,70 @@ namespace SkyrimCompileHelper.ViewModels
         /// ModOrganizer folder.</remarks>
         private void MoveCompileFiles()
         {
-            // Move the optimize files from, the application folder to the solution folder where they belong.
+            // Since the compiler places the optimise files in the application folder, we need to get the path of it
             string appPath = Path.GetDirectoryName(Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path));
 
+            // Since Path.GetDirectoryName() can be null, we need watch out for that
             if (appPath != null)
             {
+                // Get all the files with the .dot extension inside the app topmost folder so we can move it
                 foreach (string file in Directory.GetFiles(appPath, "*.dot", SearchOption.TopDirectoryOnly))
                 {
                     string fileName = Path.GetFileName(file);
 
                     if (!string.IsNullOrEmpty(fileName))
                     {
-                        string destination = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name, fileName);
+                        // Get the complete path for the destination
+                        string destination = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration, fileName);
 
+                        // If the file exists, we want to delete it first
                         if (File.Exists(destination))
                         {
                             File.Delete(destination);
                         }
 
+                        // After we made sure, that the destinationfile does not exist, 
+                        // we can safely mofe the file we want to move
                         File.Move(file, destination);
                     }
                 }
             }
 
-            // Now we check if the user wants to copy the script source files and copy them if necessary.
+            // Check if the user wants to copy the source script files
             if (this.ConfigurationView.CopySourceFiles)
             {
-                this.CopyFilesWithSubFolders(Path.Combine(this.SolutionPath, @"src\scripts"), Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name, @"scripts\source"), true);
+                // Copy the contents of the src folder
+                this.CopyFilesWithSubFolders(Path.Combine(this.SolutionPath, @"src\scripts"), Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration, @"scripts\source"), true);
             }
 
             // Lastly we copy the whole configuration folder to the ModOrganizerFolder
-            this.CopyFilesWithSubFolders(Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration.Name), Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName), true);
+            this.CopyFilesWithSubFolders(Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration), Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName), true);
         }
-
+        
         /// <summary>Copies the content of a folder with the contents of all the sub-folders from one path to another.</summary>
         /// <param name="sourcePath">The source path.</param>
         /// <param name="destinationPath">The destination path.</param>
         /// <param name="overwrite">True, if existing files should be overwritten, otherwise false.</param>
         private void CopyFilesWithSubFolders(string sourcePath, string destinationPath, bool overwrite = false)
         {
+            // Since File.Copy() does not create any foders, we need to create them ourselves.
             foreach (string directoryPath in Directory.GetDirectories(sourcePath, "*", SearchOption.AllDirectories))
             {
                 Directory.CreateDirectory(directoryPath.Replace(sourcePath, destinationPath));
             }
 
+            // Now we copy all files from their origin to destination, overwriting if the flag is set.
             foreach (string filePath in Directory.GetFiles(sourcePath, "*.*", SearchOption.AllDirectories))
             {
                 File.Copy(filePath, filePath.Replace(sourcePath, destinationPath), overwrite);
             }
         }
 
-        /// <summary>Saves a configuration to the repository.</summary>
-        private void UpdateConfigurations()
+        /// <summary>Generates the configuration details from the selected configuration.</summary>
+        /// <returns>A <see cref="CompileConfiguration" />.</returns>
+        private CompileConfiguration GenerateConfigurationDetails()
         {
-            CompileConfiguration compConfig = new CompileConfiguration
+            return new CompileConfiguration
             {
                 All = this.ConfigurationView.All,
                 AssemblyOption = this.ConfigurationView.SelectedAssemblyOption,
@@ -361,10 +408,6 @@ namespace SkyrimCompileHelper.ViewModels
                 Quiet = this.ConfigurationView.Quiet,
                 ImportFolders = this.ImportFolderView.ImportFolders
             };
-
-            this.SelectedConfiguration = compConfig;
-            this.Configurations.Remove(compConfig);
-            this.Configurations.Add(compConfig);
         }
     }
 }

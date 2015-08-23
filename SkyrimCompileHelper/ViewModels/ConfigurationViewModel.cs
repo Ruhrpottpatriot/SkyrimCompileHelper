@@ -41,9 +41,31 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Initialises a new instance of the <see cref="ConfigurationViewModel"/> class.</summary>
         /// <param name="eventAggregator">An event aggregator instance used to publish application wide messages.</param>
-        public ConfigurationViewModel(IEventAggregator eventAggregator)
+        /// <param name="configuration">The configuration to be used with this ViewModel.</param>
+        public ConfigurationViewModel(IEventAggregator eventAggregator, CompileConfiguration configuration)
         {
             this.eventAggregator = eventAggregator;
+
+            // Set sensible defaults, if the configuration is null
+            if (configuration == null)
+            {
+                this.All = true;
+                this.Debug = false;
+                this.Optimize = false;
+                this.Quiet = true;
+                this.FlagsFile = "TESV_Papyrus_Flags.flg";
+                this.SelectedAssemblyOption = AssemblyOption.AssembleAndDelete;
+                
+                // Since we want to keep the defaults, we return here.
+                return;
+            }
+
+            this.All = configuration.All;
+            this.Debug = configuration.Debug;
+            this.Optimize = configuration.Optimize;
+            this.Quiet = configuration.Quiet;
+            this.FlagsFile = configuration.FlagFile;
+            this.SelectedAssemblyOption = configuration.AssemblyOption;
         }
 
         /// <summary>Gets or sets the compiler flags.</summary>
@@ -66,23 +88,6 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Gets or sets the selected assembly option.</summary>
         public AssemblyOption SelectedAssemblyOption { get; set; }
-
-        /// <summary>Sets the properties to their actual value as saved in the solution file.</summary>
-        /// <param name="configuration">The configuration containing the property values.</param>
-        public void InitConfigiguration(CompileConfiguration configuration)
-        {
-            if (configuration == null)
-            {
-                return;
-            }
-
-            this.All = configuration.All;
-            this.Debug = configuration.Debug;
-            this.Optimize = configuration.Optimize;
-            this.Quiet = configuration.Quiet;
-            this.FlagsFile = configuration.FlagFile;
-            this.SelectedAssemblyOption = configuration.AssemblyOption;
-        }
 
         /// <summary>Publishes a message on the <see cref="IEventAggregator"/> to notify the application to save the solution.</summary>
         public void SaveSolution()
