@@ -195,7 +195,7 @@ namespace SkyrimCompileHelper.ViewModels
             // thus we can savely assume that nothing changed
             if (string.IsNullOrEmpty(this.SelectedConfiguration))
             {
-                sln.CompileConfigurations = this.Configurations;
+                sln.CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList();
             }
             else
             {
@@ -205,7 +205,7 @@ namespace SkyrimCompileHelper.ViewModels
                 config.Name = this.SelectedConfiguration;
                 this.Configurations.Remove(config);
                 this.Configurations.Add(config);
-                sln.CompileConfigurations = this.Configurations;
+                sln.CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList();
             }
 
             // Now we need to pass the solution to the repository. Since it only accepts DictionaryRanges
