@@ -140,7 +140,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             // Get the name of the selected compile configuration
-            string configurationName = ((CompileConfiguration)sender.SelectedItem).Name;
+            string configurationName = ((CompileConfiguration)sender.SelectedValue).Name;
 
             // If then name is equal to <edit...> then we open the configuration manager
             if (configurationName == Constants.EditConst)
