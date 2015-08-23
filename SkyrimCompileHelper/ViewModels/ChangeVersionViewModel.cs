@@ -69,16 +69,16 @@ namespace SkyrimCompileHelper.ViewModels
             return new SemVersion(this.Major, this.Minor, this.Patch, this.Prerelease, this.Build);
         }
 
-        /// <summary>Closes the windows with a success code.</summary>
+        /// <summary>Closes the window with an error code.</summary>
         public void Close()
         {
-            this.TryClose(true);
+            this.TryClose(false);
         }
 
-        /// <summary>Closes the window with an error code.</summary>
+        /// <summary>Closes the windows with a success code.</summary>
         public void Save()
         {
-            this.TryClose(false);
+            this.TryClose(true);
         }
     }
 }
