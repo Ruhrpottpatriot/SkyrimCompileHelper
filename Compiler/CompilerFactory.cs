@@ -12,6 +12,7 @@
 namespace SkyrimCompileHelper.Compiler
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
@@ -25,29 +26,16 @@ namespace SkyrimCompileHelper.Compiler
     using PapyrusCompiler;
 
     /// <summary>This class contains methods and properties to compile script files into their binary representation used by Skyrim.</summary>
-    /// ToDo: Implement IDisposable (warning: breaking change!)
-    public class CompilerFactory : ICompilerFactory, IDisposable
+    public class CompilerFactory : IDisposable
     {
-        /// <summary>The log writer.</summary>
-        private LogWriter logWriter;
-
         /// <summary>The absolute path to skyrims install directory.</summary>
         private readonly string skyrimPath;
 
         /// <summary>A list of files that couldn't be compiled.</summary>
-        private readonly IList<string> failedCompilations;
+        private readonly ConcurrentBag<string> failedCompilations;
 
-        /// <summary>Used to synchronize failure data.</summary>
-        private Mutex failureMutex;
-
-        /// <summary>The number of successful compilations.</summary>
-        private int sucessfulCompilations;
-
-        /// <summary>A list of files that should be compiled.</summary>
-        private IList<string> filesToCompile;
-
-        /// <summary>Index of the last file that was compiled. This variable is shared across threads.</summary>
-        private int lastFileNumber = -1;
+        /// <summary>The log writer.</summary>
+        private LogWriter logWriter;
 
         /// <summary>Initialises a new instance of the <see cref="CompilerFactory"/> class.</summary>
         /// <param name="skyrimPath">The absolute path to skyrims main folder.</param>
@@ -56,17 +44,13 @@ namespace SkyrimCompileHelper.Compiler
         {
             this.logWriter = logWriter;
             this.skyrimPath = skyrimPath;
-            this.failureMutex = new Mutex();
-            this.failedCompilations = new List<string>();
+            this.failedCompilations = new ConcurrentBag<string>();
 
             AppDomain.CurrentDomain.AssemblyResolve += this.CurrentDomainAssemblyResolve;
         }
 
         /// <summary>Gets or sets the compiler flags.</summary>
         public string Flags { get; set; }
-
-        /// <summary>Gets or sets a value indicating whether a complete folder should be compiled.</summary>
-        public bool All { get; set; }
 
         /// <summary>Gets or sets a value indicating whether the compiler should suppress non critical information.</summary>
         public bool Quiet { get; set; }
@@ -81,8 +65,7 @@ namespace SkyrimCompileHelper.Compiler
         public AssemblyOption AssemblyOptions { get; set; }
 
         /// <summary>Gets or sets the file to be compiled.</summary>
-        /// <remarks>If <see cref="All"/> is set to true, this property must point to a directory.</remarks>
-        public string CompilerTarget { get; set; }
+        public ICollection<string> FilesToCompile { get; set; }
 
         /// <summary>Gets or sets the import folders.</summary>
         public IEnumerable<string> ImportFolders { get; set; }
@@ -91,59 +74,17 @@ namespace SkyrimCompileHelper.Compiler
         public string OutputFolder { get; set; }
 
         /// <summary>Starts the Skyrim script compiler with the specified settings.</summary>
-        /// <exception cref="CompilerFlagsException">Raised when the specified flags are empty.</exception>
-        /// <exception cref="CompilerFolderException">Raised when input or output folders are not specified or emtpy.</exception>
-        public void Compile()
+        /// <param name="cancellationToken">The token to cancel the operation.</param>
+        /// <returns>The <see cref="Task"/>.</returns>
+        public async Task CompileAsync(CancellationToken cancellationToken)
         {
-            if (this.All)
-            {
-                DirectoryInfo directoryInfo = new DirectoryInfo(this.CompilerTarget);
-                if (directoryInfo.Exists)
-                {
-                    this.filesToCompile = directoryInfo.GetFiles("*.psc", SearchOption.AllDirectories).Select(f => f.ToString()).ToList();
-
-                    if (!this.filesToCompile.Any())
-                    {
-                        Console.WriteLine("Folder \"" + directoryInfo.FullName + "\" does not contain any script files");
-                        LogEntry noFilesDetectedEntry = new LogEntry
-                        {
-                            EventId = 30100,
-                            Title = "No Script files found",
-                            Message = string.Format("The specified folder \"{0}\" does not contain any script files", directoryInfo.FullName),
-                            Categories = { "Compiler", "Error" },
-                            Severity = TraceEventType.Warning
-                        };
-                        this.logWriter.Write(noFilesDetectedEntry);
-                        return;
-                    }
-                }
-                else
-                {
-                    LogEntry directoyMissingEntry = new LogEntry
-                    {
-                        EventId = 30101,
-                        Title = "Folder does not exist",
-                        Message = string.Format("Folder \"{0}\" does not exist", directoryInfo.FullName),
-                        Categories = { "Compiler", "Error" },
-                        Severity = TraceEventType.Warning
-                    };
-                    this.logWriter.Write(directoyMissingEntry);
-                    return;
-                }
-            }
-            else
-            {
-                this.filesToCompile = new[] { this.CompilerTarget };
-            }
-
-            int compileTaskCount = Math.Min(this.filesToCompile.Count, Environment.ProcessorCount + 1);
-            if (!this.Quiet)
+           if (!this.Quiet)
             {
                 LogEntry compileStartEntry = new LogEntry
                 {
                     EventId = 30000,
                     Title = "Starting Compilation",
-                    Message = string.Format("Starting {0} compile threads for {1} files...", compileTaskCount, this.filesToCompile.Count),
+                    Message = string.Format("Starting compilation for {0} files...", this.FilesToCompile.Count),
                     Categories = { "Compiler" },
                     Severity = TraceEventType.Information
                 };
@@ -151,15 +92,9 @@ namespace SkyrimCompileHelper.Compiler
             }
 
             // Generate the thread for the compilation
-            Task[] tasks = new Task[compileTaskCount];
-            for (int i = 0; i < compileTaskCount; i++)
-            {
-                var lastTask = new Task(this.CompilerThread);
-                lastTask.Start();
-                tasks[i] = lastTask;
-            }
+            IEnumerable<Task> tasks = this.FilesToCompile.Select(file => Task.Run(() => this.CompilerThread(file), cancellationToken));
 
-            Task.WaitAll(tasks);
+            await Task.WhenAll(tasks);
 
             if (!this.Quiet)
             {
@@ -167,29 +102,54 @@ namespace SkyrimCompileHelper.Compiler
                 {
                     EventId = 30001,
                     Title = "Finished Compilation",
-                    Message = string.Format("Batch compile of {0} files finished. {1} succeeded, {2} failed.", this.filesToCompile.Count, this.sucessfulCompilations, this.filesToCompile.Count - this.sucessfulCompilations),
-                    Categories = (this.filesToCompile.Count - this.sucessfulCompilations) > 0 ? new[] { "Compiler", "Error" } : new[] { "Compiler" },
-                    Severity = (this.filesToCompile.Count - this.sucessfulCompilations) > 0 ? TraceEventType.Warning : TraceEventType.Information
+                    Message = string.Format("Compilation of {0} files has finished. {1} succeeded, {2} failed.", this.FilesToCompile.Count, this.FilesToCompile.Count - this.failedCompilations.Count, this.failedCompilations.Count),
+                    Categories = this.failedCompilations.Count > 0 ? new[] { "Compiler", "Error" } : new[] { "Compiler" },
+                    Severity = this.failedCompilations.Count > 0 ? TraceEventType.Warning : TraceEventType.Information
                 };
                 this.logWriter.Write(finishedCompilingEntry);
 
-                for (int i = 0; i < this.failedCompilations.Count; i++)
+                int i = 1;
+                foreach (string compilation in this.failedCompilations)
                 {
                     LogEntry failedCompilationEntry = new LogEntry
                     {
                         EventId = 30102,
                         Title = string.Format("Failed File No. {0}", i),
-                        Message = string.Format("Failed on {0}", this.failedCompilations[i]),
+                        Message = string.Format("Failed on {0}", compilation),
                         Categories = { "Compiler", "Error" },
                         Severity = TraceEventType.Warning
                     };
                     this.logWriter.Write(failedCompilationEntry);
+
+                    i += 1;
                 }
             }
         }
 
-        /// <summary>Compiles a single script file into the corresponding binary and assembly representation.</summary>
-        private void CompilerThread()
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.</summary>
+        /// <param name="disposing">True when we want to dispose, otherwise false.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.logWriter != null)
+                {
+                    this.logWriter.Dispose();
+                    this.logWriter = null;
+                }
+            }
+        }
+
+        /// <summary>Compiles a single script file into the corresponding binary and/or assembly representation.</summary>
+        /// <param name="file">The path to the file that is to be compiled.</param>
+        private void CompilerThread(string file)
         {
             IPapyrusCompiler compiler = new PapyrusCompiler
             {
@@ -203,62 +163,57 @@ namespace SkyrimCompileHelper.Compiler
             compiler.CompilerErrorHandler += this.CompilerErrorHandler;
             compiler.CompilerNotifyHandler += this.CompilerNotifyHandler;
 
-            int index;
-            while ((index = Interlocked.Increment(ref this.lastFileNumber)) < this.filesToCompile.Count)
+            // Get the file extension and check if the file is a valid script file.
+            string extension = Path.GetExtension(file);
+
+            string fileName = string.Empty;
+            if (extension != null && extension.ToLowerInvariant() == ".psc")
             {
-                string fileToCompile = this.filesToCompile[index];
+                // If the file is a papyrus script file we want to use it withput extension.
+                fileName = Path.GetFileNameWithoutExtension(file);
+            }
 
-                string extension = Path.GetExtension(fileToCompile);
-                if (extension != null && extension.ToLowerInvariant() == ".psc")
+            if (!this.Quiet)
+            {
+                LogEntry compilationEntry = new LogEntry
                 {
-                    fileToCompile = Path.GetFileNameWithoutExtension(fileToCompile);
-                }
+                    EventId = 30002,
+                    Title = "Compiling File",
+                    Message = string.Format("Compiling \"{0}\"...\n", fileName),
+                    Categories = { "Compiler" },
+                    Severity = TraceEventType.Information
+                };
+                this.logWriter.Write(compilationEntry);
+            }
 
+            if (compiler.Compile(fileName, this.Flags, this.Optimize))
+            {
                 if (!this.Quiet)
                 {
                     LogEntry compilationEntry = new LogEntry
                     {
-                        EventId = 30002,
-                        Title = "Compiling File",
-                        Message = string.Format("Compiling \"{0}\"...\n", fileToCompile),
+                        EventId = 30003,
+                        Title = "Finished Compiling File",
+                        Message = string.Format("Compilation of file {0} succeeded", file),
                         Categories = { "Compiler" },
                         Severity = TraceEventType.Information
                     };
                     this.logWriter.Write(compilationEntry);
                 }
-
-                if (compiler.Compile(fileToCompile, this.Flags, this.Optimize))
+            }
+            else
+            {
+                LogEntry failedCompilationEntry = new LogEntry
                 {
-                    Interlocked.Increment(ref this.sucessfulCompilations);
-                    if (!this.Quiet)
-                    {
-                        LogEntry compilationEntry = new LogEntry
-                        {
-                            EventId = 30003,
-                            Title = "Finished Compiling File",
-                            Message = string.Format("Compilation of file {0} succeeded", fileToCompile),
-                            Categories = { "Compiler" },
-                            Severity = TraceEventType.Information
-                        };
-                        this.logWriter.Write(compilationEntry);
-                    }
-                }
-                else
-                {
-                    LogEntry failedCompilationEntry = new LogEntry
-                    {
-                        EventId = 30102,
-                        Title = "Failed file compilation",
-                        Message = string.Format("No output generated for {0}, compilation failed.", this.filesToCompile[index]),
-                        Categories = { "Compiler", "Error" },
-                        Severity = TraceEventType.Warning
-                    };
-                    this.logWriter.Write(failedCompilationEntry);
+                    EventId = 30102,
+                    Title = "Failed file compilation",
+                    Message = string.Format("No output generated for {0}, compilation failed.", file),
+                    Categories = { "Compiler", "Error" },
+                    Severity = TraceEventType.Warning
+                };
+                this.logWriter.Write(failedCompilationEntry);
 
-                    this.failureMutex.WaitOne();
-                    this.failedCompilations.Add(this.filesToCompile[index]);
-                    this.failureMutex.ReleaseMutex();
-                }
+                this.failedCompilations.Add(file);
             }
         }
 
@@ -332,33 +287,6 @@ namespace SkyrimCompileHelper.Compiler
             this.logWriter.Write(missingAssemblyLoadedEntry);
 
             return assembly;
-        }
-
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (this.failureMutex != null)
-                {
-                    this.failureMutex.Dispose();
-                    this.failureMutex = null;
-                }
-
-                if (this.logWriter != null)
-                {
-                    this.logWriter.Dispose();
-                    this.logWriter = null;
-                }
-            }
         }
     }
 }

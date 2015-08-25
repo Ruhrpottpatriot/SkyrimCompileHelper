@@ -15,6 +15,7 @@ namespace SkyrimCompileHelper.ViewModels
     using System.IO;
     using System.Linq;
     using System.Reflection;
+    using System.Threading;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -265,7 +266,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             // Get the path of the mod inside the ModOrganizer installation folder,
             string modOrganizerSolutionPath = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
-            
+
             // If the directory exists, we delete it.
             if (Directory.Exists(modOrganizerSolutionPath))
             {
@@ -290,7 +291,7 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Compiles the source files with the selected configuration.</summary>
         /// <exception cref="NotImplementedException">Not yet implemented.</exception>
-        public void Compile()
+        public async void Compile()
         {
             // Get the list of input folders the user added himself
             IList<string> inputFolders = new List<string>(this.ImportFolderView.ImportFolders.Select(f => f.FolderPath));
@@ -298,14 +299,16 @@ namespace SkyrimCompileHelper.ViewModels
             // We always want to add skyrims data folder, if only for the flags file.
             inputFolders.Add(Path.Combine(this.settingsRepository.Read()["SkyrimPath"].ToString(), @"Data\Scripts\Source"));
 
+            var files = Directory.GetFiles(Path.Combine(this.SolutionPath, "src"), "*.psc", SearchOption.AllDirectories);
+
+
             // Create a new Compiler factory and pass down the parameters
-            ICompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
+            CompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.ConfigurationView.FlagsFile,
                 ImportFolders = inputFolders,
-                CompilerTarget = Path.Combine(this.SolutionPath, "src"),
+                FilesToCompile = files,
                 OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration, "scripts"),
-                All = this.ConfigurationView.All,
                 Quiet = this.ConfigurationView.Quiet,
                 Debug = this.ConfigurationView.Debug,
                 Optimize = this.ConfigurationView.Optimize,
@@ -317,10 +320,10 @@ namespace SkyrimCompileHelper.ViewModels
             this.Version = this.Version.Change(build: build.ToString());
 
             // Compile and move
-            compilerFactory.Compile();
+            await compilerFactory.CompileAsync(CancellationToken.None);
             this.MoveCompileFiles();
         }
-        
+
         /// <summary>Handle the save solution messages.</summary>
         /// <param name="message">The message.</param>
         public void Handle(SaveSolutionEvenHandle message)
@@ -374,7 +377,7 @@ namespace SkyrimCompileHelper.ViewModels
             // Lastly we copy the whole configuration folder to the ModOrganizerFolder
             this.CopyFilesWithSubFolders(Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration), Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName), true);
         }
-        
+
         /// <summary>Copies the content of a folder with the contents of all the sub-folders from one path to another.</summary>
         /// <param name="sourcePath">The source path.</param>
         /// <param name="destinationPath">The destination path.</param>
