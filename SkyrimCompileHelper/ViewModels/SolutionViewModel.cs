@@ -303,7 +303,7 @@ namespace SkyrimCompileHelper.ViewModels
 
 
             // Create a new Compiler factory and pass down the parameters
-            CompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
+            ICompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
             {
                 Flags = this.ConfigurationView.FlagsFile,
                 ImportFolders = inputFolders,
