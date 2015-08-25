@@ -73,9 +73,22 @@ namespace SkyrimCompileHelper.Compiler
         /// <summary>Gets or sets the output folder.</summary>
         public string OutputFolder { get; set; }
 
-        /// <summary>Starts the Skyrim script compiler with the specified settings.</summary>
+        /// <summary>Compiles the scripts with the provided settings synchronously.</summary>
+        public void Compile()
+        {
+            this.CompileAsync(CancellationToken.None).Wait();
+        }
+
+        /// <summary>Compiles the scripts with the provided settings asynchronously.</summary>
+        /// <returns>The compile <see cref="Task"/>.</returns>
+        public Task CompileAsync()
+        {
+            return this.CompileAsync(CancellationToken.None);
+        }
+
+        /// <summary>Compiles the scripts with the provided settings asynchronously.</summary>
         /// <param name="cancellationToken">The token to cancel the operation.</param>
-        /// <returns>The <see cref="Task"/>.</returns>
+        /// <returns>The compile <see cref="Task"/>.</returns>
         public async Task CompileAsync(CancellationToken cancellationToken)
         {
            if (!this.Quiet)

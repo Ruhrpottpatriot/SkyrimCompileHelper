@@ -320,7 +320,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.Version = this.Version.Change(build: build.ToString());
 
             // Compile and move
-            await compilerFactory.CompileAsync(CancellationToken.None);
+            await compilerFactory.CompileAsync();
             this.MoveCompileFiles();
         }
 
