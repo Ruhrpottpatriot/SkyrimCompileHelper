@@ -10,6 +10,7 @@ namespace SkyrimCompileHelper.ViewModels
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
@@ -61,7 +62,7 @@ namespace SkyrimCompileHelper.ViewModels
                 this.SolutionName = "Outfits of Skyrim";
                 this.Version = new SemVersion(0, 1);
                 this.SolutionPath = @"C:\Test";
-                this.Configurations = new List<CompileConfiguration>
+                this.Configurations = new ObservableCollection<CompileConfiguration>
                 {
                     new CompileConfiguration { Name = "Debug" },
                     new CompileConfiguration { Name = "Release" },
@@ -99,7 +100,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.Version = solution.Version;
 
             // Set the configuration parameters
-            this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
+            this.Configurations = new ObservableCollection<CompileConfiguration>(solution.CompileConfigurations);
             this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
             this.SelectedConfiguration = solution.SelectedConfiguration;
 
@@ -124,7 +125,7 @@ namespace SkyrimCompileHelper.ViewModels
         public SemVersion Version { get; set; }
 
         /// <summary>Gets or sets the compile configurations.</summary>
-        public IList<CompileConfiguration> Configurations { get; set; }
+        public ObservableCollection<CompileConfiguration> Configurations { get; set; }
 
         /// <summary>Gets or sets the selected configuration.</summary>
         public string SelectedConfiguration { get; set; }
@@ -157,7 +158,7 @@ namespace SkyrimCompileHelper.ViewModels
                 // If the window was closed with "true" we want to handle the data coming back
                 if (answer.HasValue && answer.Value)
                 {
-                    this.Configurations = viewModel.Configurations;
+                    this.Configurations = new ObservableCollection<CompileConfiguration>(viewModel.Configurations);
                 }
 
                 // Since we just replaced the whole configurations list, we need to re add the <edit...> item
@@ -199,13 +200,18 @@ namespace SkyrimCompileHelper.ViewModels
             }
             else
             {
-                sln.SelectedConfiguration = this.SelectedConfiguration;
-
-                var config = this.GenerateConfigurationDetails();
+                // Generate the details for the currently selected configuration
+                CompileConfiguration config = this.GenerateConfigurationDetails();
                 config.Name = this.SelectedConfiguration;
-                this.Configurations.Remove(config);
-                this.Configurations.Add(config);
-                sln.CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList();
+                
+                // Generate the list we want to save
+                List<CompileConfiguration> configs = this.Configurations.Where(c => c.Name != this.SelectedConfiguration && c.Name != Constants.EditConst).ToList();
+                configs.Add(config);
+                configs = configs.OrderBy(i => i.Name).ToList();
+                
+                // Set the solution items
+                sln.SelectedConfiguration = this.SelectedConfiguration;
+                sln.CompileConfigurations = configs;
             }
 
             // Now we need to pass the solution to the repository. Since it only accepts DictionaryRanges
@@ -224,6 +230,15 @@ namespace SkyrimCompileHelper.ViewModels
             {
                 this.solutionRepository.Update(solutions);
             }
+
+            // Refresh the view models properties
+            this.Configurations = new ObservableCollection<CompileConfiguration>(sln.CompileConfigurations)
+            {
+                new CompileConfiguration { Name = Constants.EditConst }
+            };
+
+            // Reset the selected configuration
+            this.SelectedConfiguration = sln.SelectedConfiguration;
         }
 
         /// <summary>Changes the version of a solution.</summary>
@@ -265,7 +280,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             // Get the path of the mod inside the ModOrganizer installation folder,
             string modOrganizerSolutionPath = Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName);
-            
+
             // If the directory exists, we delete it.
             if (Directory.Exists(modOrganizerSolutionPath))
             {
@@ -294,7 +309,7 @@ namespace SkyrimCompileHelper.ViewModels
         {
             // Get the list of input folders the user added himself
             IList<string> inputFolders = new List<string>(this.ImportFolderView.ImportFolders.Select(f => f.FolderPath));
-            
+
             // We always want to add skyrims data folder, if only for the flags file.
             inputFolders.Add(Path.Combine(this.settingsRepository.Read()["SkyrimPath"].ToString(), @"Data\Scripts\Source"));
 
@@ -320,7 +335,7 @@ namespace SkyrimCompileHelper.ViewModels
             compilerFactory.Compile();
             this.MoveCompileFiles();
         }
-        
+
         /// <summary>Handle the save solution messages.</summary>
         /// <param name="message">The message.</param>
         public void Handle(SaveSolutionEvenHandle message)
@@ -374,7 +389,7 @@ namespace SkyrimCompileHelper.ViewModels
             // Lastly we copy the whole configuration folder to the ModOrganizerFolder
             this.CopyFilesWithSubFolders(Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration), Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName), true);
         }
-        
+
         /// <summary>Copies the content of a folder with the contents of all the sub-folders from one path to another.</summary>
         /// <param name="sourcePath">The source path.</param>
         /// <param name="destinationPath">The destination path.</param>
