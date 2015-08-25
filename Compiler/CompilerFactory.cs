@@ -26,7 +26,7 @@ namespace SkyrimCompileHelper.Compiler
     using PapyrusCompiler;
 
     /// <summary>This class contains methods and properties to compile script files into their binary representation used by Skyrim.</summary>
-    public class CompilerFactory : IDisposable
+    public class CompilerFactory : ICompilerFactory, IDisposable
     {
         /// <summary>The absolute path to skyrims install directory.</summary>
         private readonly string skyrimPath;
