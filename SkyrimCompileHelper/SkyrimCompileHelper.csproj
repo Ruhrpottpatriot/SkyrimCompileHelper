@@ -54,7 +54,8 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="PapyrusCompilerWrapper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\PapyrusCompilerWrapper.1.0.0\lib\portable-net45+win+wpa81\PapyrusCompilerWrapper.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Program Files (x86)\Steam\steamapps\common\Skyrim\Papyrus Compiler\PapyrusCompilerWrapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="PropertyChanged">
@@ -69,6 +70,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.ObjectModel" />
     <Reference Include="System.Runtime" />
+    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml" />
@@ -188,10 +190,6 @@
     <Resource Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Compiler\Compiler.csproj">
-      <Project>{aa767a0f-f961-4f68-a38e-f9beed8bad77}</Project>
-      <Name>Compiler</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{4d07678a-bfd9-4d7b-8625-9aac541bb6f1}</Project>
       <Name>Core</Name>

@@ -11,7 +11,6 @@
 
 namespace SkyrimCompileHelper.ViewModels
 {
-    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
@@ -53,7 +52,7 @@ namespace SkyrimCompileHelper.ViewModels
             this.DisplayName = "Edit Project Configurations";
 
             this.windowManager = windowManager;
-            this.Configurations = new ObservableCollection<CompileConfiguration>(configurations);
+            this.Configurations = new ObservableCollection<CompileConfiguration>(configurations.Where(c => !c.Equals(Constants.EditCompileConfiguration)));
         }
 
         /// <summary>Gets or sets the configurations.</summary>
@@ -61,7 +60,7 @@ namespace SkyrimCompileHelper.ViewModels
 
         /// <summary>Gets or sets the selected configuration.</summary>
         public CompileConfiguration SelectedConfiguration { get; set; }
-        
+
         /// <summary>Adds a new configuration.</summary>
         public void AddConfiguration()
         {
@@ -84,6 +83,17 @@ namespace SkyrimCompileHelper.ViewModels
         public void DeleteConfiguration()
         {
             this.Configurations.Remove(this.SelectedConfiguration);
+        }
+
+        public List<CompileConfiguration> GetConfigurations()
+        {
+            var configsToReturn = this.Configurations.ToList();
+            if (!configsToReturn.Any(c => c.Equals(Constants.EditCompileConfiguration)))
+            {
+                configsToReturn.Add(Constants.EditCompileConfiguration);
+            }
+            
+            return configsToReturn;
         }
 
         /// <summary>Closes the screen.</summary>
