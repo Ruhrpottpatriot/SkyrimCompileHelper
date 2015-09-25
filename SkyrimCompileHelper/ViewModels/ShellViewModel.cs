@@ -81,7 +81,7 @@ namespace SkyrimCompileHelper.ViewModels
                 this.Solutions.Add(solution);
             }
 
-            this.Solutions.Add(new Solution { Name = Constants.EditConst });
+            this.Solutions.Add(Constants.EditSolution);
         }
 
         /// <summary>Gets or sets the repositories.</summary>
@@ -104,10 +104,10 @@ namespace SkyrimCompileHelper.ViewModels
 
             string solutionName = ((Solution)sender.SelectedItem).Name;
 
-            if (solutionName == Constants.EditConst)
+            if (solutionName == Constants.EditSolution.Name)
             {
                 // Create a copy of the solution list excluding the edit item.
-                IEnumerable<Solution> solutions = this.Solutions.Where(s => s.Name != Constants.EditConst);
+                IEnumerable<Solution> solutions = this.Solutions.Where(s => s != Constants.EditSolution);
 
                 SolutionManagerViewModel viewModel = new SolutionManagerViewModel(this.windowManager, solutions);
 
@@ -166,7 +166,7 @@ namespace SkyrimCompileHelper.ViewModels
 
                     this.solutionRepository.Delete(deletedSolutions);
 
-                    this.Solutions.Add(new Solution { Name = Constants.EditConst });
+                    this.Solutions.Add(Constants.EditSolution);
                 }
 
                 return;

@@ -4,6 +4,9 @@
 //   
 //   Copyright (c) 2015 Robert Logiewa
 // </copyright>
+// <summary>
+//   ViewModel containing methods and properties to work with a solution.
+// </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
 namespace SkyrimCompileHelper.ViewModels
@@ -16,7 +19,6 @@ namespace SkyrimCompileHelper.ViewModels
     using System.IO;
     using System.Linq;
     using System.Reflection;
-    using System.Threading;
     using System.Windows;
     using System.Windows.Controls;
 
@@ -24,11 +26,12 @@ namespace SkyrimCompileHelper.ViewModels
 
     using Microsoft.Practices.EnterpriseLibrary.Logging;
 
+    using PapyrusCompiler;
+
     using PropertyChanged;
 
     using Semver;
 
-    using SkyrimCompileHelper.Compiler;
     using SkyrimCompileHelper.Core;
     using SkyrimCompileHelper.Core.EventHandles;
 
@@ -65,9 +68,9 @@ namespace SkyrimCompileHelper.ViewModels
                 this.SolutionPath = @"C:\Test";
                 this.Configurations = new ObservableCollection<CompileConfiguration>
                 {
-                    new CompileConfiguration { Name = "Debug" },
-                    new CompileConfiguration { Name = "Release" },
-                    new CompileConfiguration { Name = Constants.EditConst }
+                    new CompileConfiguration { Name = "Debug" }, 
+                    new CompileConfiguration { Name = "Release" }, 
+                    Constants.EditCompileConfiguration
                 };
 
                 this.ConfigurationView = new ConfigurationViewModel();
@@ -101,8 +104,8 @@ namespace SkyrimCompileHelper.ViewModels
             this.Version = solution.Version;
 
             // Set the configuration parameters
-            this.Configurations = new ObservableCollection<CompileConfiguration>(solution.CompileConfigurations);
-            this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
+            this.Configurations = solution.CompileConfigurations ?? new List<CompileConfiguration>();
+            this.Configurations.Add(Constants.EditCompileConfiguration);
             this.SelectedConfiguration = solution.SelectedConfiguration;
 
             // Intialise sub ViewModels
@@ -126,7 +129,7 @@ namespace SkyrimCompileHelper.ViewModels
         public SemVersion Version { get; set; }
 
         /// <summary>Gets or sets the compile configurations.</summary>
-        public ObservableCollection<CompileConfiguration> Configurations { get; set; }
+        public IList<CompileConfiguration> Configurations { get; set; }
 
         /// <summary>Gets or sets the selected configuration.</summary>
         public string SelectedConfiguration { get; set; }
@@ -142,16 +145,13 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             // Get the name of the selected compile configuration
-            string configurationName = ((CompileConfiguration)sender.SelectedValue).Name;
+            CompileConfiguration configurationName = (CompileConfiguration)sender.SelectedValue;
 
             // If then name is equal to <edit...> then we open the configuration manager
-            if (configurationName == Constants.EditConst)
+            if (configurationName.Equals(Constants.EditCompileConfiguration))
             {
-                // Filter out the <edit...> item so we don't pass it over to the manager
-                var filteredConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList();
-
                 // Create a new ViewModel
-                var viewModel = new ConfigurationManagerViewModel(this.windowManager, filteredConfigurations);
+                ConfigurationManagerViewModel viewModel = new ConfigurationManagerViewModel(this.windowManager, this.Configurations);
 
                 // Get how the window was closed
                 bool? answer = this.windowManager.ShowDialog(viewModel);
@@ -159,11 +159,8 @@ namespace SkyrimCompileHelper.ViewModels
                 // If the window was closed with "true" we want to handle the data coming back
                 if (answer.HasValue && answer.Value)
                 {
-                    this.Configurations = new ObservableCollection<CompileConfiguration>(viewModel.Configurations);
+                    this.Configurations = viewModel.GetConfigurations();
                 }
-
-                // Since we just replaced the whole configurations list, we need to re add the <edit...> item
-                this.Configurations.Add(new CompileConfiguration { Name = Constants.EditConst });
 
                 // After adding a new configuration to the solution we need to save it.
                 this.SaveSolution();
@@ -173,7 +170,7 @@ namespace SkyrimCompileHelper.ViewModels
             }
 
             // If the user didn't select the <edit...> item, we simply set the new selected configuration
-            this.SelectedConfiguration = configurationName;
+            this.SelectedConfiguration = configurationName.Name;
 
             // After that we want to show the user the configuration view
             this.ConfigurationView = new ConfigurationViewModel(this.eventAggregator, this.Configurations.Single(c => c.Name == this.SelectedConfiguration));
@@ -185,7 +182,7 @@ namespace SkyrimCompileHelper.ViewModels
         /// <summary>Saves the selected solution to the solution repository.</summary>
         public void SaveSolution()
         {
-            // Generate solution object with the most basic details we know we have.
+            // Create a solution object with the information attainable from this view model.
             Solution sln = new Solution
             {
                 Path = this.SolutionPath,
@@ -193,34 +190,21 @@ namespace SkyrimCompileHelper.ViewModels
                 Version = this.Version
             };
 
-            // If there is no configuration selected the user didn't change anything,
-            // thus we can savely assume that nothing changed
-            if (string.IsNullOrEmpty(this.SelectedConfiguration))
-            {
-                sln.CompileConfigurations = this.Configurations.Where(c => c.Name != Constants.EditConst).ToList();
-            }
-            else
-            {
-                // Generate the details for the currently selected configuration
-                CompileConfiguration config = this.GenerateConfigurationDetails();
-                config.Name = this.SelectedConfiguration;
-                
-                // Generate the list we want to save
-                List<CompileConfiguration> configs = this.Configurations.Where(c => c.Name != this.SelectedConfiguration && c.Name != Constants.EditConst).ToList();
-                configs.Add(config);
-                configs = configs.OrderBy(i => i.Name).ToList();
-                
-                // Set the solution items
-                sln.SelectedConfiguration = this.SelectedConfiguration;
-                sln.CompileConfigurations = configs;
-            }
+            // Get the configurations the solution currently has
+            IList<CompileConfiguration> compileConfigs = new List<CompileConfiguration>(this.Configurations.Where(config => !Equals(config, Constants.EditCompileConfiguration)));
+            sln.CompileConfigurations = compileConfigs;
+
+            // Refresh the information on the currently selected configuration and set the name.
+            CompileConfiguration selectedConfig = this.GenerateConfigurationDetails();
+            selectedConfig.Name = this.SelectedConfiguration;
+            sln.SelectedConfiguration = this.SelectedConfiguration;
 
             // Now we need to pass the solution to the repository. Since it only accepts DictionaryRanges
             // we need to wrap the solution.
             IDictionaryRange<string, Solution> solutions = new DictionaryRange<string, Solution>();
             solutions.Add(this.SolutionName, sln);
 
-            // We also need to check if the solution ame changed and handle it properly.
+            // We also need to check if the solution name changed and handle it properly.
             if (this.oldSolutionName != this.SolutionName)
             {
                 this.solutionRepository.Delete(new List<string> { this.oldSolutionName });
@@ -235,7 +219,7 @@ namespace SkyrimCompileHelper.ViewModels
             // Refresh the view models properties
             this.Configurations = new ObservableCollection<CompileConfiguration>(sln.CompileConfigurations)
             {
-                new CompileConfiguration { Name = Constants.EditConst }
+                Constants.EditCompileConfiguration
             };
 
             // Reset the selected configuration
@@ -314,36 +298,71 @@ namespace SkyrimCompileHelper.ViewModels
             // We always want to add skyrims data folder, if only for the flags file.
             inputFolders.Add(Path.Combine(this.settingsRepository.Read()["SkyrimPath"].ToString(), @"Data\Scripts\Source"));
 
-            var files = Directory.GetFiles(Path.Combine(this.SolutionPath, "src"), "*.psc", SearchOption.AllDirectories);
+            var filePaths = Directory.GetFiles(Path.Combine(this.SolutionPath, "src"), "*.psc", SearchOption.AllDirectories);
 
+            var scripts = filePaths.Select(file => new PapyrusScript { Path = file, FlagsFile = this.ConfigurationView.FlagsFile });
 
-            // Create a new Compiler factory and pass down the parameters
-            ICompilerFactory compilerFactory = new CompilerFactory(this.settingsRepository.Read()["SkyrimPath"].ToString(), this.logWriter)
+            ICompiler compiler = new Compiler
             {
-                Flags = this.ConfigurationView.FlagsFile,
                 ImportFolders = inputFolders,
-                FilesToCompile = files,
-                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration, "scripts"),
-                Quiet = this.ConfigurationView.Quiet,
+                FilesToCompile = scripts.ToList(),
                 Debug = this.ConfigurationView.Debug,
                 Optimize = this.ConfigurationView.Optimize,
-                AssemblyOptions = this.ConfigurationView.SelectedAssemblyOption
+                AssemblyOption = this.ConfigurationView.SelectedAssemblyOption,
+                Quiet = this.ConfigurationView.Quiet,
+                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration, "scripts")
             };
+
+            compiler.CompilerErrorHandler += this.CompilerErrorHandler;
+            compiler.CompilerNotifyHandler += this.CompilerNotifyHandler;
 
             // Increase the build by one per compile
             int build = Convert.ToInt32(string.IsNullOrEmpty(this.Version.Build) ? "0" : this.Version.Build) + 1;
             this.Version = this.Version.Change(build: build.ToString());
 
             // Compile and move
-            await compilerFactory.CompileAsync();
+            await compiler.CompileAsync();
+
             this.MoveCompileFiles();
         }
 
-        /// <summary>Handle the save solution messages.</summary>
-        /// <param name="message">The message.</param>
+        /// <summary>
+        /// Handle the save solution messages.
+        /// </summary>
+        /// <param name="message">
+        /// The message.
+        /// </param>
         public void Handle(SaveSolutionEvenHandle message)
         {
             this.SaveSolution();
+        }
+
+        /// <summary>
+        /// The compiler notify handler.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void CompilerNotifyHandler(object sender, CompilerNotifyEventArgs e)
+        {
+            this.logWriter.Write(e.Message);
+        }
+
+        /// <summary>
+        /// The compiler error handler.
+        /// </summary>
+        /// <param name="sender">
+        /// The sender.
+        /// </param>
+        /// <param name="e">
+        /// The e.
+        /// </param>
+        private void CompilerErrorHandler(object sender, CompilerErrorEventArgs e)
+        {
+            this.logWriter.Write(e.Message);
         }
 
         /// <summary>Moves the compiled script and remaining source files from the compilation folder to the ModOrganizer folder.</summary>
@@ -393,10 +412,18 @@ namespace SkyrimCompileHelper.ViewModels
             this.CopyFilesWithSubFolders(Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration), Path.Combine(this.settingsRepository.Read()["ModOrganizerPath"].ToString(), "mods", this.SolutionName), true);
         }
 
-        /// <summary>Copies the content of a folder with the contents of all the sub-folders from one path to another.</summary>
-        /// <param name="sourcePath">The source path.</param>
-        /// <param name="destinationPath">The destination path.</param>
-        /// <param name="overwrite">True, if existing files should be overwritten, otherwise false.</param>
+        /// <summary>
+        /// Copies the content of a folder with the contents of all the sub-folders from one path to another.
+        /// </summary>
+        /// <param name="sourcePath">
+        /// The source path.
+        /// </param>
+        /// <param name="destinationPath">
+        /// The destination path.
+        /// </param>
+        /// <param name="overwrite">
+        /// True, if existing files should be overwritten, otherwise false.
+        /// </param>
         private void CopyFilesWithSubFolders(string sourcePath, string destinationPath, bool overwrite = false)
         {
             // Since File.Copy() does not create any foders, we need to create them ourselves.
