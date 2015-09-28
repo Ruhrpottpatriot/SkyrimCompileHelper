@@ -302,17 +302,24 @@ namespace SkyrimCompileHelper.ViewModels
 
             var scripts = filePaths.Select(file => new PapyrusScript { Path = file, FlagsFile = this.ConfigurationView.FlagsFile });
 
-            ICompiler compiler = new Compiler
-            {
-                ImportFolders = inputFolders,
-                FilesToCompile = scripts.ToList(),
-                Debug = this.ConfigurationView.Debug,
-                Optimize = this.ConfigurationView.Optimize,
-                AssemblyOption = this.ConfigurationView.SelectedAssemblyOption,
-                Quiet = this.ConfigurationView.Quiet,
-                OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration, "scripts")
-            };
+            ICompiler compiler = Compiler.CreateInstance(this.settingsRepository.Read()["SkyrimPath"].ToString());
 
+            foreach (string inputFolder in inputFolders)
+            {
+                compiler.ImportFolders.Add(inputFolder);
+            }
+
+            foreach (PapyrusScript script in scripts)
+            {
+                compiler.FilesToCompile.Add(script);
+            }
+
+            compiler.Debug = this.ConfigurationView.Debug;
+            compiler.Optimize = this.ConfigurationView.Optimize;
+            compiler.AssemblyOption = this.ConfigurationView.SelectedAssemblyOption;
+            compiler.Quiet = this.ConfigurationView.Quiet;
+            compiler.OutputFolder = Path.Combine(this.SolutionPath, "bin", this.SelectedConfiguration, "scripts");
+            
             compiler.CompilerErrorHandler += this.CompilerErrorHandler;
             compiler.CompilerNotifyHandler += this.CompilerNotifyHandler;
 
