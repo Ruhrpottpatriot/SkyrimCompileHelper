@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyrimCompileHelper", "SkyrimCompileHelper\SkyrimCompileHelper.csproj", "{8E34EFD1-8228-490A-AB01-FB94160938BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler", "Compiler\Compiler.csproj", "{AA767A0F-F961-4F68-A38E-F9BEED8BAD77}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{4D07678A-BFD9-4D7B-8625-9AAC541BB6F1}"
 EndProject
 Global
@@ -19,10 +17,6 @@ Global
 		{8E34EFD1-8228-490A-AB01-FB94160938BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8E34EFD1-8228-490A-AB01-FB94160938BF}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{8E34EFD1-8228-490A-AB01-FB94160938BF}.Release|Any CPU.Build.0 = Debug|Any CPU
-		{AA767A0F-F961-4F68-A38E-F9BEED8BAD77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA767A0F-F961-4F68-A38E-F9BEED8BAD77}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA767A0F-F961-4F68-A38E-F9BEED8BAD77}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA767A0F-F961-4F68-A38E-F9BEED8BAD77}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4D07678A-BFD9-4D7B-8625-9AAC541BB6F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4D07678A-BFD9-4D7B-8625-9AAC541BB6F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4D07678A-BFD9-4D7B-8625-9AAC541BB6F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
